@@ -24,13 +24,8 @@ final class Recorder {
             throw EngineError("Audioformat des Mikrofons wird nicht unterstützt.")
         }
         let meter = Meter()
-        let outFormat = session.audioFormat
-        input.installTap(onBus: 0, bufferSize: 4096, format: inFormat) { buffer, _ in
-            meter.update(buffer)
-            if let converted = Self.convert(buffer, with: converter, to: outFormat) {
-                session.append(converted)
-            }
-        }
+        input.installTap(onBus: 0, bufferSize: 4096, format: inFormat,
+                         block: Self.tap(meter: meter, converter: converter, session: session))
         engine.prepare()
         try engine.start()
         self.engine = engine
@@ -45,6 +40,20 @@ final class Recorder {
         let take = Take(seconds: Date().timeIntervalSince(startedAt), peak: meter?.peak ?? 0)
         meter = nil
         return take
+    }
+
+    /// Built outside the main actor on purpose: a closure written inside a
+    /// @MainActor method inherits that isolation, and Swift 6 traps when
+    /// AVAudioEngine then calls it on its realtime queue.
+    nonisolated private static func tap(meter: Meter, converter: AVAudioConverter,
+                                        session: TranscriptionSession) -> AVAudioNodeTapBlock {
+        let format = session.audioFormat
+        return { buffer, _ in
+            meter.update(buffer)
+            if let converted = convert(buffer, with: converter, to: format) {
+                session.append(converted)
+            }
+        }
     }
 
     nonisolated private static func convert(_ buffer: AVAudioPCMBuffer, with converter: AVAudioConverter,
