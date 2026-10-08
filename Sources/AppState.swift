@@ -52,13 +52,24 @@ enum Status: Equatable {
         }
     }
 
-    var symbol: String {
+    /// Template image in Assets.xcassets (design/inlaut-design-v1/menubar).
+    var menuBarImage: String {
         switch self {
-        case .preparing: "mic.badge.ellipsis"
-        case .ready: "mic"
-        case .recording: "mic.fill"
-        case .transcribing: "waveform"
-        case .failed: "mic.slash"
+        case .preparing: "menubar-preparing"
+        case .ready: "menubar-ready"
+        case .recording: "menubar-recording"
+        case .transcribing: "menubar-transcribing"
+        case .failed: "menubar-failed"
+        }
+    }
+
+    var accessibilityLabel: String {
+        switch self {
+        case .preparing: "Inlaut: wird vorbereitet"
+        case .ready: "Inlaut: bereit"
+        case .recording: "Inlaut: nimmt auf"
+        case .transcribing: "Inlaut: erkennt"
+        case .failed: "Inlaut: nicht verfügbar"
         }
     }
 }

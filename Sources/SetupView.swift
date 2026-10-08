@@ -30,9 +30,9 @@ struct SetupView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack(spacing: 14) {
-                Image(systemName: "waveform.badge.mic")
-                    .font(.system(size: 36))
-                    .foregroundStyle(.tint)
+                Image(nsImage: NSApp.applicationIconImage)
+                    .resizable()
+                    .frame(width: 56, height: 56)
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Willkommen bei Inlaut").font(.title2.bold())
                     Text("Diktieren in jedes Textfeld – erkannt auf diesem Mac, nichts verlässt ihn.")
@@ -85,6 +85,7 @@ struct SetupView: View {
         }
         .padding(24)
         .frame(width: 480)
+        .tint(.inlautAccent)
         // Permissions are granted in System Settings; pick that up on return.
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             state.refreshPermissions()

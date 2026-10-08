@@ -20,7 +20,12 @@ targets:
   Inlaut:
     type: application
     platform: macOS
-    sources: [Sources]
+    sources:
+      - Sources
+      - path: Resources/Assets.xcassets
+      # Icon Composer document built from design/inlaut-design-v1/app-icon/layers.
+      - path: Resources/Inlaut.icon
+        buildPhase: resources
     # Run scripts/fetch-sherpa-onnx.sh once before the first build.
     dependencies:
       - framework: Vendor/sherpa-onnx/lib/libsherpa-onnx-c-api.dylib
@@ -32,6 +37,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: de.tobymarks.inlaut
+        ASSETCATALOG_COMPILER_APPICON_NAME: Inlaut
         GENERATE_INFOPLIST_FILE: NO
         SWIFT_INCLUDE_PATHS: $(PROJECT_DIR)/Vendor/sherpa-onnx/include
         LIBRARY_SEARCH_PATHS: $(PROJECT_DIR)/Vendor/sherpa-onnx/lib

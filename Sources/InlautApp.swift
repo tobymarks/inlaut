@@ -9,7 +9,8 @@ struct InlautApp: App {
         MenuBarExtra {
             MenuContent(state: state)
         } label: {
-            Image(systemName: state.status.symbol)
+            Image(state.status.menuBarImage)
+                .accessibilityLabel(state.status.accessibilityLabel)
         }
         .menuBarExtraStyle(.menu)
 

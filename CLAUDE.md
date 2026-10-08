@@ -15,6 +15,10 @@ pkill -x Inlaut; open build/Build/Products/Debug/Inlaut.app
 - Crash reports: `~/Library/Logs/DiagnosticReports/Inlaut-*.ips`. Logs: `log show --last 10m --predicate 'subsystem == "de.tobymarks.inlaut"'` (only `notice`/`error` are persisted). Never log dictated text — lengths and timings only.
 - Idle check: `ps -o cputime= -p $(pgrep -x Inlaut)` twice, 15 s apart, must not move. `footprint <pid>` for memory (~600–900 MB with Parakeet loaded is expected).
 
+## Design
+
+`design/inlaut-design-v1/` holds the brand package (direction "Setzpunkt") and DESIGN_GUIDE.md, which defines colours, the recording pill, motion and UI copy. `design/build-support/build-package.py` regenerates every asset (needs cairosvg, Pillow, fontTools in the system python3). `Resources/Inlaut.icon` is the Icon Composer document built from `app-icon/layers`. `Resources/Assets.xcassets` holds the five menu bar template glyphs and the colour sets used by `Sources/InlautColors.swift`. Logo and icons are not GPL (LICENSE-ASSETS.md).
+
 ## Website
 
 `site/` is the static site for https://inlaut.de (German, no cookies, no tracking, no third-party requests). Served by Cloudflare Workers static assets in the private Cloudflare account (tobias@familiemarks.com). The domain is registered at INWX, and its nameservers point to Cloudflare. Deploy with `cd site && npx wrangler deploy` (wrangler is logged in via OAuth). The Impressum uses the apollon address with c/o, agreed with the maintainer.

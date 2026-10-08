@@ -1,21 +1,31 @@
+/* Colours and type from design/inlaut-design-v1/DESIGN_GUIDE.md. */
+@font-face {
+  font-family: Manrope;
+  src: url("/fonts/manrope.woff2") format("woff2");
+  font-weight: 200 800;
+  font-display: swap;
+}
+
 :root {
-  --paper: #f6f4ef;
-  --ink: #1d2433;
-  --muted: #5d6475;
-  --line: #e2ded5;
-  --card: #ffffffb3;
-  --signal: #e5482f;
+  --paper: #F6F2E9;
+  --surface: #E4DCCF;
+  --ink: #182E30;
+  --muted: #4A5C5E;
+  --accent: #236B63;
+  --line: #E4DCCF;
+  --card: #FBF8F2;
   color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #14171e;
-    --ink: #eceae4;
-    --muted: #a3a8b5;
-    --line: #2a2f3a;
-    --card: #1c2029b3;
-    --signal: #ff6a4f;
+    --paper: #182E30;
+    --surface: #243D3E;
+    --ink: #F6F2E9;
+    --muted: #B9C6C2;
+    --accent: #9AC9BB;
+    --line: #2F4A4B;
+    --card: #1D3436;
   }
 }
 
@@ -27,7 +37,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font: 400 18px/28px Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -43,14 +53,9 @@ header.top {
   padding-bottom: 28px;
 }
 
-.wordmark {
-  font-weight: 650;
-  font-size: 22px;
-  letter-spacing: -0.02em;
-  text-decoration: none;
-}
+.wordmark { color: var(--ink); display: inline-flex; }
 
-.wordmark .dot { color: var(--signal); }
+.symbol { color: var(--accent); display: block; margin-bottom: 28px; }
 
 nav a { color: var(--muted); text-decoration: none; margin-left: 20px; font-size: 15px; }
 nav a:hover { color: var(--ink); }
@@ -58,11 +63,11 @@ nav a:hover { color: var(--ink); }
 .hero { padding: 72px 0 56px; }
 
 .hero h1 {
-  font-size: clamp(36px, 6vw, 58px);
-  line-height: 1.06;
-  letter-spacing: -0.03em;
+  font-size: clamp(34px, 6vw, 48px);
+  line-height: 1.17;
+  letter-spacing: -0.01em;
   margin: 0 0 22px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .hero p.lead { font-size: 20px; color: var(--muted); max-width: 36em; margin: 0 0 32px; }
@@ -72,7 +77,7 @@ nav a:hover { color: var(--ink); }
   width: 0.08em;
   height: 0.9em;
   margin-left: 0.06em;
-  background: var(--signal);
+  background: var(--accent);
   vertical-align: -0.08em;
   border-radius: 1px;
   animation: blink 1.1s steps(1) infinite;
@@ -87,10 +92,10 @@ nav a:hover { color: var(--ink); }
   display: inline-block;
   padding: 12px 20px;
   border-radius: 999px;
-  background: var(--ink);
+  background: var(--accent);
   color: var(--paper);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 16px;
 }
 
@@ -113,16 +118,16 @@ nav a:hover { color: var(--ink); }
   padding: 22px;
 }
 
-.feature h2 { font-size: 17px; margin: 0 0 6px; letter-spacing: -0.01em; }
-.feature p { margin: 0; color: var(--muted); font-size: 15.5px; }
+.feature h2 { font-size: 18px; font-weight: 600; margin: 0 0 6px; }
+.feature p { margin: 0; color: var(--muted); font-size: 16px; line-height: 24px; }
 
 section.how { padding: 8px 0 64px; }
-section.how h2, .prose h1 { font-size: 28px; letter-spacing: -0.02em; margin: 0 0 16px; }
+section.how h2, .prose h1 { font-size: 28px; line-height: 36px; font-weight: 600; margin: 0 0 16px; }
 section.how ol { padding-left: 1.2em; margin: 0; }
 section.how li { margin: 6px 0; }
 
 kbd {
-  font: 600 14px/1 -apple-system, BlinkMacSystemFont, sans-serif;
+  font: 600 14px/1 Manrope, -apple-system, sans-serif;
   border: 1px solid var(--line);
   border-bottom-width: 2px;
   border-radius: 6px;

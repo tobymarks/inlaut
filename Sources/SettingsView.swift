@@ -79,6 +79,7 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .tint(.inlautAccent)
         .frame(width: 500)
         .fixedSize()
         .onAppear { state.refreshPermissions() }

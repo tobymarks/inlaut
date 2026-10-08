@@ -50,8 +50,18 @@ final class RecordingIndicator {
     func hide() {
         stopLevels()
         hideTask?.cancel()
-        panel?.orderOut(nil)
-        panel = nil
+        guard let panel else { return }
+        self.panel = nil
+        // Fade out (design guide: 120 ms, ease-in), then take it off screen.
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = Self.reduceMotion ? 0 : 0.12
+            context.timingFunction = CAMediaTimingFunction(name: .easeIn)
+            panel.animator().alphaValue = 0
+        }
+        Task {
+            try? await Task.sleep(for: .milliseconds(150))
+            panel.orderOut(nil)
+        }
     }
 
     private func stopLevels() {
@@ -60,11 +70,22 @@ final class RecordingIndicator {
     }
 
     private func present(reposition: Bool = true) {
+        let isNew = self.panel == nil
         let panel = self.panel ?? makePanel()
         self.panel = panel
         if reposition { place(panel) }
+        guard isNew else { return }
+        // Fade in (design guide: 160 ms, ease-out); instant with Reduce Motion.
+        panel.alphaValue = 0
         panel.orderFrontRegardless()
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = Self.reduceMotion ? 0 : 0.16
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            panel.animator().alphaValue = 1
+        }
     }
+
+    private static var reduceMotion: Bool { NSWorkspace.shared.accessibilityDisplayShouldReduceMotion }
 
     private func makePanel() -> NSPanel {
         let panel = NSPanel(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel],
@@ -179,42 +200,87 @@ final class IndicatorModel {
     var phase: Phase = .recording
     var levels: [Float] = Array(repeating: 0, count: barCount)
 
-    /// Peak 0…1 from the mic; speech peaks sit far below 1, so scale up.
+    /// Peak 0…1 from the mic, about every 50 ms. Speech peaks sit far below 1,
+    /// so scale up; then smooth so the bars rise fast (~70 ms) and fall
+    /// slowly (~160 ms), as the design guide asks.
     func push(_ level: Float) {
-        let scaled = min(1, sqrt(level) * 1.6)
+        let target = min(1, sqrt(level) * 1.6)
+        let previous = levels.last ?? 0
+        let smoothing: Float = target > previous ? 0.51 : 0.27
         levels.removeFirst()
-        levels.append(scaled)
+        levels.append(previous + (target - previous) * smoothing)
     }
 }
 
+/// Layout and states follow design/inlaut-design-v1/DESIGN_GUIDE.md, section 8.
 private struct IndicatorView: View {
     let model: IndicatorModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorSchemeContrast) private var contrast
+
+    /// Static bars shown instead of live levels with Reduce Motion.
+    private static let restingHeights: [CGFloat] = [4, 7, 11, 14, 11, 7, 4]
 
     var body: some View {
-        HStack(spacing: 8) {
-            switch model.phase {
-            case .recording:
-                Circle().fill(.red).frame(width: 8, height: 8)
+        let pill = content
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .frame(minHeight: 38)
+            .fixedSize()
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.1), value: model.phase)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(accessibilityText)
+        // Glass needs something legible behind it; with Reduce Transparency
+        // or Increase Contrast the pill gets an opaque system background.
+        if reduceTransparency || contrast == .increased {
+            pill
+                .background(Capsule().fill(Color(nsColor: .windowBackgroundColor)))
+                .overlay(Capsule().strokeBorder(Color(nsColor: .separatorColor)))
+        } else {
+            pill.glassEffect(.regular, in: .capsule)
+        }
+    }
+
+    @ViewBuilder private var content: some View {
+        switch model.phase {
+        case .recording:
+            HStack(spacing: 10) {
+                Circle().fill(Color.inlautRecording).frame(width: 6, height: 6)
                 HStack(alignment: .center, spacing: 2.5) {
                     ForEach(model.levels.indices, id: \.self) { i in
                         Capsule()
-                            .fill(.primary.opacity(0.85))
-                            .frame(width: 3, height: 4 + CGFloat(model.levels[i]) * 14)
+                            .fill(.primary)
+                            .frame(width: 3, height: reduceMotion
+                                ? Self.restingHeights[i]
+                                : 4 + CGFloat(model.levels[i]) * 14)
                     }
                 }
                 .frame(height: 18)
-                .animation(.easeOut(duration: 0.08), value: model.levels)
-            case .transcribing:
-                ProgressView().controlSize(.small)
-                Text("Erkennt …").font(.callout)
-            case .message(let text):
-                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.yellow)
-                Text(text).font(.callout).lineLimit(2)
+                .animation(reduceMotion ? nil : .linear(duration: 0.05), value: model.levels)
             }
+            .transition(.opacity)
+        case .transcribing:
+            HStack(spacing: 8) {
+                ProgressView().controlSize(.small)
+                Text("Erkennt …")
+            }
+            .frame(minWidth: 80)  // 108 pt pill, so the switch from recording stays calm
+            .transition(.opacity)
+        case .message(let text):
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.yellow)
+                Text(text).lineLimit(2)
+            }
+            .transition(.opacity)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 7)
-        .fixedSize()
-        .glassEffect(.regular, in: .capsule)
+    }
+
+    private var accessibilityText: String {
+        switch model.phase {
+        case .recording: "Inlaut nimmt auf"
+        case .transcribing: "Inlaut erkennt"
+        case .message(let text): text
+        }
     }
 }
