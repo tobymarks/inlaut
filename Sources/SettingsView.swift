@@ -15,13 +15,22 @@ struct SettingsView: View {
                 }
             }
 
-            Section {
-                LabeledContent("Kurzbefehl") {
+            Section("Auslösen") {
+                Picker("Diktieren mit", selection: $state.trigger) {
+                    ForEach(Trigger.allCases) { Text($0.label).tag($0) }
+                }
+                switch state.trigger {
+                case .globe:
+                    GlobeKeyHelp()
+                case .shortcut:
                     ShortcutRecorder(state: state)
+                    Picker("Modus", selection: $state.mode) {
+                        ForEach(Mode.allCases) { Text($0.label).tag($0) }
+                    }
                 }
-                Picker("Modus", selection: $state.mode) {
-                    ForEach(Mode.allCases) { Text($0.label).tag($0) }
-                }
+            }
+
+            Section {
                 Picker("Anzeige beim Diktieren", selection: $state.indicatorPosition) {
                     ForEach(IndicatorPosition.allCases) { Text($0.label).tag($0) }
                 }
@@ -69,31 +78,91 @@ struct SettingsView: View {
     }
 }
 
-/// Click, then press the new key combination. Esc cancels.
+/// How the 🌐 key works, and a warning while macOS still uses it itself.
+private struct GlobeKeyHelp: View {
+    @State private var conflicts = GlobeKeySetting.conflicts
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("**Halten** zum Sprechen, loslassen fügt ein. **Zweimal tippen** zum freihändigen Diktieren, einmal tippen beendet. 🌐 zusammen mit einer anderen Taste bleibt normale fn-Nutzung.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+            if conflicts {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("macOS lässt die 🌐-Taste gerade \(GlobeKeySetting.actionName). Stell unter Tastatur „🌐-Taste drücken“ auf **Keine Aktion**.")
+                            .font(.callout)
+                        Button("Tastatur-Einstellungen öffnen …") { GlobeKeySetting.openKeyboardSettings() }
+                    }
+                }
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            conflicts = GlobeKeySetting.conflicts
+        }
+        .onReceive(Timer.publish(every: 2, on: .main, in: .common).autoconnect()) { _ in
+            conflicts = GlobeKeySetting.conflicts
+        }
+    }
+}
+
+/// Click, then press the new key combination. Esc cancels. A combination
+/// macOS itself uses is refused; a commonly taken one gets a hint.
 private struct ShortcutRecorder: View {
     let state: AppState
     @State private var recording = false
     @State private var monitor: Any?
+    @State private var message: (text: String, refused: Bool)?
 
     var body: some View {
-        Button(recording ? "Tastenkombination drücken …" : state.shortcut.display) {
-            recording ? stop() : start()
+        LabeledContent("Kurzbefehl") {
+            Button(recording ? "Tastenkombination drücken …" : state.shortcut.display) {
+                recording ? stop() : start()
+            }
+            .monospaced(!recording)
         }
-        .monospaced(!recording)
+        .onAppear { describe(ShortcutConflicts.check(state.shortcut), refused: false) }
         .onDisappear { stop() }
+        if let message {
+            Label(message.text, systemImage: message.refused ? "xmark.octagon.fill" : "exclamationmark.triangle.fill")
+                .font(.callout)
+                .foregroundStyle(message.refused ? .red : .orange)
+        }
     }
 
     private func start() {
         recording = true
+        message = nil
         state.suspendHotKey(true)
         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             if event.keyCode == 53 {  // Esc
                 stop()
             } else if let shortcut = Shortcut(event: event) {
-                state.shortcut = shortcut
+                let finding = ShortcutConflicts.check(shortcut)
+                if case .system = finding {
+                    describe(finding, for: shortcut, refused: true)
+                } else {
+                    state.shortcut = shortcut
+                    describe(finding, refused: false)
+                }
                 stop()
             }
             return nil
+        }
+    }
+
+    private func describe(_ finding: ShortcutConflicts.Finding?, for shortcut: Shortcut? = nil, refused: Bool) {
+        let keys = (shortcut ?? state.shortcut).display
+        switch finding {
+        case .system(let name):
+            message = (refused
+                ? "\(keys) nutzt macOS schon für \(name). Bitte eine andere Kombination wählen – oder den Systemkurzbefehl unter Tastatur → Tastaturkurzbefehle abschalten."
+                : "\(keys) nutzt macOS auch für \(name) – das kann sich in die Quere kommen.", refused)
+        case .commonApp(let hint):
+            message = (hint, false)
+        case nil:
+            message = nil
         }
     }
 

@@ -9,9 +9,10 @@ struct Shortcut: Codable, Equatable {
     var modifiers: UInt32   // Carbon mask: cmdKey, optionKey, controlKey, shiftKey
     var keyName: String
 
+    // ⌃⌥Space would collide with "next input source", enabled by default.
     static let `default` = Shortcut(
         keyCode: UInt32(kVK_Space),
-        modifiers: UInt32(controlKey | optionKey),
+        modifiers: UInt32(optionKey | shiftKey),
         keyName: "Space"
     )
 

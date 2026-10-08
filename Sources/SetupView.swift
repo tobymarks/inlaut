@@ -49,6 +49,17 @@ struct SetupView: View {
                         Button("Mikrofon erlauben …") { state.requestMicrophone() }
                     }
                 }
+                if state.trigger == .globe {
+                    Step(done: !GlobeKeySetting.conflicts, title: "🌐-Taste für Inlaut freigeben") {
+                        if GlobeKeySetting.conflicts {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Unter Tastatur „🌐-Taste drücken“ auf „Keine Aktion“ stellen.")
+                                    .font(.callout).foregroundStyle(.secondary)
+                                Button("Tastatur-Einstellungen öffnen …") { GlobeKeySetting.openKeyboardSettings() }
+                            }
+                        }
+                    }
+                }
                 Step(done: state.accessibilityGranted, title: "Einfügen in andere Apps erlauben") {
                     if !state.accessibilityGranted {
                         VStack(alignment: .leading, spacing: 6) {
@@ -63,7 +74,9 @@ struct SetupView: View {
             Divider()
 
             HStack {
-                Text("Diktieren: **\(state.shortcut.display)** \(state.mode == .hold ? "halten" : "drücken")")
+                Text(state.trigger == .globe
+                     ? "Diktieren: **🌐 halten** · zweimal tippen für freihändig"
+                     : "Diktieren: **\(state.shortcut.display)** \(state.mode == .hold ? "halten" : "drücken")")
                     .foregroundStyle(.secondary)
                 Spacer()
                 Button("Fertig", action: done)

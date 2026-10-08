@@ -10,6 +10,12 @@ enum Mode: String, CaseIterable, Identifiable {
     var label: String { self == .hold ? "Halten zum Sprechen" : "Drücken zum Starten/Stoppen" }
 }
 
+enum Trigger: String, CaseIterable, Identifiable {
+    case globe, shortcut
+    var id: String { rawValue }
+    var label: String { self == .globe ? "🌐-Taste (fn)" : "Tastenkombination" }
+}
+
 enum EngineChoice: String, CaseIterable, Identifiable {
     case parakeet, apple
     var id: String { rawValue }
@@ -66,8 +72,14 @@ final class AppState {
     private(set) var accessibilityGranted = TextInserter.isTrusted
     private(set) var microphoneGranted = AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
 
+    var trigger: Trigger {
+        didSet {
+            UserDefaults.standard.set(trigger.rawValue, forKey: "trigger")
+            applyTrigger()
+        }
+    }
     var shortcut: Shortcut {
-        didSet { save(shortcut, "shortcut"); hotKey.register(shortcut) }
+        didSet { save(shortcut, "shortcut"); applyTrigger() }
     }
     var mode: Mode {
         didSet { UserDefaults.standard.set(mode.rawValue, forKey: "mode") }
@@ -112,6 +124,7 @@ final class AppState {
     private var download: Task<Void, Never>?
     private let recorder = Recorder()
     private let hotKey = HotKey()
+    private let globeKey = GlobeKeyTrigger()
     private let indicator = RecordingIndicator()
     private let setupWindow = SetupWindow()
     private var session: TranscriptionSession?
@@ -124,6 +137,7 @@ final class AppState {
 
     init() {
         let defaults = UserDefaults.standard
+        trigger = Trigger(rawValue: defaults.string(forKey: "trigger") ?? "") ?? .shortcut
         shortcut = defaults.data(forKey: "shortcut").flatMap { try? JSONDecoder().decode(Shortcut.self, from: $0) } ?? .default
         mode = Mode(rawValue: defaults.string(forKey: "mode") ?? "") ?? .hold
         engineChoice = EngineChoice(rawValue: defaults.string(forKey: "engine") ?? "") ?? .parakeet
@@ -135,7 +149,10 @@ final class AppState {
 
         hotKey.onPress = { [weak self] in self?.hotKeyPressed() }
         hotKey.onRelease = { [weak self] in self?.hotKeyReleased() }
-        hotKey.register(shortcut)
+        globeKey.onStart = { [weak self] in self?.globeStart() }
+        globeKey.onStop = { [weak self] in self?.globeStop() }
+        globeKey.onCancel = { [weak self] in self?.discardRecording() }
+        applyTrigger()
 
         Task { await start() }
     }
@@ -223,9 +240,21 @@ final class AppState {
         setupWindow.show(state: self)
     }
 
+    /// Only the chosen trigger is active; the other one is fully switched off.
+    private func applyTrigger() {
+        switch trigger {
+        case .shortcut:
+            globeKey.stop()
+            hotKey.register(shortcut)
+        case .globe:
+            hotKey.unregister()
+            globeKey.start()
+        }
+    }
+
     /// While the settings field records a new shortcut, the old one must not fire.
     func suspendHotKey(_ suspended: Bool) {
-        suspended ? hotKey.unregister() : hotKey.register(shortcut)
+        if suspended { hotKey.unregister() } else { applyTrigger() }
     }
 
     func refreshPermissions() {
@@ -261,6 +290,27 @@ final class AppState {
 
     private func hotKeyReleased() {
         if mode == .hold, status == .recording { stopAndTranscribe() }
+    }
+
+    private func globeStart() {
+        switch status {
+        case .ready, .failed: startRecording()
+        default: break
+        }
+    }
+
+    private func globeStop() {
+        if status == .recording { stopAndTranscribe() }
+    }
+
+    /// fn turned out to be part of fn+key: drop the take without a sound.
+    private func discardRecording() {
+        guard let session else { return }
+        self.session = nil
+        _ = recorder.stop()
+        Task { await session.cancel() }
+        indicator.hide()
+        status = .ready
     }
 
     private func startRecording() {
