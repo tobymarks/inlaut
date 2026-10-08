@@ -1,0 +1,47 @@
+{
+  "colorSpace": "sRGB",
+  "colors": [
+    {
+      "name": "paper",
+      "assetName": "InlautPaper",
+      "light": "#F6F2E9",
+      "dark": "#182E30",
+      "usage": "Markenfläche; UI bevorzugt Systemmaterial"
+    },
+    {
+      "name": "surface",
+      "assetName": "InlautSurface",
+      "light": "#E4DCCF",
+      "dark": "#243D3E",
+      "usage": "Sekundäre Markenfläche"
+    },
+    {
+      "name": "ink",
+      "assetName": "InlautInk",
+      "light": "#182E30",
+      "dark": "#F6F2E9",
+      "usage": "Text auf Markenflächen; UI .primary"
+    },
+    {
+      "name": "accent",
+      "assetName": "InlautAccent",
+      "light": "#236B63",
+      "dark": "#9AC9BB",
+      "usage": "Sparsames tint und Links"
+    },
+    {
+      "name": "recording",
+      "assetName": "InlautRecording",
+      "light": "#C44336",
+      "dark": "#FF8E80",
+      "usage": "Aufnahmepunkt, kein kleiner Text auf Papier"
+    },
+    {
+      "name": "border",
+      "assetName": "InlautBorder",
+      "light": "#236B63",
+      "dark": "#9AC9BB",
+      "usage": "Bedeutungstragende Konturen; Deko darf Sand verwenden"
+    }
+  ]
+}

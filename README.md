@@ -39,3 +39,5 @@ Measurements that led to the engine choice (on technical German, Whisper-turbo-g
 ## License
 
 GPL-3.0-or-later. See [LICENSE](LICENSE). Model and library licenses: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+The Inlaut name, logo, app icon and menu bar glyphs are not covered by the GPL; see [design/inlaut-design-v1/LICENSE-ASSETS.md](design/inlaut-design-v1/LICENSE-ASSETS.md).

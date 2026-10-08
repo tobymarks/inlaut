@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "files": 75,
+  "svg": 19,
+  "png": 49,
+  "icoSizes": [
+    [
+      16,
+      16
+    ],
+    [
+      32,
+      32
+    ],
+    [
+      48,
+      48
+    ]
+  ],
+  "contrast": {
+    "ink-light": 12.77,
+    "accent-light": 5.6,
+    "recording-light": 4.47,
+    "border-light": 5.6,
+    "ink-dark": 12.77,
+    "accent-dark": 7.77,
+    "recording-dark": 6.41,
+    "border-dark": 7.77
+  },
+  "checks": [
+    "exact manifest",
+    "SVG paths and dimensions",
+    "black-only alpha templates",
+    "RGBA and sRGB PNGs",
+    "pixel-hinted ICO sizes",
+    "identical logo variant geometry",
+    "DMG icon clearances",
+    "documented asset generator"
+  ],
+  "nativeIconComposerTested": false
+}
