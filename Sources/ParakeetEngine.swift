@@ -93,13 +93,17 @@ final class SherpaRecognizer: @unchecked Sendable {
         config.model_config.num_threads = Int32(threads)
 
         // The C strings only need to live until the recognizer is created.
-        let strings = [
+        let values: [String] = [
             directory.appending(path: "encoder.int8.onnx").path,
             directory.appending(path: "decoder.int8.onnx").path,
             directory.appending(path: "joiner.int8.onnx").path,
             directory.appending(path: "tokens.txt").path,
             "cpu", "nemo_transducer", "greedy_search",
-        ].map { strdup($0) }
+        ]
+        // Explicit C-string conversion also compiles with the Xcode 26 SDK.
+        let strings: [UnsafeMutablePointer<CChar>?] = values.map { value in
+            value.withCString { strdup($0) }
+        }
         defer { strings.forEach { free($0) } }
         config.model_config.transducer.encoder = UnsafePointer(strings[0])
         config.model_config.transducer.decoder = UnsafePointer(strings[1])
