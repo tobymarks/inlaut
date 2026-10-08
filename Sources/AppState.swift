@@ -68,6 +68,7 @@ final class AppState {
     private let engine: TranscriptionEngine = AppleSpeechEngine()
     private let recorder = Recorder()
     private let hotKey = HotKey()
+    private let indicator = RecordingIndicator()
     private var session: TranscriptionSession?
     private let log = Logger(subsystem: "de.tobymarks.inlaut", category: "app")
 
@@ -139,11 +140,17 @@ final class AppState {
             try recorder.start(into: session)
             self.session = session
             status = .recording
+            indicator.showRecording { [recorder] in recorder.level }
             if playSounds { NSSound(named: "Tink")?.play() }
         } catch {
             log.error("start failed: \(error.localizedDescription)")
-            status = .failed(error.localizedDescription)
+            fail(error.localizedDescription)
         }
+    }
+
+    private func fail(_ message: String) {
+        status = .failed(message)
+        indicator.showMessage(message)
     }
 
     private func stopAndTranscribe() {
@@ -155,15 +162,17 @@ final class AppState {
         if take.seconds < minimumSeconds {
             Task { await session.cancel() }
             status = .ready
+            indicator.hide()
             return
         }
         if take.peak == 0 {
             Task { await session.cancel() }
-            status = .failed("Nur Stille – fehlt die Mikrofon-Berechtigung?")
+            fail("Nur Stille – fehlt die Mikrofon-Berechtigung?")
             return
         }
 
         status = .transcribing
+        indicator.showTranscribing()
         Task {
             do {
                 let started = Date()
@@ -172,20 +181,23 @@ final class AppState {
                 log.info("\(take.seconds, format: .fixed(precision: 1))s audio → \(text.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
                 guard !text.isEmpty else {
                     status = .ready
+                    indicator.showMessage("Nichts erkannt")
                     return
                 }
+                // Hide before pasting so the panel never sits over the target.
+                indicator.hide()
                 lastText = text
                 let pasted = await TextInserter.insert(text)
                 refreshAccessibility()
                 if pasted {
                     status = .ready
                 } else {
-                    status = .failed("In Zwischenablage – zum Einfügen Bedienungshilfen erlauben")
+                    fail("In Zwischenablage – zum Einfügen Bedienungshilfen erlauben")
                     requestAccessibility()
                 }
             } catch {
                 log.error("transcribe failed: \(error.localizedDescription)")
-                status = .failed(error.localizedDescription)
+                fail(error.localizedDescription)
             }
         }
     }

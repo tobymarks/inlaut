@@ -33,6 +33,9 @@ final class Recorder {
         startedAt = Date()
     }
 
+    /// Loudest sample of the latest buffer (0…1), for the level display.
+    var level: Float { meter?.current ?? 0 }
+
     func stop() -> Take {
         engine?.inputNode.removeTap(onBus: 0)
         engine?.stop()
@@ -76,14 +79,19 @@ final class Recorder {
     }
 }
 
-/// Peak level, written on the audio thread and read after the engine stopped.
+/// Peak levels, written on the audio thread. A torn Float read on the main
+/// thread only makes one bar of the level display a little off.
 private final class Meter: @unchecked Sendable {
     private(set) var peak: Float = 0
+    private(set) var current: Float = 0
 
     func update(_ buffer: AVAudioPCMBuffer) {
         guard let data = buffer.floatChannelData?[0] else { return }
+        var loudest: Float = 0
         for i in 0..<Int(buffer.frameLength) {
-            peak = max(peak, abs(data[i]))
+            loudest = max(loudest, abs(data[i]))
         }
+        current = loudest
+        peak = max(peak, loudest)
     }
 }
