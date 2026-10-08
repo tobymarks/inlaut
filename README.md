@@ -1,4 +1,4 @@
-# Dictate (working title)
+# Inlaut
 
 A tiny macOS menu bar app for dictation that never leaves your Mac. Hold a key combination, speak, let go — the text appears in whatever text field has the cursor.
 
@@ -16,8 +16,8 @@ Requires Xcode 26+ and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
 xcodegen generate
-xcodebuild -project Dictate.xcodeproj -scheme Dictate -configuration Debug -derivedDataPath build build
-open build/Build/Products/Debug/Dictate.app
+xcodebuild -project Inlaut.xcodeproj -scheme Inlaut -configuration Debug -derivedDataPath build build
+open build/Build/Products/Debug/Inlaut.app
 ```
 
 `project.yml` signs with the maintainer's team; change `DEVELOPMENT_TEAM` and `CODE_SIGN_IDENTITY` for your own builds.

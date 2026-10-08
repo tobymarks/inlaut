@@ -69,7 +69,7 @@ final class AppState {
     private let recorder = Recorder()
     private let hotKey = HotKey()
     private var session: TranscriptionSession?
-    private let log = Logger(subsystem: "de.tobymarks.dictate", category: "app")
+    private let log = Logger(subsystem: "de.tobymarks.inlaut", category: "app")
 
     /// Shorter takes are treated as an accidental tap and dropped.
     private let minimumSeconds: TimeInterval = 0.3

@@ -4,5 +4,5 @@ spike/try_apple
 spike/__pycache__/
 *.wav
 build/
-Dictate.xcodeproj/
+Inlaut.xcodeproj/
 .DS_Store

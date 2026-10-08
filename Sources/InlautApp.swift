@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 @main
-struct DictateApp: App {
+struct InlautApp: App {
     @State private var state = AppState()
 
     var body: some Scene {
