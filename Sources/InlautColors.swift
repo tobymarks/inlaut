@@ -1,4 +1,4 @@
-// Brand colours from design/inlaut-design-v1; the Color Sets live in Resources/Assets.xcassets.
+// Sprachimpuls / Petrol & Mint. Synced by scripts/sync-brand.py from the brand kit.
 import SwiftUI
 
 extension Color {
@@ -8,4 +8,7 @@ extension Color {
     static var inlautAccent: Color { Color("InlautAccent") }
     static var inlautRecording: Color { Color("InlautRecording") }
     static var inlautBorder: Color { Color("InlautBorder") }
+    static var inlautMuted: Color { Color("InlautMuted") }
+    static var inlautBrand: Color { Color("InlautBrand") }
+    static var inlautOnAccent: Color { Color("InlautOnAccent") }
 }

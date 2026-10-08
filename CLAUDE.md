@@ -11,13 +11,13 @@ xcodebuild -project Inlaut.xcodeproj -scheme Inlaut -configuration Debug -derive
 pkill -x Inlaut; open build/Build/Products/Debug/Inlaut.app
 ```
 
-- Signing: `Apple Development: Tobias Marks`, team `7V4K87652E` (project.yml). Keep a stable identity — the Accessibility grant is tied to the signature and bundle ID `de.tobymarks.inlaut`. A Developer ID cert exists for notarized releases (issue #2).
+- Signing: `Apple Development: Tobias Marks`, team `7V4K87652E` (project.yml). Keep a stable identity — the Accessibility grant is tied to the signature and bundle ID `de.tobymarks.inlaut`. Release uses Developer ID signing; `scripts/release.sh prepare` archives and exports with nested signatures. `scripts/release.sh notarize` uses the `Inlaut` notarytool Keychain profile, staples, checks Gatekeeper, and packages a signed Sparkle feed. See README for the publishing order.
 - Crash reports: `~/Library/Logs/DiagnosticReports/Inlaut-*.ips`. Logs: `log show --last 10m --predicate 'subsystem == "de.tobymarks.inlaut"'` (only `notice`/`error` are persisted). Never log dictated text — lengths and timings only.
 - Idle check: `ps -o cputime= -p $(pgrep -x Inlaut)` twice, 15 s apart, must not move. `footprint <pid>` for memory (~600–900 MB with Parakeet loaded is expected).
 
 ## Design
 
-`design/inlaut-design-v1/` holds the brand package (direction "Setzpunkt") and DESIGN_GUIDE.md, which defines colours, the recording pill, motion and UI copy. `design/build-support/build-package.py` regenerates every asset (needs cairosvg, Pillow, fontTools in the system python3). `Resources/Inlaut.icon` is the Icon Composer document built from `app-icon/layers`. `Resources/Assets.xcassets` holds the five menu bar template glyphs and the colour sets used by `Sources/InlautColors.swift`. Logo and icons are not GPL (LICENSE-ASSETS.md).
+`design/inlaut-brand-kit/` is the current brand master ("Sprachimpuls / Petrol & Mint"); read `README.txt` and `Brand-Guide.html`. UI typography is the native system font on both macOS and web. Run `python3 scripts/sync-brand.py` to sync the kit's colours, template images and web assets. It uses `scripts/outline-brand.swift` to turn the stroked waveform into a filled outline for native Icon Composer materials. `Resources/Inlaut.icon` is the native layered icon, and `Resources/Assets.xcassets` contains adaptive colours plus five distinct monochrome menu states. Keep native glass and the recording indicator's reduced-motion/transparency fallbacks. See `design/README.md` for integration details. The previous `design/build-support/` generator is archived and must not be used for the current brand. Logo and icons retain the existing asset licensing policy (`design/LICENSE-ASSETS.md`).
 
 ## Website
 
@@ -48,11 +48,11 @@ An agent cannot press the shortcut or 🌐 key (synthetic events lack permission
 - `AppState` — settings (UserDefaults), engine choice, model download state, dictation flow (start → record → 150 ms trailing audio → finish → voice commands → replacements → paste).
 - Engines behind `TranscriptionEngine`/`TranscriptionSession`:
   - `ParakeetEngine` (default) — parakeet-primeline int8 ONNX via sherpa-onnx C API on CPU, 4 threads, kept loaded. Long audio split into 90 s pieces at pauses, quiet audio gained to peak 0.5, empty long pieces retried in 20 s parts (ported from winidi/dictate `local_stt.py`).
-  - `AppleSpeechEngine` — SpeechAnalyzer/SpeechTranscriber de-DE; no download, used until Parakeet is ready.
+  - `AppleSpeechEngine` — SpeechAnalyzer/SpeechTranscriber de-DE; may download system language assets, prepared independently from Parakeet.
 - `ModelStore` — pinned HF revision, per-file size + SHA-256, downloads to `~/Library/Application Support/Inlaut/Models/`, file only renamed into place after the hash matches.
 - Triggers: `HotKey` (Carbon `RegisterEventHotKey`, no permission) or `GlobeKeyTrigger` (NSEvent monitors under Accessibility; hold 200 ms = dictate, double tap = hands-free, fn+other key = cancel; key-down monitor only while fn is down).
 - `TextInserter` — clipboard + synthetic ⌘V, marks the item transient, restores the old clipboard. Needs Accessibility; without it the text stays on the clipboard.
-- `RecordingIndicator` — non-activating NSPanel, bottom centre by default (caret mode optional; Chromium/Electron report no usable caret).
+- `RecordingIndicator` — non-activating NSPanel, 12 pt above the physical bottom edge by default (caret mode optional; Chromium/Electron report no usable caret).
 - `ShortcutConflicts` — checks enabled macOS symbolic hot keys; other apps' hot keys cannot be detected (RegisterEventHotKey accepts duplicates, even exclusive). `GlobeKeySetting` reads `AppleFnUsageType` (must be 0 = do nothing for the 🌐 trigger).
 
 ## Decisions and measurements (why things are the way they are)
@@ -64,3 +64,10 @@ An agent cannot press the shortcut or 🌐 key (synthetic events lack permission
 - Swift 6 gotcha: a closure written inside a `@MainActor` method inherits main-actor isolation and traps when called on an audio/realtime thread → build such closures in `nonisolated static` functions (see `Recorder.tap`).
 - Mac App Store rejects automatic pasting for dictation apps (2.4.5) → direct distribution first (issues #2, #6).
 - Name "Inlaut" chosen after a collision search (Hush, Murmur, Quill, Sotto, Verba … are taken). A formal trademark check (TMview, classes 9/42) is still open — private, not an issue.
+
+## Updates and validation
+
+- `AppUpdater` wraps Sparkle 2.10.0; daily checks, manual installation, no profiling, signed feed and archives. Disabled in Debug. Checks/relaunches are deferred during dictation.
+- Feed: `site/public/updates/appcast.xml` → inlaut.de; archives: public GitHub Releases. Never publish an appcast before the corresponding notarized ZIP is downloadable.
+- Sparkle private key stays in Keychain under account `de.tobymarks.inlaut`; do not print or commit it. Notarization profile: `Inlaut` (one-time user setup).
+- `xcodebuild -project Inlaut.xcodeproj -scheme Inlaut -configuration Debug -destination 'platform=macOS,arch=arm64' -derivedDataPath build test` runs the isolated tests. Tests must not touch the general clipboard or microphone.

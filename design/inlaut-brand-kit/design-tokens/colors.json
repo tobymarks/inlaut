@@ -1,0 +1,25 @@
+{
+  "brand": {
+    "petrol": "#103D3B",
+    "mint": "#BCEBD9",
+    "porcelain": "#F6F7F4"
+  },
+  "light": {
+    "background": "#F6F7F4",
+    "surface": "#FFFFFF",
+    "text": "#172C2B",
+    "textSecondary": "#536A67",
+    "accent": "#236E64",
+    "onAccent": "#FFFFFF",
+    "recording": "#C84442"
+  },
+  "dark": {
+    "background": "#0C201F",
+    "surface": "#153330",
+    "text": "#F6F7F4",
+    "textSecondary": "#A5BCB6",
+    "accent": "#BCEBD9",
+    "onAccent": "#103D3B",
+    "recording": "#FF9389"
+  }
+}

@@ -22,13 +22,14 @@ enum EngineChoice: String, CaseIterable, Identifiable {
     var label: String {
         switch self {
         case .parakeet: "Parakeet Deutsch – beste Qualität"
-        case .apple: "Apple – ohne Download"
+        case .apple: "Apple – geringer Speicherbedarf"
         }
     }
 }
 
 enum ModelState: Equatable {
     case missing
+    case installed
     case downloading(Double)
     case loading
     case ready
@@ -52,7 +53,7 @@ enum Status: Equatable {
         }
     }
 
-    /// Template image in Assets.xcassets (design/inlaut-design-v1/menubar).
+    /// Brand template with distinct, monochrome status badges (scripts/sync-brand.py).
     var menuBarImage: String {
         switch self {
         case .preparing: "menubar-preparing"
@@ -77,8 +78,10 @@ enum Status: Equatable {
 @MainActor
 @Observable
 final class AppState {
-    private(set) var status: Status = .preparing("Startet …")
-    private(set) var modelState: ModelState = ParakeetModel.isInstalled ? .loading : .missing
+    private(set) var status: Status = .preparing("Startet …") {
+        didSet { updater.isBusy = isDictating }
+    }
+    private(set) var modelState: ModelState = ParakeetModel.isInstalled ? .installed : .missing
     private(set) var lastText = ""
     private(set) var accessibilityGranted = TextInserter.isTrusted
     private(set) var microphoneGranted = AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
@@ -98,8 +101,7 @@ final class AppState {
     var engineChoice: EngineChoice {
         didSet {
             UserDefaults.standard.set(engineChoice.rawValue, forKey: "engine")
-            if engineChoice == .parakeet, modelState == .missing { showSetup() }
-            updateStatus()
+            configureEngine()
         }
     }
     var playSounds: Bool {
@@ -136,13 +138,20 @@ final class AppState {
     private let apple = AppleSpeechEngine()
     private let parakeet = ParakeetEngine()
     private var appleReady = false
+    private var appleError: String?
+    private var applePreparation: Task<Void, Never>?
+    private var parakeetPreparation: Task<Void, Never>?
     private var download: Task<Void, Never>?
+    let updater = AppUpdater()
     private let recorder = Recorder()
     private let hotKey = HotKey()
     private let globeKey = GlobeKeyTrigger()
     private let indicator = RecordingIndicator()
     private let setupWindow = SetupWindow()
     private var session: TranscriptionSession?
+    private var transcription: Task<Void, Never>?
+    private var dictationID: UUID?
+    private var pasteTarget: TextInserter.Target?
     private let log = Logger(subsystem: "de.tobymarks.inlaut", category: "app")
 
     /// Shorter takes are treated as an accidental tap and dropped.
@@ -170,62 +179,96 @@ final class AppState {
         globeKey.onCancel = { [weak self] in self?.discardRecording() }
         applyTrigger()
 
-        Task { await start() }
+        Task { start() }
     }
 
-    private func start() async {
+    private func start() {
         status = .preparing("Lädt Spracherkennung …")
-        await prepareApple()
-        if ParakeetModel.isInstalled {
-            await loadParakeet()
-        } else if engineChoice == .parakeet {
+        // Independent tasks: Apple's asset installation must never delay a
+        // locally installed Parakeet model or its download/setup window.
+        prepareApple()
+        configureEngine()
+    }
+
+    private func configureEngine() {
+        if engineChoice == .apple {
+            download?.cancel()
+            parakeet.unload()
+            if download == nil, parakeetPreparation == nil {
+                modelState = ParakeetModel.isInstalled ? .installed : .missing
+            }
+            prepareApple()
+        } else if parakeet.isLoaded {
+            modelState = .ready
+        } else if ParakeetModel.isInstalled {
+            loadParakeet()
+        } else if download == nil {
             showSetup()
             startDownload()
         }
         updateStatus()
     }
 
-    func prepareApple() async {
-        do {
-            try await apple.prepare()
-            appleReady = true
-        } catch {
-            log.error("apple prepare failed: \(error.localizedDescription)")
+    func prepareApple() {
+        guard !appleReady, applePreparation == nil else { return }
+        appleError = nil
+        applePreparation = Task {
+            defer { applePreparation = nil }
+            do {
+                try await apple.prepare()
+                appleReady = true
+            } catch {
+                appleError = error.localizedDescription
+                log.error("apple prepare failed: \(error.localizedDescription)")
+            }
+            updateStatus()
         }
-        updateStatus()
     }
 
-    private func loadParakeet() async {
+    private func loadParakeet() {
+        guard engineChoice == .parakeet, parakeetPreparation == nil, !parakeet.isLoaded else { return }
         modelState = .loading
         updateStatus()
-        do {
-            let started = Date()
-            try await parakeet.prepare()
-            log.notice("parakeet loaded in \(Date().timeIntervalSince(started), format: .fixed(precision: 1))s")
-            modelState = .ready
-        } catch {
-            log.error("parakeet load failed: \(error.localizedDescription)")
-            modelState = .failed(error.localizedDescription)
+        parakeetPreparation = Task {
+            defer { parakeetPreparation = nil }
+            do {
+                let started = Date()
+                try await parakeet.prepare()
+                if engineChoice == .parakeet {
+                    modelState = .ready
+                    log.notice("parakeet loaded in \(Date().timeIntervalSince(started), format: .fixed(precision: 1))s")
+                } else {
+                    parakeet.unload()
+                    modelState = .installed
+                }
+            } catch {
+                log.error("parakeet load failed: \(error.localizedDescription)")
+                modelState = .failed(error.localizedDescription)
+            }
+            updateStatus()
         }
-        updateStatus()
     }
 
     func startDownload() {
-        guard download == nil, !parakeet.isLoaded else { return }
+        guard download == nil, parakeetPreparation == nil, !parakeet.isLoaded else { return }
         modelState = .downloading(0)
         updateStatus()
         download = Task {
             defer { download = nil }
             do {
-                try await ParakeetModel.install { [weak self] fraction in
-                    self?.modelState = .downloading(fraction)
+                try await ParakeetModel.install { fraction in
+                    guard self.download != nil else { return }
+                    if case .downloading = self.modelState { self.modelState = .downloading(fraction) }
                 }
-                await loadParakeet()
+                try Task.checkCancellation()
+                modelState = .installed
+                loadParakeet()
             } catch is CancellationError {
-                modelState = .missing
+                modelState = ParakeetModel.isInstalled ? .installed : .missing
             } catch {
                 log.error("model download failed: \(error.localizedDescription)")
-                modelState = Task.isCancelled ? .missing : .failed(error.localizedDescription)
+                modelState = Task.isCancelled
+                    ? (ParakeetModel.isInstalled ? .installed : .missing) : .failed(error.localizedDescription)
             }
             updateStatus()
         }
@@ -244,7 +287,9 @@ final class AppState {
         }
         if activeEngine != nil {
             status = .ready
-        } else if case .failed(let message) = modelState {
+        } else if engineChoice == .apple, let appleError {
+            status = .failed(appleError)
+        } else if engineChoice == .parakeet, case .failed(let message) = modelState {
             status = .failed(message)
         } else {
             status = .preparing("Lädt Spracherkennung …")
@@ -296,6 +341,8 @@ final class AppState {
 
     // MARK: - Dictation flow
 
+    var isDictating: Bool { status == .recording || status == .transcribing }
+
     private func hotKeyPressed() {
         switch (mode, status) {
         case (.toggle, .recording): stopAndTranscribe()
@@ -321,12 +368,22 @@ final class AppState {
 
     /// fn turned out to be part of fn+key: drop the take without a sound.
     private func discardRecording() {
-        guard let session else { return }
+        cancelDictation()
+    }
+
+    func cancelDictation() {
+        guard isDictating else { return }
+        let cancelledSession = session
+        dictationID = nil
+        transcription?.cancel()
+        transcription = nil
         self.session = nil
+        pasteTarget = nil
         _ = recorder.stop()
-        Task { await session.cancel() }
+        Task { await cancelledSession?.cancel() }
         indicator.hide()
         status = .ready
+        updateStatus()
     }
 
     private func startRecording() {
@@ -335,13 +392,18 @@ final class AppState {
             return
         }
         do {
-            let session = try engine.begin()
-            try recorder.start(into: session)
-            self.session = session
+            pasteTarget = TextInserter.captureTarget()
+            self.session = try ManagedSession.start(engine: engine) { try recorder.start(into: $0) }
+            dictationID = UUID()
             status = .recording
             indicator.showRecording { [recorder] in recorder.level }
             if playSounds { NSSound(named: "Tink")?.play() }
         } catch {
+            let failedSession = session
+            session = nil
+            pasteTarget = nil
+            _ = recorder.stop()
+            Task { await failedSession?.cancel() }
             log.error("start failed: \(error.localizedDescription)")
             fail(error.localizedDescription)
         }
@@ -353,29 +415,39 @@ final class AppState {
     }
 
     private func stopAndTranscribe() {
-        guard let session else { return }
-        self.session = nil
+        guard let session, let id = dictationID, status == .recording else { return }
+        let target = pasteTarget
         status = .transcribing
         indicator.showTranscribing()
-        if playSounds { NSSound(named: "Pop")?.play() }
 
-        Task {
-            try? await Task.sleep(for: trailingAudio)
-            let take = recorder.stop()
-            if take.seconds < minimumSeconds {
-                await session.cancel()
-                status = .ready
-                indicator.hide()
-                return
-            }
-            if take.peak == 0 {
-                await session.cancel()
-                fail("Nur Stille – fehlt die Mikrofon-Berechtigung?")
-                return
+        transcription = Task {
+            defer {
+                if dictationID == id {
+                    self.session = nil
+                    transcription = nil
+                    dictationID = nil
+                    pasteTarget = nil
+                }
             }
             do {
+                try await Task.sleep(for: trailingAudio)
+                guard dictationID == id else { return }
+                let take = recorder.stop()
+                // Play after closing the microphone, not into the trailing audio.
+                if playSounds { NSSound(named: "Pop")?.play() }
+                if take.seconds < minimumSeconds {
+                    await session.cancel()
+                    guard dictationID == id else { return }
+                    status = .ready
+                    updateStatus()
+                    indicator.hide()
+                    return
+                }
+                if take.peak == 0 { throw EngineError("Nur Stille – fehlt die Mikrofon-Berechtigung?") }
                 let started = Date()
                 let raw = try await session.finish()
+                try Task.checkCancellation()
+                guard dictationID == id else { return }
                 // Length and timing only — the dictated text is never logged.
                 log.notice("\(take.seconds, format: .fixed(precision: 1))s audio → \(raw.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
                 let text = replacements.apply(to: voiceCommands ? VoiceCommands.apply(to: raw) : raw)
@@ -387,15 +459,22 @@ final class AppState {
                 // Hide before pasting so the panel never sits over the target.
                 indicator.hide()
                 lastText = text
-                let pasted = await TextInserter.insert(text)
+                let result = try await TextInserter.insert(text, target: target)
+                guard dictationID == id else { return }
                 refreshPermissions()
-                if pasted {
+                switch result {
+                case .inserted:
                     status = .ready
-                } else {
-                    fail("In Zwischenablage – zum Einfügen Bedienungshilfen erlauben")
-                    requestAccessibility()
+                    updateStatus()
+                case .copied(let message):
+                    fail(message)
+                    if !accessibilityGranted { requestAccessibility() }
                 }
             } catch {
+                guard dictationID == id else { return }
+                _ = recorder.stop()
+                await session.cancel()
+                guard dictationID == id else { return }
                 log.error("transcribe failed: \(error.localizedDescription)")
                 fail(error.localizedDescription)
             }

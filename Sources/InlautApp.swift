@@ -10,6 +10,7 @@ struct InlautApp: App {
             MenuContent(state: state)
         } label: {
             Image(state.status.menuBarImage)
+                .renderingMode(.template)
                 .accessibilityLabel(state.status.accessibilityLabel)
         }
         .menuBarExtraStyle(.menu)
@@ -26,7 +27,10 @@ private struct MenuContent: View {
 
     var body: some View {
         Text(state.status.label)
-        Text("Kurzbefehl: \(state.shortcut.display)")
+        Text(state.trigger == .globe ? "Diktieren: 🌐-Taste" : "Kurzbefehl: \(state.shortcut.display)")
+        if state.isDictating {
+            Button("Diktat verwerfen") { state.cancelDictation() }
+        }
         if let engine = state.activeEngine {
             Text("Erkennung: \(engine.name)")
         }
@@ -60,6 +64,7 @@ private struct MenuContent: View {
             openSettings()
         }
         .keyboardShortcut(",")
+        CheckForUpdatesButton(updater: state.updater)
 
         Divider()
         Button("Beenden") { NSApp.terminate(nil) }

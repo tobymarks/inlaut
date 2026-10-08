@@ -2,9 +2,13 @@
 spike/takes/
 spike/try_apple
 spike/__pycache__/
+scripts/__pycache__/
 *.wav
 build/
 Inlaut.xcodeproj/
 .DS_Store
 Vendor/
 design/inlaut-design-v1.zip
+design/inlaut-brand-kit.zip
+site/.wrangler/
+NEXT-SESSION.txt

@@ -113,18 +113,26 @@ final class RecordingIndicator {
         let caret = position == .caret ? Self.caretRect() : nil
         let screen = (caret ?? field).flatMap { rect in NSScreen.screens.first { $0.frame.intersects(rect) } }
             ?? NSScreen.screens.first { $0.frame.contains(NSEvent.mouseLocation) } ?? NSScreen.main
-        guard let visible = screen?.visibleFrame ?? screen?.frame else { return }
+        guard let screen else { return }
+        let visible = screen.visibleFrame
 
         var origin: NSPoint
         if let caret {
             origin = NSPoint(x: caret.minX, y: caret.minY - size.height - 6)
             if origin.y < visible.minY { origin.y = caret.maxY + 6 }  // no room below: go above
         } else {
-            origin = NSPoint(x: visible.midX - size.width / 2, y: visible.minY + 48)
+            // Use the physical display edge, including the area occupied by
+            // the Dock. The non-interactive panel does not intercept clicks.
+            panel.setFrameOrigin(Self.bottomOrigin(size: size, screenFrame: screen.frame))
+            return
         }
         origin.x = min(max(origin.x, visible.minX + 8), visible.maxX - size.width - 8)
         origin.y = min(max(origin.y, visible.minY + 8), visible.maxY - size.height - 8)
         panel.setFrameOrigin(origin)
+    }
+
+    static func bottomOrigin(size: NSSize, screenFrame: NSRect) -> NSPoint {
+        NSPoint(x: screenFrame.midX - size.width / 2, y: screenFrame.minY + 12)
     }
 
     // MARK: - Accessibility lookups (Cocoa coordinates, bottom-left origin)
@@ -212,7 +220,7 @@ final class IndicatorModel {
     }
 }
 
-/// Layout and states follow design/inlaut-design-v1/DESIGN_GUIDE.md, section 8.
+/// Native glass and the Sprachimpuls palette, with opaque accessibility fallbacks.
 private struct IndicatorView: View {
     let model: IndicatorModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -224,6 +232,8 @@ private struct IndicatorView: View {
 
     var body: some View {
         let pill = content
+            .font(.system(size: 12, weight: .medium))
+            .foregroundStyle(Color.inlautInk)
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
             .frame(minHeight: 38)
@@ -235,8 +245,8 @@ private struct IndicatorView: View {
         // or Increase Contrast the pill gets an opaque system background.
         if reduceTransparency || contrast == .increased {
             pill
-                .background(Capsule().fill(Color(nsColor: .windowBackgroundColor)))
-                .overlay(Capsule().strokeBorder(Color(nsColor: .separatorColor)))
+                .background(Capsule().fill(Color.inlautSurface))
+                .overlay(Capsule().strokeBorder(Color.inlautInk.opacity(contrast == .increased ? 0.6 : 0.2)))
         } else {
             pill.glassEffect(.regular, in: .capsule)
         }
@@ -247,10 +257,11 @@ private struct IndicatorView: View {
         case .recording:
             HStack(spacing: 10) {
                 Circle().fill(Color.inlautRecording).frame(width: 6, height: 6)
+                Text("Hört zu")
                 HStack(alignment: .center, spacing: 2.5) {
                     ForEach(model.levels.indices, id: \.self) { i in
                         Capsule()
-                            .fill(.primary)
+                            .fill(Color.inlautBrand)
                             .frame(width: 3, height: reduceMotion
                                 ? Self.restingHeights[i]
                                 : 4 + CGFloat(model.levels[i]) * 14)
@@ -265,7 +276,7 @@ private struct IndicatorView: View {
                 ProgressView().controlSize(.small)
                 Text("Erkennt …")
             }
-            .frame(minWidth: 80)  // 108 pt pill, so the switch from recording stays calm
+            .frame(minWidth: 112)
             .transition(.opacity)
         case .message(let text):
             HStack(spacing: 8) {

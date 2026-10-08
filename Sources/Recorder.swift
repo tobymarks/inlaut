@@ -1,4 +1,5 @@
 @preconcurrency import AVFoundation
+import Synchronization
 
 /// Microphone capture that only exists while a dictation runs: a fresh
 /// AVAudioEngine per take, torn down right after, so the mic indicator goes
@@ -27,7 +28,13 @@ final class Recorder {
         input.installTap(onBus: 0, bufferSize: 4096, format: inFormat,
                          block: Self.tap(meter: meter, converter: converter, session: session))
         engine.prepare()
-        try engine.start()
+        do {
+            try engine.start()
+        } catch {
+            input.removeTap(onBus: 0)
+            engine.stop()
+            throw error
+        }
         self.engine = engine
         self.meter = meter
         startedAt = Date()
@@ -79,11 +86,13 @@ final class Recorder {
     }
 }
 
-/// Peak levels, written on the audio thread. A torn Float read on the main
-/// thread only makes one bar of the level display a little off.
-private final class Meter: @unchecked Sendable {
-    private(set) var peak: Float = 0
-    private(set) var current: Float = 0
+/// One writer (the audio tap), concurrent readers (the UI). Atomic bit
+/// patterns keep the realtime callback free of locks and allocations.
+final class Meter: Sendable {
+    private let peakBits = Atomic<UInt32>(0)
+    private let currentBits = Atomic<UInt32>(0)
+    var peak: Float { Float(bitPattern: peakBits.load(ordering: .relaxed)) }
+    var current: Float { Float(bitPattern: currentBits.load(ordering: .relaxed)) }
 
     func update(_ buffer: AVAudioPCMBuffer) {
         guard let data = buffer.floatChannelData?[0] else { return }
@@ -91,7 +100,7 @@ private final class Meter: @unchecked Sendable {
         for i in 0..<Int(buffer.frameLength) {
             loudest = max(loudest, abs(data[i]))
         }
-        current = loudest
-        peak = max(peak, loudest)
+        currentBits.store(loudest.bitPattern, ordering: .relaxed)
+        peakBits.store(max(peak, loudest).bitPattern, ordering: .relaxed)
     }
 }

@@ -22,6 +22,7 @@ final class AppleSpeechEngine: TranscriptionEngine {
         if let request = try await AssetInventory.assetInstallationRequest(supporting: [transcriber]) {
             try await request.downloadAndInstall()
         }
+        try Task.checkCancellation()
         guard let format = await SpeechAnalyzer.bestAvailableAudioFormat(compatibleWith: [transcriber]) else {
             throw EngineError("Kein passendes Audioformat für die Spracherkennung.")
         }
@@ -77,8 +78,11 @@ final class AppleSpeechSession: TranscriptionSession, @unchecked Sendable {
 
     func finish() async throws -> String {
         input.finish()
+        try Task.checkCancellation()
         try await analysis.value
+        try Task.checkCancellation()
         try await analyzer.finalizeAndFinishThroughEndOfInput()
+        try Task.checkCancellation()
         return try await collected.value
     }
 

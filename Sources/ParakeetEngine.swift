@@ -16,9 +16,22 @@ final class ParakeetEngine: TranscriptionEngine {
         guard recognizer == nil else { return }
         guard ParakeetModel.isInstalled else { throw EngineError("Das Parakeet-Modell ist noch nicht geladen.") }
         let threads = min(4, ProcessInfo.processInfo.activeProcessorCount)
-        recognizer = try await Task.detached(priority: .userInitiated) {
-            try SherpaRecognizer(directory: ParakeetModel.directory, threads: threads)
-        }.value
+        let loading = Task.detached(priority: .userInitiated) {
+            try Task.checkCancellation()
+            return try SherpaRecognizer(directory: ParakeetModel.directory, threads: threads)
+        }
+        let prepared = try await withTaskCancellationHandler {
+            try await loading.value
+        } onCancel: {
+            loading.cancel()
+        }
+        try Task.checkCancellation()
+        recognizer = prepared
+    }
+
+    func unload() {
+        // An active session retains its recognizer until its take finishes.
+        recognizer = nil
     }
 
     func begin() throws -> TranscriptionSession {
@@ -32,6 +45,7 @@ final class ParakeetSession: TranscriptionSession, @unchecked Sendable {
                                     channels: 1, interleaved: false)!
     private let recognizer: SherpaRecognizer
     private let samples = Mutex<[Float]>([])
+    private let cancellation = CancellationFlag()
 
     init(recognizer: SherpaRecognizer) {
         self.recognizer = recognizer
@@ -41,15 +55,25 @@ final class ParakeetSession: TranscriptionSession, @unchecked Sendable {
     func append(_ buffer: AVAudioPCMBuffer) {
         guard let data = buffer.floatChannelData?[0] else { return }
         let chunk = UnsafeBufferPointer(start: data, count: Int(buffer.frameLength))
-        samples.withLock { $0.append(contentsOf: chunk) }
+        samples.withLock { if !cancellation.isCancelled { $0.append(contentsOf: chunk) } }
     }
 
     func finish() async throws -> String {
-        let audio = samples.withLock { $0 }
-        return await recognizer.transcribe(audio)
+        let audio = samples.withLock { samples in
+            let audio = samples
+            samples = []
+            return audio
+        }
+        return try await withTaskCancellationHandler {
+            try cancellation.check()
+            return try await recognizer.transcribe(audio, cancellation: cancellation)
+        } onCancel: {
+            cancellation.cancel()
+        }
     }
 
     func cancel() async {
+        cancellation.cancel()
         samples.withLock { $0.removeAll() }
     }
 }
@@ -99,9 +123,11 @@ final class SherpaRecognizer: @unchecked Sendable {
         SherpaOnnxDestroyOfflineRecognizer(handle)
     }
 
-    func transcribe(_ audio: [Float]) async -> String {
-        await withCheckedContinuation { continuation in
-            queue.async { continuation.resume(returning: self.process(audio)) }
+    func transcribe(_ audio: [Float], cancellation: CancellationFlag) async throws -> String {
+        try await withCheckedThrowingContinuation { continuation in
+            queue.async {
+                continuation.resume(with: Result { try self.process(audio, cancellation: cancellation) })
+            }
         }
     }
 
@@ -114,18 +140,24 @@ final class SherpaRecognizer: @unchecked Sendable {
     private static let targetPeak: Float = 0.5
     private static let maxGain: Float = 30
 
-    private func process(_ audio: [Float]) -> String {
+    private func process(_ audio: [Float], cancellation: CancellationFlag) throws -> String {
+        try cancellation.check()
         var parts: [String] = []
         for piece in Self.split(audio[...], maxSeconds: Self.maxPiece) {
+            try cancellation.check()
             var text = decode(piece)
             // Now and then a long piece that clearly holds speech comes back
             // empty; shorter pieces of the same audio decode fine.
             if text.isEmpty, Double(piece.count) > Self.retryPiece * Self.sampleRate {
-                text = Self.split(piece, maxSeconds: Self.retryPiece).map(decode)
+                text = try Self.split(piece, maxSeconds: Self.retryPiece).map { part in
+                    try cancellation.check()
+                    return decode(part)
+                }
                     .filter { !$0.isEmpty }.joined(separator: " ")
             }
             if !text.isEmpty { parts.append(text) }
         }
+        try cancellation.check()
         return parts.joined(separator: " ")
     }
 

@@ -5,83 +5,93 @@ struct SettingsView: View {
     @Bindable var state: AppState
 
     var body: some View {
-        Form {
-            Section("Spracherkennung") {
-                Picker("Engine", selection: $state.engineChoice) {
-                    ForEach(EngineChoice.allCases) { Text($0.label).tag($0) }
-                }
-                if state.engineChoice == .parakeet {
-                    LabeledContent("Modell") { ModelStatusView(state: state) }
-                }
-            }
-
-            Section("Auslösen") {
-                Picker("Diktieren mit", selection: $state.trigger) {
-                    ForEach(Trigger.allCases) { Text($0.label).tag($0) }
-                }
-                switch state.trigger {
-                case .globe:
-                    GlobeKeyHelp()
-                case .shortcut:
-                    ShortcutRecorder(state: state)
-                    Picker("Modus", selection: $state.mode) {
-                        ForEach(Mode.allCases) { Text($0.label).tag($0) }
+        VStack(spacing: 0) {
+            InlautBrandHeader(title: "So diktierst du.",
+                              subtitle: "Spracherkennung, Tasten und Wörter – passend zu dir.")
+                .padding(.horizontal, 28)
+                .padding(.top, 24)
+                .padding(.bottom, 20)
+            Form {
+                Section("Spracherkennung") {
+                    Picker("Engine", selection: $state.engineChoice) {
+                        ForEach(EngineChoice.allCases) { Text($0.label).tag($0) }
+                    }
+                    if state.engineChoice == .parakeet {
+                        LabeledContent("Modell") { ModelStatusView(state: state) }
                     }
                 }
-            }
 
-            Section {
-                Picker("Anzeige beim Diktieren", selection: $state.indicatorPosition) {
-                    ForEach(IndicatorPosition.allCases) { Text($0.label).tag($0) }
+                Section("Auslösen") {
+                    Picker("Diktieren mit", selection: $state.trigger) {
+                        ForEach(Trigger.allCases) { Text($0.label).tag($0) }
+                    }
+                    switch state.trigger {
+                    case .globe:
+                        GlobeKeyHelp()
+                    case .shortcut:
+                        ShortcutRecorder(state: state)
+                        Picker("Modus", selection: $state.mode) {
+                            ForEach(Mode.allCases) { Text($0.label).tag($0) }
+                        }
+                    }
                 }
-                Toggle("Töne beim Start und Ende", isOn: $state.playSounds)
-                Toggle("Beim Anmelden starten", isOn: $state.launchAtLogin)
-            }
 
-            Section {
-                Toggle(isOn: $state.voiceCommands) {
-                    Text("Zeilen und Absätze per Sprache")
-                    Text("„neue Zeile“ und „neuer Absatz“ werden zu Umbrüchen.")
+                Section("Verhalten") {
+                    Picker("Anzeige beim Diktieren", selection: $state.indicatorPosition) {
+                        ForEach(IndicatorPosition.allCases) { Text($0.label).tag($0) }
+                    }
+                    Toggle("Töne beim Start und Ende", isOn: $state.playSounds)
+                    Toggle("Beim Anmelden starten", isOn: $state.launchAtLogin)
                 }
-            }
 
-            Section {
-                ReplacementsField(rules: $state.replacements)
-            } header: {
-                Text("Ersetzungen")
-            } footer: {
-                Text("Korrigiert, was die Erkennung regelmäßig falsch schreibt – ganze Wörter, Groß-/Kleinschreibung egal.")
+                Section {
+                    Toggle(isOn: $state.voiceCommands) {
+                        Text("Zeilen und Absätze per Sprache")
+                        Text("„neue Zeile“ und „neuer Absatz“ werden zu Umbrüchen.")
+                    }
+                }
+
+                Section {
+                    ReplacementsField(rules: $state.replacements)
+                } header: {
+                    Text("Ersetzungen")
+                } footer: {
+                    Text("Korrigiert, was die Erkennung regelmäßig falsch schreibt – ganze Wörter, Groß-/Kleinschreibung egal.")
+                        .foregroundStyle(.secondary)
+                }
+
+                UpdateSettingsView(updater: state.updater)
+
+                Section {
+                    LabeledContent("Mikrofon") {
+                        if state.microphoneGranted {
+                            Label("Erlaubt", systemImage: "checkmark.circle.fill").foregroundStyle(Color.inlautAccent)
+                        } else {
+                            Button("Erlauben …") { state.requestMicrophone() }
+                        }
+                    }
+                    LabeledContent("Einfügen in andere Apps") {
+                        if state.accessibilityGranted {
+                            Label("Erlaubt", systemImage: "checkmark.circle.fill").foregroundStyle(Color.inlautAccent)
+                        } else {
+                            Button("Bedienungshilfen erlauben …") { state.requestAccessibility() }
+                        }
+                    }
+                } footer: {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Alles wird auf diesem Mac erkannt. Es werden keine Aufnahmen oder Texte gespeichert oder übertragen.")
+                        Text("Spracherkennung: [parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (primeline) auf Basis von [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), beide CC BY 4.0 · [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache 2.0) · ONNX Runtime (MIT)")
+                            .font(.caption)
+                    }
                     .foregroundStyle(.secondary)
+                }
             }
-
-            Section {
-                LabeledContent("Mikrofon") {
-                    if state.microphoneGranted {
-                        Label("Erlaubt", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
-                    } else {
-                        Button("Erlauben …") { state.requestMicrophone() }
-                    }
-                }
-                LabeledContent("Einfügen in andere Apps") {
-                    if state.accessibilityGranted {
-                        Label("Erlaubt", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
-                    } else {
-                        Button("Bedienungshilfen erlauben …") { state.requestAccessibility() }
-                    }
-                }
-            } footer: {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Alles wird auf diesem Mac erkannt. Es werden keine Aufnahmen oder Texte gespeichert oder übertragen.")
-                    Text("Spracherkennung: [parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (primeline) auf Basis von [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), beide CC BY 4.0 · [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache 2.0) · ONNX Runtime (MIT)")
-                        .font(.caption)
-                }
-                .foregroundStyle(.secondary)
-            }
+            .formStyle(.grouped)
+            .scrollContentBackground(.hidden)
         }
-        .formStyle(.grouped)
+        .background(Color.inlautPaper)
         .tint(.inlautAccent)
-        .frame(width: 500)
-        .fixedSize()
+        .frame(width: 560, height: 740)
         .onAppear { state.refreshPermissions() }
     }
 }

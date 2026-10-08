@@ -87,7 +87,7 @@ private struct Bubble: View {
         .padding(.leading, 10)
         .padding(.trailing, 6)
         .padding(.vertical, 4)
-        .background(Color.accentColor.opacity(0.18), in: .capsule)
+        .background(Color.inlautAccent.opacity(0.12), in: .capsule)
     }
 }
 

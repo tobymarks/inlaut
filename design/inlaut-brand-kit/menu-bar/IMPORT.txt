@@ -1,0 +1,12 @@
+InlautTemplate.imageset in Assets.xcassets ziehen.
+
+AppKit:
+let image = NSImage(named: "InlautTemplate")!
+image.isTemplate = true
+image.size = NSSize(width: 18, height: 18)
+statusItem.button?.image = image
+
+SwiftUI:
+Image("InlautTemplate").renderingMode(.template)
+
+Keine farbige App-Icon-Kachel in der Menüleiste verwenden. Die schwarzen Pixel definieren die Maske; macOS übernimmt die Darstellung für helle/dunkle Hintergründe.

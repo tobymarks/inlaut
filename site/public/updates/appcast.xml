@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
+--><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+  <channel>
+    <title>Inlaut Updates</title>
+    <link>https://inlaut.de</link>
+    <description>Neue Versionen von Inlaut für macOS.</description>
+    <language>de</language>
+  </channel>
+</rss><!-- sparkle-signatures:
+edSignature: XbrsyLAD3N2Y5rCTD7MEgwyeafUlPFIWPZeRw4q1bHoaA34XjbLAsmfc0nKYe4KsQ/O8Ui5XA5zyVLu/HlftCQ==
+length: 576
+-->

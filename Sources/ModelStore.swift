@@ -51,13 +51,20 @@ enum ParakeetModel {
         progress(Double(done) / Double(totalBytes))
 
         for file in files where !isComplete(file) {
+            try Task.checkCancellation()
             let source = URL(string: "https://huggingface.co/\(repo)/resolve/\(revision)/\(file.name)")!
             let base = done
             let temp = try await Download.run(source) { written in
                 progress(Double(base + written) / Double(totalBytes))
             }
             defer { try? FileManager.default.removeItem(at: temp) }
-            let hash = try await Task.detached(priority: .userInitiated) { try sha256(of: temp) }.value
+            let hashing = Task.detached(priority: .userInitiated) { try sha256(of: temp) }
+            let hash = try await withTaskCancellationHandler {
+                try await hashing.value
+            } onCancel: {
+                hashing.cancel()
+            }
+            try Task.checkCancellation()
             guard hash == file.sha256 else {
                 throw EngineError("Prüfsumme von \(file.name) stimmt nicht – Download beschädigt.")
             }
@@ -74,6 +81,7 @@ enum ParakeetModel {
         defer { try? handle.close() }
         var hasher = SHA256()
         while let chunk = try handle.read(upToCount: 8 << 20), !chunk.isEmpty {
+            try Task.checkCancellation()
             hasher.update(data: chunk)
         }
         return hasher.finalize().map { String(format: "%02x", $0) }.joined()
@@ -92,6 +100,7 @@ private final class Download: NSObject, URLSessionDownloadDelegate, @unchecked S
 
     @MainActor
     static func run(_ url: URL, progress: @escaping @MainActor (Int64) -> Void) async throws -> URL {
+        try Task.checkCancellation()
         let download = Download { written in Task { @MainActor in progress(written) } }
         let session = URLSession(configuration: .default, delegate: download, delegateQueue: nil)
         defer { session.finishTasksAndInvalidate() }

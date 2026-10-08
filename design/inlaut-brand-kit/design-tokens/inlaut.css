@@ -1,0 +1,10 @@
+:root {
+  --inlaut-petrol: #103D3B; --inlaut-mint: #BCEBD9;
+  --background: #F6F7F4; --surface: #FFFFFF; --text: #172C2B;
+  --text-secondary: #536A67; --accent: #236E64; --on-accent: #FFFFFF; --recording: #C84442;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --background: #0C201F; --surface: #153330; --text: #F6F7F4;
+  --text-secondary: #A5BCB6; --accent: #BCEBD9; --on-accent: #103D3B; --recording: #FF9389;
+}}

@@ -5,6 +5,10 @@ options:
   deploymentTarget:
     macOS: "26.0"
   createIntermediateGroups: true
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    exactVersion: 2.10.0
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -16,18 +20,49 @@ settings:
     CODE_SIGN_IDENTITY: "Apple Development"
     ENABLE_HARDENED_RUNTIME: YES
     DEAD_CODE_STRIPPING: YES
+    ARCHS: arm64
+  configs:
+    Release:
+      CODE_SIGN_IDENTITY: "Developer ID Application"
+      OTHER_CODE_SIGN_FLAGS: "--timestamp"
 targets:
+  InlautTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests
+      - Sources/TextInserter.swift
+      - Sources/VoiceCommands.swift
+      - Sources/Replacements.swift
+      - Sources/CancellationFlag.swift
+      - Sources/Recorder.swift
+      - Sources/TranscriptionEngine.swift
+      - Sources/ManagedSession.swift
+      - Sources/RecordingIndicator.swift
+      - Sources/InlautColors.swift
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: de.tobymarks.inlaut.tests
   Inlaut:
     type: application
     platform: macOS
     sources:
       - Sources
       - path: Resources/Assets.xcassets
-      # Icon Composer document built from design/inlaut-design-v1/app-icon/layers.
+      # Native Icon Composer document using the brand kit's unmasked vector layer.
       - path: Resources/Inlaut.icon
+        buildPhase: resources
+      - path: Resources/Licenses
+        type: folder
+        buildPhase: resources
+      - path: LICENSE
+        buildPhase: resources
+      - path: THIRD_PARTY_NOTICES.md
         buildPhase: resources
     # Run scripts/fetch-sherpa-onnx.sh once before the first build.
     dependencies:
+      - package: Sparkle
       - framework: Vendor/sherpa-onnx/lib/libsherpa-onnx-c-api.dylib
         embed: true
         codeSign: true
@@ -52,7 +87,25 @@ targets:
         LSApplicationCategoryType: public.app-category.productivity
         NSMicrophoneUsageDescription: Inlaut hört nur zu, solange du die Tastenkombination nutzt. Die Aufnahme wird auf diesem Mac in Text umgewandelt und verlässt ihn nicht.
         NSSpeechRecognitionUsageDescription: Inlaut wandelt deine Sprache mit der Spracherkennung von macOS auf diesem Mac in Text um.
+        SUFeedURL: https://inlaut.de/updates/appcast.xml
+        SUPublicEDKey: 0BXRecMp8/xobMyn1LWMXUlWzRNC5JDPlwC48CwzqwU=
+        SUEnableAutomaticChecks: true
+        SUScheduledCheckInterval: 86400
+        SUAutomaticallyUpdate: false
+        SUAllowsAutomaticUpdates: false
+        SUEnableSystemProfiling: false
+        SUVerifyUpdateBeforeExtraction: true
+        SURequireSignedFeed: true
     entitlements:
       path: Resources/Inlaut.entitlements
       properties:
         com.apple.security.device.audio-input: true
+schemes:
+  Inlaut:
+    build:
+      targets:
+        Inlaut: all
+        InlautTests: [test]
+    test:
+      targets:
+        - InlautTests

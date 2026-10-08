@@ -1,0 +1,28 @@
+name: Build and test
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Prepare dependencies
+        run: |
+          command -v xcodegen || brew install xcodegen
+          scripts/fetch-sherpa-onnx.sh
+          xcodegen generate
+      - name: Build and run isolated tests
+        run: |
+          xcodebuild -project Inlaut.xcodeproj -scheme Inlaut \
+            -configuration Debug -destination 'platform=macOS,arch=arm64' \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO test
+      - name: Validate release scripts
+        run: |
+          bash -n scripts/release.sh
+          python3 -m py_compile scripts/validate-appcast.py
+          git diff --exit-code -- Resources/Info.plist Resources/Inlaut.entitlements

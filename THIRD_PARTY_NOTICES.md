@@ -14,3 +14,5 @@ Based on **NVIDIA Parakeet TDT 0.6B v3** — [nvidia/parakeet-tdt-0.6b-v3](https
 **sherpa-onnx** 1.13.8 — Copyright Xiaomi Corporation and contributors, [Apache License 2.0](https://github.com/k2-fsa/sherpa-onnx/blob/master/LICENSE).
 
 **ONNX Runtime** — Copyright Microsoft Corporation, [MIT License](https://github.com/microsoft/onnxruntime/blob/main/LICENSE).
+
+**Sparkle** 2.10.0 — Copyright Sparkle Project contributors, [MIT License](https://github.com/sparkle-project/Sparkle/blob/2.10.0/LICENSE). Used for signed application updates. Its license and third-party notices are included in `Resources/Licenses/Sparkle.txt` and in the app bundle.
