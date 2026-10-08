@@ -2,11 +2,18 @@ import AppKit
 import ApplicationServices
 import SwiftUI
 
-/// A small floating pill next to the text cursor, so you can see that
-/// Inlaut is listening even in full screen where the menu bar is hidden.
-/// It only exists during a dictation; nothing runs between dictations.
+enum IndicatorPosition: String, CaseIterable, Identifiable {
+    case bottomCenter, caret
+    var id: String { rawValue }
+    var label: String { self == .bottomCenter ? "Unten mittig" : "Am Textcursor" }
+}
+
+/// A small floating pill, so you can see that Inlaut is listening even in
+/// full screen where the menu bar is hidden. It only exists during a
+/// dictation; nothing runs between dictations.
 @MainActor
 final class RecordingIndicator {
+    var position: IndicatorPosition = .bottomCenter
     private var panel: NSPanel?
     private let model = IndicatorModel()
     private var levelTimer: Timer?
@@ -75,22 +82,24 @@ final class RecordingIndicator {
         return panel
     }
 
-    /// Just below the text cursor if the focused app reports it, else below
-    /// the focused element, else bottom centre of the screen with the mouse.
+    /// Bottom centre of the screen you work on, or just below the text
+    /// cursor when that is chosen and the focused app reports it. Many apps
+    /// (Chromium, Electron) report no usable caret; they get bottom centre.
     private func place(_ panel: NSPanel) {
         panel.setContentSize(panel.contentView?.fittingSize ?? NSSize(width: 120, height: 32))
         let size = panel.frame.size
-        let anchor = Self.caretRect() ?? Self.focusedElementRect()
-        let screen = anchor.flatMap { rect in NSScreen.screens.first { $0.frame.intersects(rect) } }
+        let field = Self.focusedElementRect()
+        let caret = position == .caret ? Self.caretRect() : nil
+        let screen = (caret ?? field).flatMap { rect in NSScreen.screens.first { $0.frame.intersects(rect) } }
             ?? NSScreen.screens.first { $0.frame.contains(NSEvent.mouseLocation) } ?? NSScreen.main
         guard let visible = screen?.visibleFrame ?? screen?.frame else { return }
 
         var origin: NSPoint
-        if let anchor {
-            origin = NSPoint(x: anchor.minX, y: anchor.minY - size.height - 6)
-            if origin.y < visible.minY { origin.y = anchor.maxY + 6 }  // no room below: go above
+        if let caret {
+            origin = NSPoint(x: caret.minX, y: caret.minY - size.height - 6)
+            if origin.y < visible.minY { origin.y = caret.maxY + 6 }  // no room below: go above
         } else {
-            origin = NSPoint(x: visible.midX - size.width / 2, y: visible.minY + 80)
+            origin = NSPoint(x: visible.midX - size.width / 2, y: visible.minY + 48)
         }
         origin.x = min(max(origin.x, visible.minX + 8), visible.maxX - size.width - 8)
         origin.y = min(max(origin.y, visible.minY + 8), visible.maxY - size.height - 8)
@@ -111,16 +120,32 @@ final class RecordingIndicator {
 
     private static func caretRect() -> NSRect? {
         guard let element = focusedElement() else { return nil }
-        var range: CFTypeRef?
-        guard AXUIElementCopyAttributeValue(element, kAXSelectedTextRangeAttribute as CFString, &range) == .success,
-              let range else { return nil }
-        var bounds: CFTypeRef?
+        var value: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element, kAXSelectedTextRangeAttribute as CFString, &value) == .success,
+              let value, CFGetTypeID(value) == AXValueGetTypeID() else { return nil }
+        var range = CFRange()
+        guard AXValueGetValue(value as! AXValue, .cfRange, &range) else { return nil }
+        // Chromium answers an empty range (a plain blinking cursor) with junk;
+        // the character before the cursor gives a reliable box to stand on.
+        if range.length == 0, range.location > 0,
+           let before = bounds(of: CFRange(location: range.location - 1, length: 1), in: element) {
+            return NSRect(x: before.maxX, y: before.minY, width: 1, height: before.height)
+        }
+        return bounds(of: range, in: element)
+    }
+
+    private static func bounds(of range: CFRange, in element: AXUIElement) -> NSRect? {
+        var range = range
+        guard let axRange = AXValueCreate(.cfRange, &range) else { return nil }
+        var value: CFTypeRef?
         guard AXUIElementCopyParameterizedAttributeValue(
-            element, kAXBoundsForRangeParameterizedAttribute as CFString, range, &bounds) == .success,
-              let bounds, CFGetTypeID(bounds) == AXValueGetTypeID() else { return nil }
+            element, kAXBoundsForRangeParameterizedAttribute as CFString, axRange, &value) == .success,
+              let value, CFGetTypeID(value) == AXValueGetTypeID() else { return nil }
         var rect = CGRect.zero
-        guard AXValueGetValue(bounds as! AXValue, .cgRect, &rect), rect.height > 0 else { return nil }
-        return toCocoa(rect)
+        guard AXValueGetValue(value as! AXValue, .cgRect, &rect),
+              rect.height > 0, rect.height < 200, rect.origin != .zero else { return nil }
+        let cocoa = toCocoa(rect)
+        return NSScreen.screens.contains { $0.frame.intersects(cocoa) } ? cocoa : nil
     }
 
     private static func focusedElementRect() -> NSRect? {
@@ -135,10 +160,7 @@ final class RecordingIndicator {
         AXValueGetValue(posValue as! AXValue, .cgPoint, &point)
         AXValueGetValue(sizeValue as! AXValue, .cgSize, &size)
         guard size.width > 0, size.height > 0 else { return nil }
-        // Big elements (a whole editor) are a poor anchor: use their bottom edge.
-        let rect = CGRect(origin: point, size: size)
-        let cocoa = toCocoa(rect)
-        return size.height > 120 ? NSRect(x: cocoa.minX + 12, y: cocoa.minY + 40, width: 1, height: 1) : cocoa
+        return toCocoa(CGRect(origin: point, size: size))
     }
 
     /// AX uses a top-left origin on the primary screen; AppKit bottom-left.

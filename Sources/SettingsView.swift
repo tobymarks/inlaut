@@ -13,6 +13,9 @@ struct SettingsView: View {
                 Picker("Modus", selection: $state.mode) {
                     ForEach(Mode.allCases) { Text($0.label).tag($0) }
                 }
+                Picker("Anzeige beim Diktieren", selection: $state.indicatorPosition) {
+                    ForEach(IndicatorPosition.allCases) { Text($0.label).tag($0) }
+                }
                 Toggle("Töne beim Start und Ende", isOn: $state.playSounds)
                 Toggle("Beim Anmelden starten", isOn: $state.launchAtLogin)
             }

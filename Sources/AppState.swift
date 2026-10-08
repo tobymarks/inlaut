@@ -57,6 +57,12 @@ final class AppState {
     var vocabulary: String {
         didSet { UserDefaults.standard.set(vocabulary, forKey: "vocabulary") }
     }
+    var indicatorPosition: IndicatorPosition {
+        didSet {
+            UserDefaults.standard.set(indicatorPosition.rawValue, forKey: "indicatorPosition")
+            indicator.position = indicatorPosition
+        }
+    }
     var launchAtLogin: Bool {
         get { SMAppService.mainApp.status == .enabled }
         set {
@@ -81,6 +87,8 @@ final class AppState {
         mode = Mode(rawValue: defaults.string(forKey: "mode") ?? "") ?? .hold
         playSounds = defaults.object(forKey: "playSounds") as? Bool ?? true
         vocabulary = defaults.string(forKey: "vocabulary") ?? ""
+        indicatorPosition = IndicatorPosition(rawValue: defaults.string(forKey: "indicatorPosition") ?? "") ?? .bottomCenter
+        indicator.position = indicatorPosition
 
         hotKey.onPress = { [weak self] in self?.hotKeyPressed() }
         hotKey.onRelease = { [weak self] in self?.hotKeyReleased() }
@@ -178,7 +186,7 @@ final class AppState {
                 let started = Date()
                 let text = try await session.finish()
                 // Length and timing only — the dictated text is never logged.
-                log.info("\(take.seconds, format: .fixed(precision: 1))s audio → \(text.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
+                log.notice("\(take.seconds, format: .fixed(precision: 1))s audio → \(text.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
                 guard !text.isEmpty else {
                     status = .ready
                     indicator.showMessage("Nichts erkannt")
