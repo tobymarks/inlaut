@@ -66,11 +66,11 @@ enum Status: Equatable {
 
     var accessibilityLabel: String {
         switch self {
-        case .preparing: "Inlaut: wird vorbereitet"
-        case .ready: "Inlaut: bereit"
-        case .recording: "Inlaut: nimmt auf"
-        case .transcribing: "Inlaut: erkennt"
-        case .failed: "Inlaut: nicht verfügbar"
+        case .preparing: "inlaut: wird vorbereitet"
+        case .ready: "inlaut: bereit"
+        case .recording: "inlaut: nimmt auf"
+        case .transcribing: "inlaut: erkennt"
+        case .failed: "inlaut: nicht verfügbar"
         }
     }
 }

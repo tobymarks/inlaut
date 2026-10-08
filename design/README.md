@@ -1,4 +1,4 @@
-# Inlaut brand integration
+# inlaut brand integration
 
 The current master is **Sprachimpuls / Petrol & Mint** in [`inlaut-brand-kit/`](inlaut-brand-kit/README.txt), supplied as `inlaut-brand-kit.zip`. The original kit is kept unchanged. Its [`Brand-Guide.html`](inlaut-brand-kit/Brand-Guide.html) shows the palette and vector masters.
 

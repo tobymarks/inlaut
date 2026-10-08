@@ -1,4 +1,4 @@
-# Inlaut
+# inlaut
 
 A tiny macOS menu bar app for dictation that never leaves your Mac. Hold a key combination, speak, let go — the text appears in whatever text field has the cursor.
 
@@ -15,7 +15,7 @@ The app and website use the **Sprachimpuls / Petrol & Mint** brand kit, with nat
 
 ## Download
 
-[Download Inlaut 0.1.0](https://github.com/tobymarks/inlaut/releases/download/v0.1.0/Inlaut-0.1.0.dmg) for Apple Silicon and macOS 26 or later. Open the DMG, drag Inlaut onto the “Programme” (Applications) folder, then open Inlaut from Applications. You can eject the disk image after copying. Both the app and the DMG are Developer ID signed and notarized by Apple.
+[Download inlaut 0.1.0](https://github.com/tobymarks/inlaut/releases/download/v0.1.0/Inlaut-0.1.0.dmg) for Apple Silicon and macOS 26 or later. Open the DMG, drag inlaut onto the “Programme” (Applications) folder, then open inlaut from Applications. You can eject the disk image after copying. Both the app and the DMG are Developer ID signed and notarized by Apple.
 
 This is the first public version. Setup downloads the speech model (around 670 MB) and guides you through microphone and Accessibility permissions. [Release notes and checksums](https://github.com/tobymarks/inlaut/releases/tag/v0.1.0).
 
@@ -103,4 +103,4 @@ Measurements that led to the engine choice (on technical German, Whisper-turbo-g
 
 GPL-3.0-or-later. See [LICENSE](LICENSE). Model and library licenses: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-The Inlaut name, logo, app icon and menu bar glyphs are not covered by the GPL; see [design/LICENSE-ASSETS.md](design/LICENSE-ASSETS.md).
+The inlaut name, logo, app icon and menu bar glyphs are not covered by the GPL; see [design/LICENSE-ASSETS.md](design/LICENSE-ASSETS.md).

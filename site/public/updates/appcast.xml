@@ -4,9 +4,9 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
 -->
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
-        <title>Inlaut Updates</title>
+        <title>inlaut Updates</title>
         <link>https://inlaut.de</link>
-        <description>Neue Versionen von Inlaut für macOS.</description>
+        <description>Neue Versionen von inlaut für macOS.</description>
         <language>de</language>
         <item>
             <title>0.1.0</title>
@@ -16,7 +16,7 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
             <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description><![CDATA[<h2>Inlaut 0.1.0</h2>
+            <description><![CDATA[<h2>inlaut 0.1.0</h2>
 <ul>
   <li>Lokales Diktieren auf Apple-Silicon-Macs ab macOS 26.</li>
   <li>Deutsche Spracherkennung mit Parakeet und Apple als Alternative.</li>

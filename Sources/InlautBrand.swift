@@ -13,7 +13,7 @@ struct InlautBrandHeader: View {
                 .scaledToFit()
                 .frame(width: 150, height: 36)
                 .foregroundStyle(Color.inlautBrand)
-                .accessibilityLabel("Inlaut")
+                .accessibilityLabel("inlaut")
             VStack(alignment: .leading, spacing: 6) {
                 Text(title)
                     .font(.system(size: 25, weight: .semibold))

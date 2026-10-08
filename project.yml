@@ -80,13 +80,13 @@ targets:
     info:
       path: Resources/Info.plist
       properties:
-        CFBundleDisplayName: Inlaut
+        CFBundleDisplayName: inlaut
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.productivity
-        NSMicrophoneUsageDescription: Inlaut hört nur zu, solange du die Tastenkombination nutzt. Die Aufnahme wird auf diesem Mac in Text umgewandelt und verlässt ihn nicht.
-        NSSpeechRecognitionUsageDescription: Inlaut wandelt deine Sprache mit der Spracherkennung von macOS auf diesem Mac in Text um.
+        NSMicrophoneUsageDescription: inlaut hört nur zu, solange du die Tastenkombination nutzt. Die Aufnahme wird auf diesem Mac in Text umgewandelt und verlässt ihn nicht.
+        NSSpeechRecognitionUsageDescription: inlaut wandelt deine Sprache mit der Spracherkennung von macOS auf diesem Mac in Text um.
         SUFeedURL: https://inlaut.de/updates/appcast.xml
         SUPublicEDKey: 0BXRecMp8/xobMyn1LWMXUlWzRNC5JDPlwC48CwzqwU=
         SUEnableAutomaticChecks: true

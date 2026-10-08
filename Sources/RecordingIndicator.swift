@@ -8,7 +8,7 @@ enum IndicatorPosition: String, CaseIterable, Identifiable {
     var label: String { self == .bottomCenter ? "Unten mittig" : "Am Textcursor" }
 }
 
-/// A small floating pill, so you can see that Inlaut is listening even in
+/// A small floating pill, so you can see that inlaut is listening even in
 /// full screen where the menu bar is hidden. It only exists during a
 /// dictation; nothing runs between dictations.
 @MainActor
@@ -289,8 +289,8 @@ private struct IndicatorView: View {
 
     private var accessibilityText: String {
         switch model.phase {
-        case .recording: "Inlaut nimmt auf"
-        case .transcribing: "Inlaut erkennt"
+        case .recording: "inlaut nimmt auf"
+        case .transcribing: "inlaut erkennt"
         case .message(let text): text
         }
     }

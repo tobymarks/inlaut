@@ -1,6 +1,6 @@
-# Prompt für ChatGPT: Designsystem und Asset-Paket für Inlaut
+# Prompt für ChatGPT: Designsystem und Asset-Paket für inlaut
 
-Du bist Brand- und Icon-Designer:in für native macOS-Apps. Erstelle das komplette Designpaket für **Inlaut**, eine kleine macOS-Menüleisten-App für Diktat. Sie arbeitet vollständig lokal. Arbeite in zwei Schritten und warte nach Schritt 1 auf meine Auswahl.
+Du bist Brand- und Icon-Designer:in für native macOS-Apps. Erstelle das komplette Designpaket für **inlaut**, eine kleine macOS-Menüleisten-App für Diktat. Sie arbeitet vollständig lokal. Arbeite in zwei Schritten und warte nach Schritt 1 auf meine Auswahl.
 
 ## Produkt
 
@@ -12,8 +12,8 @@ Du bist Brand- und Icon-Designer:in für native macOS-Apps. Erstelle das komplet
 
 ## Name und Schreibweise
 
-- „Inlaut“ ist ein Begriff aus der Sprachwissenschaft: der Laut im Inneren eines Wortes (im Gegensatz zu Anlaut und Auslaut).
-- **Wortmarke: komplett klein, „inlaut“.** Im Fließtext, im App-Namen und am Satzanfang schreiben wir „Inlaut“ (normales deutsches Substantiv).
+- „inlaut“ ist ein Begriff aus der Sprachwissenschaft: der Laut im Inneren eines Wortes (im Gegensatz zu Anlaut und Auslaut).
+- **Wortmarke: komplett klein, „inlaut“.** Auch im Fließtext, im App-Namen und am Satzanfang schreiben wir „inlaut“.
 - **Verboten:** „laut“ optisch abtrennen oder hervorheben (inLAUT, inLaut, in·laut, „laut“ in anderer Farbe oder Schnitt). Es gibt eingetragene Marken „LAUT“ in den Klassen 9 und 42. Das Wort bleibt eine geschlossene Einheit.
 - Spielraum gibt es nur *innerhalb* des Wortes, passend zur Bedeutung „Laut im Inneren“: Das „l“ in der Mitte darf zur Text-Einfügemarke (Caret) werden, also zu dem Punkt, an dem diktierter Text erscheint. Der i-Punkt darf als kleiner Aufnahmepunkt gelesen werden. Beides muss subtil bleiben, das Wort muss sich als „inlaut“ lesen.
 
@@ -102,7 +102,7 @@ inlaut-design-v1/
 ### DESIGN_GUIDE.md muss enthalten
 
 1. **Markenkern:** Idee, Haltung, 3 Adjektive, Bedeutung des Namens.
-2. **Schreibweise:** Wortmarke „inlaut“, im Text „Inlaut“, Verbote (siehe oben), Beispiele für richtig und falsch.
+2. **Schreibweise:** immer „inlaut“, auch im Text, Verbote (siehe oben), Beispiele für richtig und falsch.
 3. **Logo:** Aufbau, Schutzraum (in Einheiten der x-Höhe), Mindestgrößen in px und mm, erlaubte Farbvarianten, Don'ts mit Beispielen.
 4. **App-Icon:** Ebenen-Aufbau, Grid, Verhalten in Default/Dark/Clear/Tinted, Schritt-für-Schritt-Anleitung für Icon Composer und den Export als `.icon` für Xcode.
 5. **Menüleiste:** die 5 Zustände, wann welcher gilt, Template-Regeln, optischer Abgleich mit SF Symbols, keine Farbe, kein Animieren der Glyphe (die Aufnahme zeigt die schwebende Kapsel).

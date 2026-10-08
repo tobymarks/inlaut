@@ -1,4 +1,6 @@
-# Inlaut — notes for working on this repo
+# inlaut — notes for working on this repo
+
+Brand name is always written in lowercase: "inlaut", even at the start of a sentence (UI, website, docs, social posts, comments). Technical identifiers keep their existing form (`Inlaut.app`, scheme/target `Inlaut`, `Inlaut.icon`).
 
 macOS menu bar dictation, fully local. Swift 6, SwiftUI + AppKit, macOS 26+, Apple Silicon. Maintainer: Tobias Marks (talks German; UI strings are German for now, code, comments, commits and issues are English). License GPL-3.0-or-later. Roadmap: GitHub issues on `tobymarks/inlaut`.
 
@@ -63,7 +65,7 @@ An agent cannot press the shortcut or 🌐 key (synthetic events lack permission
 - Parakeet-primeline (and Whisper-turbo-german, same author) writes ß as ss — issue #1.
 - Swift 6 gotcha: a closure written inside a `@MainActor` method inherits main-actor isolation and traps when called on an audio/realtime thread → build such closures in `nonisolated static` functions (see `Recorder.tap`).
 - Mac App Store rejects automatic pasting for dictation apps (2.4.5) → direct distribution first (issues #2, #6).
-- Name "Inlaut" chosen after a collision search (Hush, Murmur, Quill, Sotto, Verba … are taken). A formal trademark check (TMview, classes 9/42) is still open — private, not an issue.
+- Name "inlaut" chosen after a collision search (Hush, Murmur, Quill, Sotto, Verba … are taken). A formal trademark check (TMview, classes 9/42) is still open — private, not an issue.
 
 ## Updates and validation
 

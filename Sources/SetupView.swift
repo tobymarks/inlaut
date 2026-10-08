@@ -12,7 +12,7 @@ final class SetupWindow {
             let window = NSWindow(contentViewController: NSHostingController(rootView: SetupView(state: state) { [weak self] in
                 self?.window?.close()
             }))
-            window.title = "Inlaut einrichten"
+            window.title = "inlaut einrichten"
             window.styleMask = [.titled, .closable]
             window.isReleasedWhenClosed = false
             window.center()
@@ -42,7 +42,7 @@ struct SetupView: View {
                     }
                 }
                 if state.trigger == .globe {
-                    Step(number: 3, done: !GlobeKeySetting.conflicts, title: "🌐-Taste für Inlaut freigeben") {
+                    Step(number: 3, done: !GlobeKeySetting.conflicts, title: "🌐-Taste für inlaut freigeben") {
                         if GlobeKeySetting.conflicts {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text("Unter Tastatur „🌐-Taste drücken“ auf „Keine Aktion“ stellen.")
@@ -55,7 +55,7 @@ struct SetupView: View {
                 Step(number: state.trigger == .globe ? 4 : 3, done: state.accessibilityGranted, title: "Einfügen in andere Apps erlauben") {
                     if !state.accessibilityGranted {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Unter Bedienungshilfen „Inlaut“ einschalten.")
+                            Text("Unter Bedienungshilfen „inlaut“ einschalten.")
                                 .font(.callout).foregroundStyle(.secondary)
                             Button("Bedienungshilfen öffnen …") { state.requestAccessibility() }
                         }

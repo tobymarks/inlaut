@@ -89,7 +89,7 @@ PY
     # Keep incomplete images separate from the final, publishable filename.
     PENDING="$DMG_OUT/Inlaut-$VERSION.pending.dmg"
     "$VENV/bin/dmgbuild" -s scripts/dmg-settings.py -D "app=$APP" \
-      -D "background=$DMG_OUT/artwork/background.png" 'Inlaut' "$PENDING"
+      -D "background=$DMG_OUT/artwork/background.png" 'inlaut' "$PENDING"
     "$VENV/bin/python" scripts/validate-dmg.py "$PENDING" "$APP"
     IDENTITY="${DEVELOPER_ID_APPLICATION:-Developer ID Application: Tobias Marks (7V4K87652E)}"
     codesign --force --sign "$IDENTITY" --timestamp "$PENDING"

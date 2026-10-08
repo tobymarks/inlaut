@@ -7,7 +7,7 @@ import AppKit
 ///   starts, or a recording that already started is dropped.
 ///
 /// Watching modifier keys of other apps needs the Accessibility permission
-/// Inlaut already has for pasting. The key-down monitor that spots fn+key
+/// inlaut already has for pasting. The key-down monitor that spots fn+key
 /// only runs while fn is held.
 @MainActor
 final class GlobeKeyTrigger {

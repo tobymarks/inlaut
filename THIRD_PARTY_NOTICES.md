@@ -1,6 +1,6 @@
 # Third-party notices
 
-Inlaut downloads or bundles the following components.
+inlaut downloads or bundles the following components.
 
 ## Speech model (downloaded on first start)
 

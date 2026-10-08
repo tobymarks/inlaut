@@ -8,7 +8,7 @@ guard CommandLine.arguments.count == 2 else {
 let output = URL(fileURLWithPath: CommandLine.arguments[1], isDirectory: true)
 try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
 guard let logo = NSImage(contentsOfFile: "design/inlaut-brand-kit/logo/inlaut-logo-petrol-880.png") else {
-    fatalError("The supplied Inlaut wordmark is missing; run from the repository root.")
+    fatalError("The supplied inlaut wordmark is missing; run from the repository root.")
 }
 
 func color(_ hex: UInt32) -> NSColor {
@@ -41,8 +41,8 @@ for scale in [1, 2] {
                              .foregroundColor: color])
     }
     logo.draw(in: NSRect(x: 40, y: 430 - 38 - 38, width: 160, height: 38))
-    label("Inlaut installieren", x: 40, top: 106, width: 580, size: 27, weight: .semibold, color: petrol)
-    label("Ziehe Inlaut in den Ordner „Programme“.", x: 40, top: 151,
+    label("inlaut installieren", x: 40, top: 106, width: 580, size: 27, weight: .semibold, color: petrol)
+    label("Ziehe inlaut in den Ordner „Programme“.", x: 40, top: 151,
           width: 580, size: 16, weight: .regular, color: petrol)
 
     let arrow = NSBezierPath()
@@ -59,7 +59,7 @@ for scale in [1, 2] {
 
     color(0xD9E3DD).setFill()
     NSRect(x: 40, y: 430 - 354, width: 580, height: 1).fill()
-    label("Danach Inlaut aus „Programme“ öffnen.", x: 40, top: 376,
+    label("Danach inlaut aus „Programme“ öffnen.", x: 40, top: 376,
           width: 580, size: 14, weight: .regular, color: accent)
     NSGraphicsContext.restoreGraphicsState()
     let suffix = scale == 1 ? "" : "@2x"
