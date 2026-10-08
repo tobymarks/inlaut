@@ -21,13 +21,11 @@ struct SettingsView: View {
             }
 
             Section {
-                TextEditor(text: $state.vocabulary)
-                    .font(.body)
-                    .frame(minHeight: 90)
+                TermsField(terms: $state.vocabulary)
             } header: {
                 Text("Eigene Begriffe")
             } footer: {
-                Text("Namen und Fachbegriffe, einer pro Zeile. Die Spracherkennung bevorzugt sie.")
+                Text("Namen und Fachbegriffe, auch aus mehreren Wörtern. Mit ↩ oder Komma hinzufügen. Die Spracherkennung bevorzugt sie.")
                     .foregroundStyle(.secondary)
             }
 

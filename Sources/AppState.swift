@@ -53,9 +53,9 @@ final class AppState {
     var playSounds: Bool {
         didSet { UserDefaults.standard.set(playSounds, forKey: "playSounds") }
     }
-    /// Names and terms the recogniser should prefer, one per line.
-    var vocabulary: String {
-        didSet { UserDefaults.standard.set(vocabulary, forKey: "vocabulary") }
+    /// Names and terms the recogniser should prefer.
+    var vocabulary: [String] {
+        didSet { UserDefaults.standard.set(vocabulary, forKey: "terms") }
     }
     var indicatorPosition: IndicatorPosition {
         didSet {
@@ -86,7 +86,10 @@ final class AppState {
         shortcut = (defaults.data(forKey: "shortcut")).flatMap { try? JSONDecoder().decode(Shortcut.self, from: $0) } ?? .default
         mode = Mode(rawValue: defaults.string(forKey: "mode") ?? "") ?? .hold
         playSounds = defaults.object(forKey: "playSounds") as? Bool ?? true
-        vocabulary = defaults.string(forKey: "vocabulary") ?? ""
+        // Early builds kept the terms as one newline-separated string.
+        vocabulary = defaults.stringArray(forKey: "terms")
+            ?? (defaults.string(forKey: "vocabulary") ?? "").split(whereSeparator: \.isNewline)
+                .map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
         indicatorPosition = IndicatorPosition(rawValue: defaults.string(forKey: "indicatorPosition") ?? "") ?? .bottomCenter
         indicator.position = indicatorPosition
 
@@ -142,9 +145,7 @@ final class AppState {
 
     private func startRecording() {
         do {
-            let words = vocabulary.split(whereSeparator: \.isNewline)
-                .map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
-            let session = try engine.begin(vocabulary: words)
+            let session = try engine.begin(vocabulary: vocabulary)
             try recorder.start(into: session)
             self.session = session
             status = .recording
