@@ -39,6 +39,13 @@ struct SettingsView: View {
             }
 
             Section {
+                Toggle(isOn: $state.voiceCommands) {
+                    Text("Zeilen und Absätze per Sprache")
+                    Text("„neue Zeile“ und „neuer Absatz“ werden zu Umbrüchen.")
+                }
+            }
+
+            Section {
                 ReplacementsField(rules: $state.replacements)
             } header: {
                 Text("Ersetzungen")

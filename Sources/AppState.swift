@@ -94,6 +94,10 @@ final class AppState {
     var playSounds: Bool {
         didSet { UserDefaults.standard.set(playSounds, forKey: "playSounds") }
     }
+    /// "neue Zeile" / "neuer Absatz" become line breaks.
+    var voiceCommands: Bool {
+        didSet { UserDefaults.standard.set(voiceCommands, forKey: "voiceCommands") }
+    }
     var replacements: [Replacement] {
         didSet { save(replacements, "replacements") }
     }
@@ -142,6 +146,7 @@ final class AppState {
         mode = Mode(rawValue: defaults.string(forKey: "mode") ?? "") ?? .hold
         engineChoice = EngineChoice(rawValue: defaults.string(forKey: "engine") ?? "") ?? .parakeet
         playSounds = defaults.object(forKey: "playSounds") as? Bool ?? true
+        voiceCommands = defaults.object(forKey: "voiceCommands") as? Bool ?? true
         replacements = defaults.data(forKey: "replacements")
             .flatMap { try? JSONDecoder().decode([Replacement].self, from: $0) } ?? []
         indicatorPosition = IndicatorPosition(rawValue: defaults.string(forKey: "indicatorPosition") ?? "") ?? .bottomCenter
@@ -362,7 +367,7 @@ final class AppState {
                 let raw = try await session.finish()
                 // Length and timing only — the dictated text is never logged.
                 log.notice("\(take.seconds, format: .fixed(precision: 1))s audio → \(raw.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
-                let text = replacements.apply(to: raw)
+                let text = replacements.apply(to: voiceCommands ? VoiceCommands.apply(to: raw) : raw)
                 guard !text.isEmpty else {
                     status = .ready
                     indicator.showMessage("Nichts erkannt")
