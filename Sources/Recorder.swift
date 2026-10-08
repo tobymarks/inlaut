@@ -1,0 +1,80 @@
+@preconcurrency import AVFoundation
+
+/// Microphone capture that only exists while a dictation runs: a fresh
+/// AVAudioEngine per take, torn down right after, so the mic indicator goes
+/// off and nothing keeps running between dictations.
+@MainActor
+final class Recorder {
+    private var engine: AVAudioEngine?
+    private var meter: Meter?
+    private var startedAt = Date()
+
+    /// Seconds recorded and the loudest sample (0…1). A peak of exactly 0
+    /// means macOS handed out silence — the microphone permission is missing.
+    struct Take { let seconds: TimeInterval; let peak: Float }
+
+    func start(into session: TranscriptionSession) throws {
+        let engine = AVAudioEngine()
+        let input = engine.inputNode
+        let inFormat = input.outputFormat(forBus: 0)
+        guard inFormat.sampleRate > 0, inFormat.channelCount > 0 else {
+            throw EngineError("Kein Mikrofon gefunden.")
+        }
+        guard let converter = AVAudioConverter(from: inFormat, to: session.audioFormat) else {
+            throw EngineError("Audioformat des Mikrofons wird nicht unterstützt.")
+        }
+        let meter = Meter()
+        let outFormat = session.audioFormat
+        input.installTap(onBus: 0, bufferSize: 4096, format: inFormat) { buffer, _ in
+            meter.update(buffer)
+            if let converted = Self.convert(buffer, with: converter, to: outFormat) {
+                session.append(converted)
+            }
+        }
+        engine.prepare()
+        try engine.start()
+        self.engine = engine
+        self.meter = meter
+        startedAt = Date()
+    }
+
+    func stop() -> Take {
+        engine?.inputNode.removeTap(onBus: 0)
+        engine?.stop()
+        engine = nil
+        let take = Take(seconds: Date().timeIntervalSince(startedAt), peak: meter?.peak ?? 0)
+        meter = nil
+        return take
+    }
+
+    nonisolated private static func convert(_ buffer: AVAudioPCMBuffer, with converter: AVAudioConverter,
+                                            to format: AVAudioFormat) -> AVAudioPCMBuffer? {
+        let ratio = format.sampleRate / buffer.format.sampleRate
+        let capacity = AVAudioFrameCount((Double(buffer.frameLength) * ratio).rounded(.up)) + 16
+        guard let out = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: capacity) else { return nil }
+        var consumed = false
+        var error: NSError?
+        converter.convert(to: out, error: &error) { _, status in
+            if consumed {
+                status.pointee = .noDataNow
+                return nil
+            }
+            consumed = true
+            status.pointee = .haveData
+            return buffer
+        }
+        return error == nil && out.frameLength > 0 ? out : nil
+    }
+}
+
+/// Peak level, written on the audio thread and read after the engine stopped.
+private final class Meter: @unchecked Sendable {
+    private(set) var peak: Float = 0
+
+    func update(_ buffer: AVAudioPCMBuffer) {
+        guard let data = buffer.floatChannelData?[0] else { return }
+        for i in 0..<Int(buffer.frameLength) {
+            peak = max(peak, abs(data[i]))
+        }
+    }
+}
