@@ -21,7 +21,7 @@ pkill -x Inlaut; open build/Build/Products/Debug/Inlaut.app
 
 ## Website
 
-`site/` is the static site for https://inlaut.de (German, no cookies, no tracking, no third-party requests). Served by Cloudflare Workers static assets in the private Cloudflare account (tobias@familiemarks.com). The domain is registered at INWX, and its nameservers point to Cloudflare. Deploy with `cd site && npx wrangler deploy` (wrangler is logged in via OAuth). The Impressum uses the apollon address with c/o, agreed with the maintainer.
+`site/` is the static site for https://inlaut.de (German, no cookies, no tracking, no third-party requests). Served by Cloudflare Workers static assets in the private Cloudflare account (tobias@familiemarks.com). The domain is registered at INWX, and its nameservers point to Cloudflare. Deploy with `cd site && npx wrangler deploy` (wrangler is logged in via OAuth). The Impressum uses the apollon address with c/o, agreed with the maintainer. hallo@inlaut.de is forwarded by Cloudflare Email Routing to the maintainer's private address.
 
 ## Git and GitHub
 
