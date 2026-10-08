@@ -1,13 +1,37 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><!-- sparkle-sign-warning:
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- sparkle-sign-warning:
 IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
---><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
-  <channel>
-    <title>Inlaut Updates</title>
-    <link>https://inlaut.de</link>
-    <description>Neue Versionen von Inlaut für macOS.</description>
-    <language>de</language>
-  </channel>
-</rss><!-- sparkle-signatures:
-edSignature: XbrsyLAD3N2Y5rCTD7MEgwyeafUlPFIWPZeRw4q1bHoaA34XjbLAsmfc0nKYe4KsQ/O8Ui5XA5zyVLu/HlftCQ==
-length: 576
+-->
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Inlaut Updates</title>
+        <link>https://inlaut.de</link>
+        <description>Neue Versionen von Inlaut für macOS.</description>
+        <language>de</language>
+        <item>
+            <title>0.1.0</title>
+            <pubDate>Thu, 08 Oct 2026 21:50:03 +0200</pubDate>
+            <link>https://inlaut.de</link>
+            <sparkle:version>1</sparkle:version>
+            <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <description><![CDATA[<h2>Inlaut 0.1.0</h2>
+<ul>
+  <li>Lokales Diktieren auf Apple-Silicon-Macs ab macOS 26.</li>
+  <li>Deutsche Spracherkennung mit Parakeet und Apple als Alternative.</li>
+  <li>Globale Tastenkombination oder 🌐-Taste zum Diktieren.</li>
+  <li>Sprachbefehle für Zeilen und Absätze sowie eigene Ersetzungen.</li>
+  <li>Aufnahmeanzeige direkt am unteren Bildschirmrand.</li>
+  <li>Signierte Updates mit täglicher Prüfung und manueller Installation.</li>
+  <li>Neues Sprachimpuls-Design in Petrol und Mint, mit nativen Glas-Icons und Hell-/Dunkelmodus.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/tobymarks/inlaut/releases/download/v0.1.0/Inlaut-0.1.0.zip" length="11976512" type="application/octet-stream" sparkle:edSignature="p1RG/bVW+9lDmMplBW+XzC2VVkVnGa0jlcBA/MN8HS1YvDterruVOIRPz/XxZAPzi5d9lgclKsN1bUlPvoE0DA=="/>
+        </item>
+    </channel>
+</rss>
+<!-- sparkle-signatures:
+edSignature: GK455lPi0kyD2zKngWSWe3V5k+4hK/MOt3aNn8f2cSM0rOWjubWF/5mPY+pNTZYqm1rl9G9/IQ0lEpAtLuv3CQ==
+length: 1935
 -->
