@@ -1,14 +1,14 @@
 @preconcurrency import AVFoundation
 
-/// A speech-to-text backend. Apple's on-device recogniser is the first one;
-/// a local Parakeet model can follow behind the same two protocols.
+/// A speech-to-text backend: German Parakeet (default) or Apple's on-device
+/// recogniser, which needs no download.
 @MainActor
 protocol TranscriptionEngine: AnyObject {
     var name: String { get }
     /// Download models or check availability. Throws a message for the user.
     func prepare() async throws
     /// Start a session; audio is pushed into it while the hotkey is held.
-    func begin(vocabulary: [String]) throws -> TranscriptionSession
+    func begin() throws -> TranscriptionSession
 }
 
 /// One dictation. `append` is called on the audio thread, so implementations

@@ -1,4 +1,5 @@
 import AppKit
+import AVFoundation
 import Observation
 import os
 import ServiceManagement
@@ -7,6 +8,25 @@ enum Mode: String, CaseIterable, Identifiable {
     case hold, toggle
     var id: String { rawValue }
     var label: String { self == .hold ? "Halten zum Sprechen" : "Drücken zum Starten/Stoppen" }
+}
+
+enum EngineChoice: String, CaseIterable, Identifiable {
+    case parakeet, apple
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .parakeet: "Parakeet Deutsch – beste Qualität"
+        case .apple: "Apple – ohne Download"
+        }
+    }
+}
+
+enum ModelState: Equatable {
+    case missing
+    case downloading(Double)
+    case loading
+    case ready
+    case failed(String)
 }
 
 enum Status: Equatable {
@@ -41,8 +61,10 @@ enum Status: Equatable {
 @Observable
 final class AppState {
     private(set) var status: Status = .preparing("Startet …")
+    private(set) var modelState: ModelState = ParakeetModel.isInstalled ? .loading : .missing
     private(set) var lastText = ""
     private(set) var accessibilityGranted = TextInserter.isTrusted
+    private(set) var microphoneGranted = AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
 
     var shortcut: Shortcut {
         didSet { save(shortcut, "shortcut"); hotKey.register(shortcut) }
@@ -50,12 +72,18 @@ final class AppState {
     var mode: Mode {
         didSet { UserDefaults.standard.set(mode.rawValue, forKey: "mode") }
     }
+    var engineChoice: EngineChoice {
+        didSet {
+            UserDefaults.standard.set(engineChoice.rawValue, forKey: "engine")
+            if engineChoice == .parakeet, modelState == .missing { showSetup() }
+            updateStatus()
+        }
+    }
     var playSounds: Bool {
         didSet { UserDefaults.standard.set(playSounds, forKey: "playSounds") }
     }
-    /// Names and terms the recogniser should prefer.
-    var vocabulary: [String] {
-        didSet { UserDefaults.standard.set(vocabulary, forKey: "terms") }
+    var replacements: [Replacement] {
+        didSet { save(replacements, "replacements") }
     }
     var indicatorPosition: IndicatorPosition {
         didSet {
@@ -71,25 +99,37 @@ final class AppState {
         }
     }
 
-    private let engine: TranscriptionEngine = AppleSpeechEngine()
+    /// The engine dictation actually uses: Parakeet once it is loaded, Apple
+    /// until then (or when chosen), so dictating works from the first minute.
+    var activeEngine: TranscriptionEngine? {
+        if engineChoice == .parakeet, parakeet.isLoaded { return parakeet }
+        return appleReady ? apple : nil
+    }
+
+    private let apple = AppleSpeechEngine()
+    private let parakeet = ParakeetEngine()
+    private var appleReady = false
+    private var download: Task<Void, Never>?
     private let recorder = Recorder()
     private let hotKey = HotKey()
     private let indicator = RecordingIndicator()
+    private let setupWindow = SetupWindow()
     private var session: TranscriptionSession?
     private let log = Logger(subsystem: "de.tobymarks.inlaut", category: "app")
 
     /// Shorter takes are treated as an accidental tap and dropped.
     private let minimumSeconds: TimeInterval = 0.3
+    /// People finish the last syllable just after letting go of the key.
+    private let trailingAudio: Duration = .milliseconds(150)
 
     init() {
         let defaults = UserDefaults.standard
-        shortcut = (defaults.data(forKey: "shortcut")).flatMap { try? JSONDecoder().decode(Shortcut.self, from: $0) } ?? .default
+        shortcut = defaults.data(forKey: "shortcut").flatMap { try? JSONDecoder().decode(Shortcut.self, from: $0) } ?? .default
         mode = Mode(rawValue: defaults.string(forKey: "mode") ?? "") ?? .hold
+        engineChoice = EngineChoice(rawValue: defaults.string(forKey: "engine") ?? "") ?? .parakeet
         playSounds = defaults.object(forKey: "playSounds") as? Bool ?? true
-        // Early builds kept the terms as one newline-separated string.
-        vocabulary = defaults.stringArray(forKey: "terms")
-            ?? (defaults.string(forKey: "vocabulary") ?? "").split(whereSeparator: \.isNewline)
-                .map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+        replacements = defaults.data(forKey: "replacements")
+            .flatMap { try? JSONDecoder().decode([Replacement].self, from: $0) } ?? []
         indicatorPosition = IndicatorPosition(rawValue: defaults.string(forKey: "indicatorPosition") ?? "") ?? .bottomCenter
         indicator.position = indicatorPosition
 
@@ -97,18 +137,90 @@ final class AppState {
         hotKey.onRelease = { [weak self] in self?.hotKeyReleased() }
         hotKey.register(shortcut)
 
-        Task { await prepare() }
+        Task { await start() }
     }
 
-    func prepare() async {
+    private func start() async {
         status = .preparing("Lädt Spracherkennung …")
-        do {
-            try await engine.prepare()
-            status = .ready
-        } catch {
-            log.error("prepare failed: \(error.localizedDescription)")
-            status = .failed(error.localizedDescription)
+        await prepareApple()
+        if ParakeetModel.isInstalled {
+            await loadParakeet()
+        } else if engineChoice == .parakeet {
+            showSetup()
+            startDownload()
         }
+        updateStatus()
+    }
+
+    func prepareApple() async {
+        do {
+            try await apple.prepare()
+            appleReady = true
+        } catch {
+            log.error("apple prepare failed: \(error.localizedDescription)")
+        }
+        updateStatus()
+    }
+
+    private func loadParakeet() async {
+        modelState = .loading
+        updateStatus()
+        do {
+            let started = Date()
+            try await parakeet.prepare()
+            log.notice("parakeet loaded in \(Date().timeIntervalSince(started), format: .fixed(precision: 1))s")
+            modelState = .ready
+        } catch {
+            log.error("parakeet load failed: \(error.localizedDescription)")
+            modelState = .failed(error.localizedDescription)
+        }
+        updateStatus()
+    }
+
+    func startDownload() {
+        guard download == nil, !parakeet.isLoaded else { return }
+        modelState = .downloading(0)
+        updateStatus()
+        download = Task {
+            defer { download = nil }
+            do {
+                try await ParakeetModel.install { [weak self] fraction in
+                    self?.modelState = .downloading(fraction)
+                }
+                await loadParakeet()
+            } catch is CancellationError {
+                modelState = .missing
+            } catch {
+                log.error("model download failed: \(error.localizedDescription)")
+                modelState = Task.isCancelled ? .missing : .failed(error.localizedDescription)
+            }
+            updateStatus()
+        }
+    }
+
+    func cancelDownload() {
+        download?.cancel()
+    }
+
+    /// Ready whenever some engine can take a dictation; only the menu shows
+    /// that Parakeet is still on its way.
+    private func updateStatus() {
+        switch status {
+        case .recording, .transcribing: return
+        default: break
+        }
+        if activeEngine != nil {
+            status = .ready
+        } else if case .failed(let message) = modelState {
+            status = .failed(message)
+        } else {
+            status = .preparing("Lädt Spracherkennung …")
+        }
+    }
+
+    func showSetup() {
+        refreshPermissions()
+        setupWindow.show(state: self)
     }
 
     /// While the settings field records a new shortcut, the old one must not fire.
@@ -116,12 +228,20 @@ final class AppState {
         suspended ? hotKey.unregister() : hotKey.register(shortcut)
     }
 
-    func refreshAccessibility() {
+    func refreshPermissions() {
         accessibilityGranted = TextInserter.isTrusted
+        microphoneGranted = AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
     }
 
     func requestAccessibility() {
         TextInserter.requestTrust()
+    }
+
+    func requestMicrophone() {
+        Task {
+            _ = await AVCaptureDevice.requestAccess(for: .audio)
+            refreshPermissions()
+        }
     }
 
     func copyLastText() {
@@ -144,8 +264,12 @@ final class AppState {
     }
 
     private func startRecording() {
+        guard let engine = activeEngine else {
+            fail("Spracherkennung lädt noch …")
+            return
+        }
         do {
-            let session = try engine.begin(vocabulary: vocabulary)
+            let session = try engine.begin()
             try recorder.start(into: session)
             self.session = session
             status = .recording
@@ -165,29 +289,30 @@ final class AppState {
     private func stopAndTranscribe() {
         guard let session else { return }
         self.session = nil
-        let take = recorder.stop()
-        if playSounds { NSSound(named: "Pop")?.play() }
-
-        if take.seconds < minimumSeconds {
-            Task { await session.cancel() }
-            status = .ready
-            indicator.hide()
-            return
-        }
-        if take.peak == 0 {
-            Task { await session.cancel() }
-            fail("Nur Stille – fehlt die Mikrofon-Berechtigung?")
-            return
-        }
-
         status = .transcribing
         indicator.showTranscribing()
+        if playSounds { NSSound(named: "Pop")?.play() }
+
         Task {
+            try? await Task.sleep(for: trailingAudio)
+            let take = recorder.stop()
+            if take.seconds < minimumSeconds {
+                await session.cancel()
+                status = .ready
+                indicator.hide()
+                return
+            }
+            if take.peak == 0 {
+                await session.cancel()
+                fail("Nur Stille – fehlt die Mikrofon-Berechtigung?")
+                return
+            }
             do {
                 let started = Date()
-                let text = try await session.finish()
+                let raw = try await session.finish()
                 // Length and timing only — the dictated text is never logged.
-                log.notice("\(take.seconds, format: .fixed(precision: 1))s audio → \(text.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
+                log.notice("\(take.seconds, format: .fixed(precision: 1))s audio → \(raw.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
+                let text = replacements.apply(to: raw)
                 guard !text.isEmpty else {
                     status = .ready
                     indicator.showMessage("Nichts erkannt")
@@ -197,7 +322,7 @@ final class AppState {
                 indicator.hide()
                 lastText = text
                 let pasted = await TextInserter.insert(text)
-                refreshAccessibility()
+                refreshPermissions()
                 if pasted {
                     status = .ready
                 } else {

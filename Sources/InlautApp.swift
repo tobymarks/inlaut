@@ -26,6 +26,19 @@ private struct MenuContent: View {
     var body: some View {
         Text(state.status.label)
         Text("Kurzbefehl: \(state.shortcut.display)")
+        if let engine = state.activeEngine {
+            Text("Erkennung: \(engine.name)")
+        }
+        switch state.modelState {
+        case .downloading(let fraction):
+            Text("Parakeet wird geladen: \(Int(fraction * 100)) %")
+        case .missing, .failed:
+            if state.engineChoice == .parakeet {
+                Button("Parakeet-Modell laden …") { state.showSetup() }
+            }
+        default:
+            EmptyView()
+        }
 
         if !state.lastText.isEmpty {
             Button("Letztes Diktat kopieren") { state.copyLastText() }
@@ -34,13 +47,8 @@ private struct MenuContent: View {
 
         Divider()
 
-        if !state.accessibilityGranted {
-            Button("Bedienungshilfen erlauben (für automatisches Einfügen) …") {
-                state.requestAccessibility()
-            }
-        }
-        if case .failed = state.status {
-            Button("Spracherkennung neu laden") { Task { await state.prepare() } }
+        if !state.accessibilityGranted || !state.microphoneGranted {
+            Button("Berechtigungen einrichten …") { state.showSetup() }
         }
 
         Picker("Modus", selection: $state.mode) {
@@ -55,6 +63,6 @@ private struct MenuContent: View {
         Divider()
         Button("Beenden") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
-            .onAppear { state.refreshAccessibility() }
+            .onAppear { state.refreshPermissions() }
     }
 }

@@ -6,3 +6,4 @@ spike/__pycache__/
 build/
 Inlaut.xcodeproj/
 .DS_Store
+Vendor/

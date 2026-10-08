@@ -21,10 +21,21 @@ targets:
     type: application
     platform: macOS
     sources: [Sources]
+    # Run scripts/fetch-sherpa-onnx.sh once before the first build.
+    dependencies:
+      - framework: Vendor/sherpa-onnx/lib/libsherpa-onnx-c-api.dylib
+        embed: true
+        codeSign: true
+      - framework: Vendor/sherpa-onnx/lib/libonnxruntime.dylib
+        embed: true
+        codeSign: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: de.tobymarks.inlaut
         GENERATE_INFOPLIST_FILE: NO
+        SWIFT_INCLUDE_PATHS: $(PROJECT_DIR)/Vendor/sherpa-onnx/include
+        LIBRARY_SEARCH_PATHS: $(PROJECT_DIR)/Vendor/sherpa-onnx/lib
+        LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
     info:
       path: Resources/Info.plist
       properties:

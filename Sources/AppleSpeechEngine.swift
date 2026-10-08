@@ -29,9 +29,9 @@ final class AppleSpeechEngine: TranscriptionEngine {
         self.format = format
     }
 
-    func begin(vocabulary: [String]) throws -> TranscriptionSession {
+    func begin() throws -> TranscriptionSession {
         guard let resolvedLocale, let format else { throw EngineError("Spracherkennung ist noch nicht bereit.") }
-        return AppleSpeechSession(transcriber: Self.makeTranscriber(resolvedLocale), format: format, vocabulary: vocabulary)
+        return AppleSpeechSession(transcriber: Self.makeTranscriber(resolvedLocale), format: format)
     }
 
     nonisolated private static func makeTranscriber(_ locale: Locale) -> SpeechTranscriber {
@@ -48,7 +48,7 @@ final class AppleSpeechSession: TranscriptionSession, @unchecked Sendable {
     private let analysis: Task<Void, Error>
     private let collected: Task<String, Error>
 
-    init(transcriber: SpeechTranscriber, format: AVAudioFormat, vocabulary: [String]) {
+    init(transcriber: SpeechTranscriber, format: AVAudioFormat) {
         audioFormat = format
         let (stream, continuation) = AsyncStream<AnalyzerInput>.makeStream()
         input = continuation
@@ -63,12 +63,9 @@ final class AppleSpeechSession: TranscriptionSession, @unchecked Sendable {
             }
             return parts.joined(separator: " ")
         }
+        // Contextual strings (custom vocabulary) were tried and had no effect
+        // on SpeechTranscriber's output; Replacements cover that instead.
         analysis = Task {
-            if !vocabulary.isEmpty {
-                let context = AnalysisContext()
-                context.contextualStrings[.general] = vocabulary
-                try await analyzer.setContext(context)
-            }
             try await analyzer.prepareToAnalyze(in: format)
             try await analyzer.start(inputSequence: stream)
         }
