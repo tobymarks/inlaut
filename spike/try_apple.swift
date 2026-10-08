@@ -29,6 +29,12 @@ if let request = try await AssetInventory.assetInstallationRequest(supporting: [
 
 let t0 = Date()
 let analyzer = SpeechAnalyzer(modules: [transcriber])
+// Optional custom vocabulary, comma-separated: TERMS="DAM,AWS" spike/try_apple file.wav
+if let terms = ProcessInfo.processInfo.environment["TERMS"], !terms.isEmpty {
+    let context = AnalysisContext()
+    context.contextualStrings[.general] = terms.split(separator: ",").map { String($0) }
+    try await analyzer.setContext(context)
+}
 let file = try AVAudioFile(forReading: url)
 let collector = Task {
     var text = ""
