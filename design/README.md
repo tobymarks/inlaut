@@ -12,7 +12,11 @@ The current master is **Sprachimpuls / Petrol & Mint** in [`inlaut-brand-kit/`](
 
 ## Website
 
-`site/public/` stays a static, script-free website with no remote fonts or embedded third-party assets. It follows the system appearance, includes a responsive illustrative dictation view, keyboard focus/skip navigation and reduced-motion support. The download button points to the versioned GitHub release; publish its ZIP before deploying the website and signed update feed.
+`site/public/` stays a static, script-free website with no remote fonts or embedded third-party assets. It follows the system appearance, includes a responsive illustrative dictation view, keyboard focus/skip navigation and reduced-motion support. The download button points to the versioned GitHub DMG; publish the DMG and Sparkle ZIP before deploying the website and signed update feed.
+
+## Installer
+
+`scripts/render-dmg-background.swift` generates the porcelain/petrol installer background from the supplied wordmark at 1x and 2x. AppKit derives the Retina scale from `NSBitmapImageRep.size`; do not apply a second graphics-context scale. `scripts/dmg-settings.py` positions the native app icon and a “Programme” link to `/Applications` on either side of the arrow. The generated artwork and DMG stay in `build/release/`; `scripts/release.sh dmg` builds and notarizes the image. The app inside is unchanged.
 
 [`social-card.html`](social-card.html) is the source for the social sharing image. Serve `design/` locally, open this page at 1200 × 630 CSS pixels and export a browser screenshot. The current preview export is 1280 × 672 pixels; the Open Graph dimensions match that file. The checked-in social image includes the kit's supplied static glass icon; the native app uses Icon Composer's rendering.
 

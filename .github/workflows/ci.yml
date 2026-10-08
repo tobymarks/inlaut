@@ -24,5 +24,6 @@ jobs:
       - name: Validate release scripts
         run: |
           bash -n scripts/release.sh
-          python3 -m py_compile scripts/validate-appcast.py
+          python3 -m py_compile scripts/validate-appcast.py scripts/validate-dmg.py scripts/dmg-settings.py
+          xcrun swift scripts/render-dmg-background.swift build/dmg-artwork
           git diff --exit-code -- Resources/Info.plist Resources/Inlaut.entitlements

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds a Developer ID archive, notarizes/staples it, then signs the update feed.
+# Builds a notarized app, drag-to-install DMG and signed Sparkle ZIP/feed.
 # No credentials or private keys are read into shell variables or repository files.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -68,8 +68,48 @@ PY
     # Ensure the signed feed actually points at the package we are about to publish.
     python3 scripts/validate-appcast.py "$STAGING/appcast.xml" "$STAGING/$NAME" "$APP"
     (cd "$STAGING" && shasum -a 256 "$NAME" > SHA256SUMS)
-    echo "Ready for review: $STAGING"
-    echo 'Upload the ZIP to a GitHub Release first; deploy this appcast only after the asset is public.'
+    "$0" dmg
+    echo "Sparkle update: $STAGING"
+    echo 'Upload the DMG and ZIP to GitHub before deploying the download link and signed appcast.'
     ;;
-  *) echo "Usage: $0 {prepare|notarize|package}" >&2; exit 2 ;;
+  dmg)
+    # Can also add a DMG to an existing release without rewriting its ZIP/feed.
+    xcrun stapler validate "$APP"
+    codesign --verify --deep --strict "$APP"
+    VERSION=$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP/Contents/Info.plist")
+    BUILD_NUMBER=$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$APP/Contents/Info.plist")
+    DMG_OUT="$OUT/downloads/$VERSION-$BUILD_NUMBER"
+    DMG="$DMG_OUT/Inlaut-$VERSION.dmg"
+    test ! -e "$DMG" || { echo "Refusing to replace existing release image: $DMG" >&2; exit 1; }
+    mkdir -p "$DMG_OUT"
+    VENV="$ROOT/build/dmg-venv"
+    if [ ! -x "$VENV/bin/python" ]; then python3 -m venv "$VENV"; fi
+    "$VENV/bin/python" -m pip install --disable-pip-version-check -r scripts/dmg-requirements.txt
+    xcrun swift scripts/render-dmg-background.swift "$DMG_OUT/artwork"
+    # Keep incomplete images separate from the final, publishable filename.
+    PENDING="$DMG_OUT/Inlaut-$VERSION.pending.dmg"
+    "$VENV/bin/dmgbuild" -s scripts/dmg-settings.py -D "app=$APP" \
+      -D "background=$DMG_OUT/artwork/background.png" 'Inlaut' "$PENDING"
+    "$VENV/bin/python" scripts/validate-dmg.py "$PENDING" "$APP"
+    IDENTITY="${DEVELOPER_ID_APPLICATION:-Developer ID Application: Tobias Marks (7V4K87652E)}"
+    codesign --force --sign "$IDENTITY" --timestamp "$PENDING"
+    codesign --verify --strict "$PENDING"
+    xcrun notarytool submit "$PENDING" --keychain-profile "$PROFILE" \
+      --wait --output-format json > "$DMG_OUT/notarization.json"
+    python3 - "$DMG_OUT/notarization.json" <<'PY'
+import json, sys
+result = json.load(open(sys.argv[1]))
+if result.get('status') != 'Accepted':
+    sys.exit(f"DMG notarization not accepted: {result.get('status')}; submission {result.get('id')}")
+print(f"DMG notarization accepted: {result['id']}")
+PY
+    xcrun stapler staple "$PENDING"
+    xcrun stapler validate "$PENDING"
+    spctl --assess --type open --context context:primary-signature --verbose=2 "$PENDING"
+    mv "$PENDING" "$DMG"
+    (cd "$DMG_OUT" && shasum -a 256 "Inlaut-$VERSION.dmg" > "Inlaut-$VERSION.dmg.sha256")
+    echo "Notarized installer: $DMG"
+    echo 'Publish the DMG and its .sha256 file; retain the ZIP and signed feed for Sparkle updates.'
+    ;;
+  *) echo "Usage: $0 {prepare|notarize|package|dmg}" >&2; exit 2 ;;
 esac

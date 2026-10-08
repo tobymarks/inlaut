@@ -15,7 +15,7 @@ The app and website use the **Sprachimpuls / Petrol & Mint** brand kit, with nat
 
 ## Download
 
-[Download Inlaut 0.1.0](https://github.com/tobymarks/inlaut/releases/download/v0.1.0/Inlaut-0.1.0.zip) for Apple Silicon and macOS 26 or later. Unzip, move Inlaut to Applications, and open it. The app is Developer ID signed and notarized by Apple.
+[Download Inlaut 0.1.0](https://github.com/tobymarks/inlaut/releases/download/v0.1.0/Inlaut-0.1.0.dmg) for Apple Silicon and macOS 26 or later. Open the DMG, drag Inlaut onto the “Programme” (Applications) folder, then open Inlaut from Applications. You can eject the disk image after copying. Both the app and the DMG are Developer ID signed and notarized by Apple.
 
 This is the first public version. Setup downloads the speech model (around 670 MB) and guides you through microphone and Accessibility permissions. [Release notes and checksums](https://github.com/tobymarks/inlaut/releases/tag/v0.1.0).
 
@@ -67,19 +67,26 @@ scripts/release.sh prepare    # archive + Developer ID export; verifies nested s
 scripts/release.sh notarize   # submit to Apple, require Accepted, staple and check Gatekeeper
 ```
 
-The second step also packages the stapled app, signs the ZIP and feed, and checks release metadata. If packaging needs repeating after successful notarization, use `scripts/release.sh package`. Output is under `build/release/updates/<version>-<build>/`. The script refuses to package an app without a valid notarization ticket.
+The second step also packages the stapled app, signs the Sparkle ZIP and feed, and builds, signs and notarizes the drag-to-install DMG. The script refuses to package an app without a valid notarization ticket. The pinned Python packaging tools live in `build/dmg-venv/`; they are not included in the app.
+
+- Sparkle ZIP, signed feed and `SHA256SUMS`: `build/release/updates/<version>-<build>/`.
+- DMG, separate `.dmg.sha256` checksum and notarization log: `build/release/downloads/<version>-<build>/`.
+
+To add a DMG for an already exported and stapled app, run `scripts/release.sh dmg`. This leaves the existing ZIP and signed feed untouched and refuses to replace a completed DMG. For an **unpublished** app, `scripts/release.sh package` repeats packaging after successful app notarization. Never regenerate or replace a published archive. The DMG is kept outside Sparkle's input directory so it cannot produce a duplicate update entry.
 
 For each release, increase **both** `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `project.yml`; Sparkle compares the build number. Add `release-notes/<version>.html` (an HTML fragment, embedded in the signed feed). Build from the exact source commit that the release tag will reference.
 
 Publishing order:
 
 1. Test recording, hold/toggle, 🌐, paste into a native app and a browser, cancel, and Settings on the exported app. For later releases, also test updating from the previous public version using a separate installation.
-2. Create a GitHub Release for the matching source tag, upload `Inlaut-<version>.zip` and `SHA256SUMS`, and verify the public ZIP URL is reachable. The ZIP contains only the app; copy it to Applications before running.
+2. Create a GitHub Release for the matching source tag. Upload `Inlaut-<version>.dmg`, its `.dmg.sha256` file, `Inlaut-<version>.zip` and `SHA256SUMS`. Download both public packages and verify their checksums and notarization. The DMG is the website download; the ZIP is retained for Sparkle updates.
 3. Copy the generated `appcast.xml` to `site/public/updates/appcast.xml` **without editing it** (the feed itself is signed). It keeps earlier entries and their version-specific GitHub URLs.
-4. Enable the download link in `site/public/index.html`, then deploy the site with `cd site && npx wrangler deploy`.
-5. Verify the live feed and ZIP before announcing the release. The initial empty feed is only a template. The package step produces the signed feed; do not deploy an unsigned template to released clients.
+4. Point the download link in `site/public/index.html` at the public DMG, then deploy the site with `cd site && npx wrangler deploy`.
+5. Verify the live download link, DMG and feed before announcing the release. The package step produces the signed feed; do not deploy an unsigned template to released clients.
 
-Useful references: [Sparkle setup](https://sparkle-project.org/documentation/), [Sparkle publishing](https://sparkle-project.org/documentation/publishing/), [Apple notarization](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow).
+The DMG layout is defined in `scripts/dmg-settings.py`; `scripts/render-dmg-background.swift` renders the brand artwork at 1x and 2x. `scripts/validate-dmg.py` mounts the image read-only and checks the exact app payload, code signature, notarization ticket, `/Applications` link and Finder layout. Visually inspect the mounted image on a Retina display before publishing.
+
+Useful references: [Sparkle setup](https://sparkle-project.org/documentation/), [Sparkle publishing](https://sparkle-project.org/documentation/publishing/), [Apple notarization](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow), [dmgbuild layout settings](https://dmgbuild.readthedocs.io/en/latest/settings.html).
 
 ## Permissions
 

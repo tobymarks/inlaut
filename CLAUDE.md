@@ -69,5 +69,6 @@ An agent cannot press the shortcut or 🌐 key (synthetic events lack permission
 
 - `AppUpdater` wraps Sparkle 2.10.0; daily checks, manual installation, no profiling, signed feed and archives. Disabled in Debug. Checks/relaunches are deferred during dictation.
 - Feed: `site/public/updates/appcast.xml` → inlaut.de; archives: public GitHub Releases. Never publish an appcast before the corresponding notarized ZIP is downloadable.
+- Website downloads use the signed, notarized drag-to-install DMG. `scripts/release.sh dmg` packages the exported/stapled app without altering the existing Sparkle ZIP or feed. DMGs live separately in `build/release/downloads/<version>-<build>/`; upload the DMG and its `.dmg.sha256` before deploying the website link. Do not replace published archives. See README for the full pipeline and Retina layout verification.
 - Sparkle private key stays in Keychain under account `de.tobymarks.inlaut`; do not print or commit it. Notarization profile: `Inlaut` (one-time user setup).
 - `xcodebuild -project Inlaut.xcodeproj -scheme Inlaut -configuration Debug -destination 'platform=macOS,arch=arm64' -derivedDataPath build test` runs the isolated tests. Tests must not touch the general clipboard or microphone.
