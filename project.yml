@@ -34,6 +34,7 @@ targets:
       - Sources/TextInserter.swift
       - Sources/VoiceCommands.swift
       - Sources/Replacements.swift
+      - Sources/SharpS.swift
       - Sources/CancellationFlag.swift
       - Sources/Recorder.swift
       - Sources/TranscriptionEngine.swift

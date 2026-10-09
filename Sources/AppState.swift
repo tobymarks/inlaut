@@ -111,6 +111,10 @@ final class AppState {
     var voiceCommands: Bool {
         didSet { UserDefaults.standard.set(voiceCommands, forKey: "voiceCommands") }
     }
+    /// "Strasse" → "Straße"; off by default where ss is the norm.
+    var sharpS: Bool {
+        didSet { UserDefaults.standard.set(sharpS, forKey: "sharpS") }
+    }
     var replacements: [Replacement] {
         didSet { save(replacements, "replacements") }
     }
@@ -167,6 +171,7 @@ final class AppState {
         engineChoice = EngineChoice(rawValue: defaults.string(forKey: "engine") ?? "") ?? .parakeet
         playSounds = defaults.object(forKey: "playSounds") as? Bool ?? true
         voiceCommands = defaults.object(forKey: "voiceCommands") as? Bool ?? true
+        sharpS = defaults.object(forKey: "sharpS") as? Bool ?? !["CH", "LI"].contains(Locale.current.region?.identifier)
         replacements = defaults.data(forKey: "replacements")
             .flatMap { try? JSONDecoder().decode([Replacement].self, from: $0) } ?? []
         indicatorPosition = IndicatorPosition(rawValue: defaults.string(forKey: "indicatorPosition") ?? "") ?? .bottomCenter
@@ -450,7 +455,10 @@ final class AppState {
                 guard dictationID == id else { return }
                 // Length and timing only — the dictated text is never logged.
                 log.notice("\(take.seconds, format: .fixed(precision: 1))s audio → \(raw.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
-                let text = replacements.apply(to: voiceCommands ? VoiceCommands.apply(to: raw) : raw)
+                // The user's replacements come last, so they can override ß.
+                var text = voiceCommands ? VoiceCommands.apply(to: raw) : raw
+                if sharpS { text = SharpS.apply(to: text) }
+                text = replacements.apply(to: text)
                 guard !text.isEmpty else {
                     status = .ready
                     indicator.showMessage("Nichts erkannt")

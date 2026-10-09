@@ -130,6 +130,21 @@ final class TextProcessingTests: XCTestCase {
         XCTAssertEqual(VoiceCommands.apply(to: "Hallo, neue Zeile, neuer Absatz, Tobias."), "Hallo,\n\nTobias")
     }
 
+    func testSharpSInWordsAndCompounds() {
+        XCTAssertEqual(SharpS.apply(to: "Viele Grüsse aus der Hauptstrasse, das ist ausserdem regelmässig ein grosser Spass."),
+                       "Viele Grüße aus der Hauptstraße, das ist außerdem regelmäßig ein großer Spaß.")
+        XCTAssertEqual(SharpS.apply(to: "Er weiss, was die Massnahme heisst; schliesslich fliesst es draussen."),
+                       "Er weiß, was die Maßnahme heißt; schließlich fließt es draußen.")
+        XCTAssertEqual(SharpS.apply(to: "Fussball, Weisswein, Eiweiss, Aussendienst, Reissverschluss"),
+                       "Fußball, Weißwein, Eiweiß, Außendienst, Reißverschluss")
+    }
+
+    func testSharpSLeavesAmbiguousAndCorrectWordsAlone() {
+        let unchanged = "Masse Busse floss Schloss muss dass Fluss Strass STRASSE Füssen Fussel Hinweisschild "
+            + "Preissenkung Kreissäge aussenden Aussendung Weissagung Ausstellung Eissorte Blossom"
+        XCTAssertEqual(SharpS.apply(to: unchanged), unchanged)
+    }
+
     func testCancellationFlag() throws {
         let flag = CancellationFlag()
         try flag.check()

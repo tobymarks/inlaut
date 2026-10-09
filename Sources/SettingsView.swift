@@ -49,6 +49,10 @@ struct SettingsView: View {
                         Text("Zeilen und Absätze per Sprache")
                         Text("„neue Zeile“ und „neuer Absatz“ werden zu Umbrüchen.")
                     }
+                    Toggle(isOn: $state.sharpS) {
+                        Text("ß statt ss")
+                        Text("Schreibt eindeutige Wörter wie Straße, groß oder Grüße mit ß.")
+                    }
                 }
 
                 Section {
