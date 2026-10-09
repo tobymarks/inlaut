@@ -2,23 +2,29 @@
 import SherpaOnnx
 import Synchronization
 
-/// German Parakeet through sherpa-onnx on the CPU. The model is loaded once
-/// and kept in memory, so a dictation starts instantly and a 10 s clip is
-/// text in about a third of a second.
+/// Parakeet through sherpa-onnx on the CPU. The model is loaded once and
+/// kept in memory, so a dictation starts instantly and a 10 s clip is text
+/// in about a third of a second.
 @MainActor
 final class ParakeetEngine: TranscriptionEngine {
-    let name = "Parakeet (Deutsch)"
+    let model: SpeechModel
+    var name: String { model.name }
     private var recognizer: SherpaRecognizer?
+
+    init(model: SpeechModel) {
+        self.model = model
+    }
 
     var isLoaded: Bool { recognizer != nil }
 
     func prepare() async throws {
         guard recognizer == nil else { return }
-        guard ParakeetModel.isInstalled else { throw EngineError("Das Parakeet-Modell ist noch nicht geladen.") }
+        guard model.isInstalled else { throw EngineError("Das Parakeet-Modell ist noch nicht geladen.") }
         let threads = min(4, ProcessInfo.processInfo.activeProcessorCount)
+        let directory = model.directory
         let loading = Task.detached(priority: .userInitiated) {
             try Task.checkCancellation()
-            return try SherpaRecognizer(directory: ParakeetModel.directory, threads: threads)
+            return try SherpaRecognizer(directory: directory, threads: threads)
         }
         let prepared = try await withTaskCancellationHandler {
             try await loading.value

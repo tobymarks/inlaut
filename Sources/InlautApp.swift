@@ -36,13 +36,24 @@ private struct MenuContent: View {
         }
         switch state.modelState {
         case .downloading(let fraction):
-            Text("Parakeet wird geladen: \(Int(fraction * 100)) %")
+            Text("\(state.model.name) wird geladen: \(Int(fraction * 100)) %")
         case .missing, .failed:
             if state.engineChoice == .parakeet {
                 Button("Parakeet-Modell laden …") { state.showSetup() }
             }
         default:
             EmptyView()
+        }
+        if state.keepModels, state.engineChoice == .parakeet {
+            Picker("Modell", selection: Binding(get: { state.selectedModel }, set: { state.selectModel($0) })) {
+                ForEach(SpeechModel.catalogue) { Text($0.name).tag($0) }
+            }
+        }
+        if let pending = state.modelSwitch, case .loading = pending.phase {
+            Text("\(pending.model.name) wird geladen …")
+        }
+        if let pending = state.modelSwitch, case .downloading(let fraction) = pending.phase {
+            Text("Wechsel zu \(pending.model.name): \(Int(fraction * 100)) %")
         }
 
         if !state.lastText.isEmpty {

@@ -21,7 +21,7 @@ enum EngineChoice: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .parakeet: "Parakeet Deutsch – beste Qualität"
+        case .parakeet: "Parakeet – beste Qualität"
         case .apple: "Apple – geringer Speicherbedarf"
         }
     }
@@ -34,6 +34,19 @@ enum ModelState: Equatable {
     case loading
     case ready
     case failed(String)
+}
+
+/// A different model on its way in. The current one keeps dictating until
+/// the new one is downloaded, verified and loaded.
+struct ModelSwitch: Equatable {
+    enum Phase: Equatable {
+        case downloading(Double)
+        case loading
+        case failed(String)
+    }
+
+    let model: SpeechModel
+    var phase: Phase
 }
 
 enum Status: Equatable {
@@ -81,7 +94,10 @@ final class AppState {
     private(set) var status: Status = .preparing("Startet …") {
         didSet { updater.isBusy = isDictating }
     }
-    private(set) var modelState: ModelState = ParakeetModel.isInstalled ? .installed : .missing
+    /// The Parakeet model in use (or being set up for first use).
+    private(set) var model: SpeechModel
+    private(set) var modelState: ModelState
+    private(set) var modelSwitch: ModelSwitch?
     private(set) var lastText = ""
     private(set) var accessibilityGranted = TextInserter.isTrusted
     private(set) var microphoneGranted = AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
@@ -102,6 +118,14 @@ final class AppState {
         didSet {
             UserDefaults.standard.set(engineChoice.rawValue, forKey: "engine")
             configureEngine()
+        }
+    }
+    /// Keeps every downloaded model on disk, so switching back only loads
+    /// (~2 s) instead of downloading again. Only the active one is in memory.
+    var keepModels: Bool {
+        didSet {
+            UserDefaults.standard.set(keepModels, forKey: "keepModels")
+            if !keepModels, modelSwitch == nil { ModelStore.removeAll(except: model) }
         }
     }
     var playSounds: Bool {
@@ -140,12 +164,13 @@ final class AppState {
     }
 
     private let apple = AppleSpeechEngine()
-    private let parakeet = ParakeetEngine()
+    private var parakeet: ParakeetEngine
     private var appleReady = false
     private var appleError: String?
     private var applePreparation: Task<Void, Never>?
     private var parakeetPreparation: Task<Void, Never>?
     private var download: Task<Void, Never>?
+    private var switchTask: Task<Void, Never>?
     let updater = AppUpdater()
     private let recorder = Recorder()
     private let hotKey = HotKey()
@@ -169,6 +194,14 @@ final class AppState {
         shortcut = defaults.data(forKey: "shortcut").flatMap { try? JSONDecoder().decode(Shortcut.self, from: $0) } ?? .default
         mode = Mode(rawValue: defaults.string(forKey: "mode") ?? "") ?? .hold
         engineChoice = EngineChoice(rawValue: defaults.string(forKey: "engine") ?? "") ?? .parakeet
+        let model = SpeechModel.with(id: defaults.string(forKey: "model") ?? "") ?? .primeline
+        self.model = model
+        parakeet = ParakeetEngine(model: model)
+        // Also clears what an interrupted switch left behind.
+        let keepModels = defaults.bool(forKey: "keepModels")
+        self.keepModels = keepModels
+        if !keepModels { ModelStore.removeAll(except: model) }
+        modelState = model.isInstalled ? .installed : .missing
         playSounds = defaults.object(forKey: "playSounds") as? Bool ?? true
         voiceCommands = defaults.object(forKey: "voiceCommands") as? Bool ?? true
         sharpS = defaults.object(forKey: "sharpS") as? Bool ?? !["CH", "LI"].contains(Locale.current.region?.identifier)
@@ -200,12 +233,12 @@ final class AppState {
             download?.cancel()
             parakeet.unload()
             if download == nil, parakeetPreparation == nil {
-                modelState = ParakeetModel.isInstalled ? .installed : .missing
+                modelState = model.isInstalled ? .installed : .missing
             }
             prepareApple()
         } else if parakeet.isLoaded {
             modelState = .ready
-        } else if ParakeetModel.isInstalled {
+        } else if model.isInstalled {
             loadParakeet()
         } else if download == nil {
             showSetup()
@@ -232,23 +265,29 @@ final class AppState {
 
     private func loadParakeet() {
         guard engineChoice == .parakeet, parakeetPreparation == nil, !parakeet.isLoaded else { return }
+        let engine = parakeet
         modelState = .loading
         updateStatus()
         parakeetPreparation = Task {
-            defer { parakeetPreparation = nil }
-            do {
-                let started = Date()
-                try await parakeet.prepare()
-                if engineChoice == .parakeet {
-                    modelState = .ready
-                    log.notice("parakeet loaded in \(Date().timeIntervalSince(started), format: .fixed(precision: 1))s")
-                } else {
-                    parakeet.unload()
-                    modelState = .installed
-                }
-            } catch {
-                log.error("parakeet load failed: \(error.localizedDescription)")
-                modelState = .failed(error.localizedDescription)
+            let started = Date()
+            var failure: Error?
+            do { try await engine.prepare() } catch { failure = error }
+            parakeetPreparation = nil
+            // A model switch replaced the engine meanwhile: start over with the new one.
+            guard engine === parakeet else {
+                engine.unload()
+                configureEngine()
+                return
+            }
+            if let failure {
+                log.error("parakeet load failed: \(failure.localizedDescription)")
+                modelState = .failed(failure.localizedDescription)
+            } else if engineChoice == .parakeet {
+                modelState = .ready
+                log.notice("parakeet loaded in \(Date().timeIntervalSince(started), format: .fixed(precision: 1))s")
+            } else {
+                parakeet.unload()
+                modelState = .installed
             }
             updateStatus()
         }
@@ -261,7 +300,7 @@ final class AppState {
         download = Task {
             defer { download = nil }
             do {
-                try await ParakeetModel.install { fraction in
+                try await model.install { fraction in
                     guard self.download != nil else { return }
                     if case .downloading = self.modelState { self.modelState = .downloading(fraction) }
                 }
@@ -269,11 +308,11 @@ final class AppState {
                 modelState = .installed
                 loadParakeet()
             } catch is CancellationError {
-                modelState = ParakeetModel.isInstalled ? .installed : .missing
+                modelState = model.isInstalled ? .installed : .missing
             } catch {
                 log.error("model download failed: \(error.localizedDescription)")
                 modelState = Task.isCancelled
-                    ? (ParakeetModel.isInstalled ? .installed : .missing) : .failed(error.localizedDescription)
+                    ? (model.isInstalled ? .installed : .missing) : .failed(error.localizedDescription)
             }
             updateStatus()
         }
@@ -281,6 +320,113 @@ final class AppState {
 
     func cancelDownload() {
         download?.cancel()
+    }
+
+    // MARK: - Switching models
+
+    /// The model the settings show as chosen, including one still on its way.
+    var selectedModel: SpeechModel { modelSwitch?.model ?? model }
+
+    func selectModel(_ new: SpeechModel) {
+        if new == model {
+            cancelModelSwitch()
+            return
+        }
+        if modelSwitch?.model == new, switchTask != nil { return }
+        cancelModelSwitch()
+        if parakeet.isLoaded || model.isInstalled {
+            startModelSwitch(to: new)
+        } else {
+            replaceModel(with: new)
+        }
+    }
+
+    /// Other models kept on disk next to the active one.
+    var otherInstalledModels: [SpeechModel] {
+        SpeechModel.catalogue.filter { $0 != model && $0.isInstalled }
+    }
+
+    func retryModelSwitch() {
+        guard let pending = modelSwitch, switchTask == nil else { return }
+        startModelSwitch(to: pending.model)
+    }
+
+    /// Stops the switch and removes what it downloaded; the current model stays.
+    func cancelModelSwitch() {
+        guard let pending = modelSwitch else { return }
+        let task = switchTask
+        task?.cancel()
+        switchTask = nil
+        modelSwitch = nil
+        Task {
+            await task?.value
+            if !keepModels, pending.model != model, modelSwitch?.model != pending.model { pending.model.delete() }
+        }
+    }
+
+    /// Downloads and loads the new model next to the current one, which keeps
+    /// dictating. Only when the new one works is the old one deleted, so a
+    /// failed or cancelled switch changes nothing.
+    private func startModelSwitch(to new: SpeechModel) {
+        modelSwitch = ModelSwitch(model: new, phase: .downloading(0))
+        switchTask = Task {
+            do {
+                try await new.install { fraction in
+                    guard self.modelSwitch?.model == new, case .downloading = self.modelSwitch?.phase else { return }
+                    self.modelSwitch?.phase = .downloading(fraction)
+                }
+                try Task.checkCancellation()
+                var engine: ParakeetEngine?
+                if engineChoice == .parakeet {
+                    modelSwitch?.phase = .loading
+                    let loading = ParakeetEngine(model: new)
+                    try await loading.prepare()
+                    try Task.checkCancellation()
+                    engine = loading
+                }
+                commitModel(new, engine: engine)
+            } catch {
+                // A cancelled switch was already cleared by cancelModelSwitch.
+                guard !Task.isCancelled, !(error is CancellationError) else { return }
+                log.error("model switch failed: \(error.localizedDescription)")
+                switchTask = nil
+                modelSwitch?.phase = .failed(error.localizedDescription)
+            }
+        }
+    }
+
+    private func commitModel(_ new: SpeechModel, engine: ParakeetEngine?) {
+        // An active take keeps its own recognizer until it finishes.
+        parakeet.unload()
+        parakeet = engine ?? ParakeetEngine(model: new)
+        model = new
+        UserDefaults.standard.set(new.id, forKey: "model")
+        switchTask = nil
+        modelSwitch = nil
+        if !keepModels { ModelStore.removeAll(except: new) }
+        log.notice("switched model")
+        modelState = parakeet.isLoaded ? .ready : .installed
+        // A load still running for the old engine restarts with the new one.
+        if parakeetPreparation == nil { configureEngine() }
+        updateStatus()
+    }
+
+    /// Nothing usable to keep (first download not finished): swap right away.
+    private func replaceModel(with new: SpeechModel) {
+        let old = model
+        let previous = download
+        previous?.cancel()
+        parakeet = ParakeetEngine(model: new)
+        model = new
+        UserDefaults.standard.set(new.id, forKey: "model")
+        modelState = new.isInstalled ? .installed : .missing
+        Task {
+            await previous?.value
+            if !keepModels, model != old { old.delete() }
+            modelState = model.isInstalled ? .installed : .missing
+            // Straight on with the download, without reopening the setup window.
+            if engineChoice == .parakeet, !model.isInstalled { startDownload() } else { configureEngine() }
+        }
     }
 
     /// Ready whenever some engine can take a dictation; only the menu shows

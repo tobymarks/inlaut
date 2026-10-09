@@ -127,10 +127,25 @@ struct ModelStatusView: View {
     let state: AppState
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            current
+            ForEach(state.otherInstalledModels) { model in
+                Text("Auch gespeichert: \(model.name), \(Self.size(of: model))")
+                    .font(.callout).foregroundStyle(.secondary)
+            }
+            if let pending = state.modelSwitch {
+                ModelSwitchView(state: state, pending: pending)
+            }
+        }
+    }
+
+    @ViewBuilder private var current: some View {
+        let name = state.model.name
+        let size = Self.size(of: state.model)
         switch state.modelState {
         case .missing:
             HStack {
-                Text("Parakeet Deutsch, \(Self.size) einmalig").font(.callout).foregroundStyle(.secondary)
+                Text("\(name), \(size) einmalig").font(.callout).foregroundStyle(.secondary)
                 Button("Laden") { state.startDownload() }
             }
         case .downloading(let fraction):
@@ -138,7 +153,7 @@ struct ModelStatusView: View {
                 ProgressView(value: fraction).frame(maxWidth: 240)
                     .accessibilityLabel("Sprachmodell herunterladen")
                 HStack(spacing: 12) {
-                    Text("\(Int(fraction * 100)) % von \(Self.size)").font(.callout).monospacedDigit()
+                    Text("\(Int(fraction * 100)) % von \(size)").font(.callout).monospacedDigit()
                         .foregroundStyle(.secondary)
                     Button("Abbrechen") { state.cancelDownload() }.controlSize(.small)
                 }
@@ -146,17 +161,17 @@ struct ModelStatusView: View {
         case .loading:
             HStack(spacing: 6) {
                 ProgressView().controlSize(.small)
-                Text("Wird geladen …").font(.callout).foregroundStyle(.secondary)
+                Text("\(name) wird geladen …").font(.callout).foregroundStyle(.secondary)
             }
         case .installed:
             HStack {
-                Text("Auf diesem Mac gespeichert.").font(.callout).foregroundStyle(.secondary)
+                Text("\(name), \(size) auf diesem Mac.").font(.callout).foregroundStyle(.secondary)
                 if state.engineChoice == .parakeet {
                     Button("Aktivieren") { state.startDownload() }
                 }
             }
         case .ready:
-            Text("Parakeet Deutsch ist bereit.").font(.callout).foregroundStyle(.secondary)
+            Text("\(name) ist bereit, \(size) auf diesem Mac.").font(.callout).foregroundStyle(.secondary)
         case .failed(let message):
             VStack(alignment: .leading, spacing: 4) {
                 Text(message).font(.callout).foregroundStyle(.red)
@@ -165,5 +180,45 @@ struct ModelStatusView: View {
         }
     }
 
-    static let size = ByteCountFormatter.string(fromByteCount: ParakeetModel.totalBytes, countStyle: .file)
+    static func size(of model: SpeechModel) -> String {
+        ByteCountFormatter.string(fromByteCount: model.totalBytes, countStyle: .file)
+    }
+}
+
+/// The model on its way in; the current one keeps working meanwhile.
+private struct ModelSwitchView: View {
+    let state: AppState
+    let pending: ModelSwitch
+
+    var body: some View {
+        let name = pending.model.name
+        let size = ModelStatusView.size(of: pending.model)
+        switch pending.phase {
+        case .downloading(let fraction):
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Wechsel zu \(name). Bis dahin diktierst du weiter mit \(state.model.name).")
+                    .font(.callout).foregroundStyle(.secondary)
+                ProgressView(value: fraction).frame(maxWidth: 240)
+                    .accessibilityLabel("\(name) herunterladen")
+                HStack(spacing: 12) {
+                    Text("\(Int(fraction * 100)) % von \(size)").font(.callout).monospacedDigit()
+                        .foregroundStyle(.secondary)
+                    Button("Abbrechen") { state.cancelModelSwitch() }.controlSize(.small)
+                }
+            }
+        case .loading:
+            HStack(spacing: 6) {
+                ProgressView().controlSize(.small)
+                Text("\(name) wird geladen …").font(.callout).foregroundStyle(.secondary)
+            }
+        case .failed(let message):
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Wechsel zu \(name) fehlgeschlagen: \(message)").font(.callout).foregroundStyle(.red)
+                HStack {
+                    Button("Erneut versuchen") { state.retryModelSwitch() }
+                    Button("Abbrechen") { state.cancelModelSwitch() }
+                }
+            }
+        }
+    }
 }

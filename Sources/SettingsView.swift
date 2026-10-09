@@ -17,7 +17,15 @@ struct SettingsView: View {
                         ForEach(EngineChoice.allCases) { Text($0.label).tag($0) }
                     }
                     if state.engineChoice == .parakeet {
-                        LabeledContent("Modell") { ModelStatusView(state: state) }
+                        Picker("Modell", selection: Binding(get: { state.selectedModel },
+                                                            set: { state.selectModel($0) })) {
+                            ForEach(SpeechModel.catalogue) { Text($0.name).tag($0) }
+                        }
+                        LabeledContent("Status") { ModelStatusView(state: state) }
+                        Toggle(isOn: $state.keepModels) {
+                            Text("Beide Modelle behalten")
+                            Text("Für alle, die oft wechseln: Umschalten im Menü dauert dann nur ein paar Sekunden statt eines neuen Downloads. Braucht zusammen bis zu \(ByteCountFormatter.string(fromByteCount: SpeechModel.catalogue.reduce(0) { $0 + $1.totalBytes }, countStyle: .file)) auf diesem Mac.")
+                        }
                     }
                 }
 
@@ -84,7 +92,7 @@ struct SettingsView: View {
                 } footer: {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Alles wird auf diesem Mac erkannt. Es werden keine Aufnahmen oder Texte gespeichert oder übertragen.")
-                        Text("Spracherkennung: [parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (primeline) auf Basis von [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), beide CC BY 4.0 · [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache 2.0) · ONNX Runtime (MIT)")
+                        Text(LocalizedStringKey("Spracherkennung: \(state.model.credit) · [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache 2.0) · ONNX Runtime (MIT)"))
                             .font(.caption)
                     }
                     .foregroundStyle(.secondary)
