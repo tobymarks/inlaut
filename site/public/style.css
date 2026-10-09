@@ -58,6 +58,7 @@ h1 span { color: var(--accent); }
 .lead { font-size: 18px; line-height: 1.65; color: var(--muted); max-width: 29em; margin: 0 0 30px; }
 .actions { display: flex; flex-wrap: wrap; gap: 22px; align-items: center; }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 22px; border-radius: 10px; padding: 13px 19px; font-size: 14px; font-weight: 600; color: var(--on-accent); background: var(--accent); text-decoration: none; transition: transform 180ms, box-shadow 180ms; }
+.button .apple-logo { flex-shrink: 0; width: 16px; height: 16px; fill: currentColor; margin: -3px -13px 0 0; }
 .button:hover { transform: translateY(-2px); box-shadow: 0 5px 16px #103d3b24; }
 .button:active { transform: translateY(1px); }
 .text-link { display: inline-flex; gap: 12px; align-items: center; min-height: 28px; font-size: 14px; font-weight: 600; color: var(--brand); text-decoration: none; }
