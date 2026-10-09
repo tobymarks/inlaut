@@ -15,6 +15,14 @@ final class Recorder {
     struct Take { let seconds: TimeInterval; let peak: Float }
 
     func start(into session: TranscriptionSession) throws {
+        #if DEBUG
+        // End-to-end tests: `-testAudioFile /path.wav` replaces the microphone,
+        // so a synthetic key press dictates a known recording.
+        if let path = UserDefaults.standard.string(forKey: "testAudioFile") {
+            try feed(path, into: session)
+            return
+        }
+        #endif
         let engine = AVAudioEngine()
         let input = engine.inputNode
         let inFormat = input.outputFormat(forBus: 0)
@@ -39,6 +47,22 @@ final class Recorder {
         self.meter = meter
         startedAt = Date()
     }
+
+    #if DEBUG
+    private func feed(_ path: String, into session: TranscriptionSession) throws {
+        let file = try AVAudioFile(forReading: URL(fileURLWithPath: path))
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: AVAudioFrameCount(file.length)),
+              let converter = AVAudioConverter(from: file.processingFormat, to: session.audioFormat) else {
+            throw EngineError("The microphone's audio format is not supported.")
+        }
+        try file.read(into: buffer)
+        let meter = Meter()
+        meter.update(buffer)
+        if let converted = Self.convert(buffer, with: converter, to: session.audioFormat) { session.append(converted) }
+        self.meter = meter
+        startedAt = Date()
+    }
+    #endif
 
     /// Loudest sample of the latest buffer (0…1), for the level display.
     var level: Float { meter?.current ?? 0 }
