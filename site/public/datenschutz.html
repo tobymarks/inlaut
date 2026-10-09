@@ -5,19 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Datenschutz – inlaut</title>
   <meta name="robots" content="noindex">
+  <link rel="alternate" hreflang="de" href="https://inlaut.de/datenschutz">
+  <link rel="alternate" hreflang="en" href="https://inlaut.de/en/privacy">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="/icon-180.png">
   <meta name="theme-color" content="#F6F7F4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0C201F" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/style.css?v=ux1">
+  <link rel="stylesheet" href="/style.css?v=lang1">
+  <script src="/lang-switch.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt">Zum Inhalt</a>
   <header class="wrap top">
     <a class="wordmark" href="/" aria-label="inlaut – Startseite"><picture><source srcset="/brand/inlaut-logo-mint.svg" media="(prefers-color-scheme: dark)"><img src="/brand/inlaut-logo-petrol.svg" width="168" height="40" alt="inlaut"></picture></a>
-    <nav aria-label="Hauptnavigation"><a href="/">Zur Startseite</a></nav>
+    <nav aria-label="Hauptnavigation"><a href="/">Zur Startseite</a><a class="lang-switch" data-current="de" href="/en/privacy" hreflang="en" lang="en" aria-label="Switch to English" title="Switch to English"><span class="lang-code lang-now" aria-hidden="true">DE</span><span class="lang-code lang-next" aria-hidden="true">EN</span><span class="lang-knob" aria-hidden="true"><span class="lang-now"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" focusable="false"><g transform="translate(3 10.6)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(7 10.6)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(9.4 5.4) rotate(180)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(13.4 5.4) rotate(180)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g></svg></span><span class="lang-next"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" focusable="false"><g transform="translate(2.4 9.4) rotate(180) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(5.6 9.4) rotate(180) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(10.6 6) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(13.8 6) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g></svg></span></span></a></nav>
   </header>
 
   <main class="wrap prose" id="inhalt">
@@ -39,7 +42,7 @@
     <p>Links zu GitHub führen auf eine Website der GitHub, Inc. Dort gelten deren Datenschutzbestimmungen. Beim bloßen Besuch dieser Seite werden keine Daten an GitHub übertragen.</p>
 
     <h2>Die App inlaut</h2>
-    <p>inlaut wandelt Sprache auf deinem Mac in Text um. Aufnahmen und erkannter Text werden nicht gespeichert und nicht übertragen. Beim ersten Start lädt die App das Sprachmodell einmalig von Hugging Face (Hugging Face, Inc., USA) herunter. Dabei sieht Hugging Face wie jeder Webserver deine IP-Adresse. Die Apple-Spracherkennung kann bei Bedarf Sprachdateien von Apple laden. Wenn die automatische Update-Prüfung eingeschaltet ist, fragt inlaut täglich den Versionsfeed auf inlaut.de ab. Dabei erhält Cloudflare technisch notwendige Verbindungsdaten wie IP-Adresse und die App-Version in der Programmkennung. Update-Pakete werden erst auf deine Anforderung von GitHub heruntergeladen; dabei erhält auch GitHub die für den Download notwendigen Verbindungsdaten. Die automatische Prüfung lässt sich in den Einstellungen abschalten. Diktate werden bei diesen Anfragen nicht übertragen; ein zusätzliches Systemprofil wird nicht gesendet.</p>
+    <p>inlaut wandelt Sprache auf deinem Mac in Text um. Aufnahmen und erkannter Text werden nicht gespeichert und nicht übertragen. Beim ersten Start und beim Wechsel der Sprache lädt die App das Sprachmodell von Hugging Face (Hugging Face, Inc., USA) herunter. Dabei sieht Hugging Face wie jeder Webserver deine IP-Adresse. Die Apple-Spracherkennung kann bei Bedarf Sprachdateien von Apple laden. Wenn die automatische Update-Prüfung eingeschaltet ist, fragt inlaut täglich den Versionsfeed auf inlaut.de ab. Dabei erhält Cloudflare technisch notwendige Verbindungsdaten wie IP-Adresse und die App-Version in der Programmkennung. Update-Pakete werden erst auf deine Anforderung von GitHub heruntergeladen; dabei erhält auch GitHub die für den Download notwendigen Verbindungsdaten. Die automatische Prüfung lässt sich in den Einstellungen abschalten. Diktate werden bei diesen Anfragen nicht übertragen; ein zusätzliches Systemprofil wird nicht gesendet.</p>
 
     <h2>Deine Rechte</h2>
     <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO). Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren, zum Beispiel bei der für deinen Wohnort zuständigen.</p>

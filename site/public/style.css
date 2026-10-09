@@ -50,6 +50,25 @@ h1, h2, h3 { text-wrap: balance; }
 nav { display: flex; gap: 28px; align-items: center; }
 nav a { display: inline-flex; align-items: center; min-height: 32px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--muted); transition: color 180ms; }
 nav a:hover, nav a[aria-current="page"] { color: var(--brand); text-decoration: underline; }
+/* Language switch: a pill whose knob shows the current language's quotation marks („…“ or “…”) and springs to the other side before the link is followed. */
+nav a.lang-switch { --knob: var(--surface); position: relative; flex-shrink: 0; width: 64px; min-height: 32px; height: 32px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 9%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 6%, transparent); color: var(--muted); text-decoration: none; transition: background 180ms; }
+nav a.lang-switch:hover { background: color-mix(in srgb, var(--ink) 14%, transparent); color: var(--brand); text-decoration: none; }
+.lang-code { position: absolute; top: 0; bottom: 0; width: 32px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; letter-spacing: .05em; transition: opacity 220ms; }
+.lang-switch[data-current="de"] .lang-code.lang-now, .lang-switch[data-current="en"] .lang-code.lang-next { right: 1px; }
+.lang-switch[data-current="en"] .lang-code.lang-now, .lang-switch[data-current="de"] .lang-code.lang-next { left: 1px; }
+.lang-code.lang-next { opacity: 0; }
+.lang-knob { position: absolute; top: 3px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: var(--knob); color: var(--petrol); box-shadow: 0 1px 2px rgb(0 0 0 / .16), 0 2px 6px rgb(0 0 0 / .1); transition: transform 520ms cubic-bezier(.34, 1.45, .5, 1); }
+.lang-switch[data-current="de"] .lang-knob { left: 3px; }
+.lang-switch[data-current="en"] .lang-knob { right: 3px; }
+.lang-knob > span { grid-area: 1 / 1; display: grid; transition: opacity 260ms, transform 320ms ease-out; }
+.lang-knob .lang-next { opacity: 0; transform: rotate(60deg); }
+.lang-switch.is-switching[data-current="de"] .lang-knob { transform: translateX(32px); }
+.lang-switch.is-switching[data-current="en"] .lang-knob { transform: translateX(-32px); }
+.lang-switch.is-switching .lang-code.lang-now { opacity: 0; }
+.lang-switch.is-switching .lang-code.lang-next { opacity: 1; }
+.lang-switch.is-switching .lang-knob .lang-now { opacity: 0; transform: rotate(-60deg); }
+.lang-switch.is-switching .lang-knob .lang-next { opacity: 1; transform: rotate(0); }
+@media (prefers-color-scheme: dark) { nav a.lang-switch { --knob: var(--mint); } }
 .hero { display: grid; grid-template-columns: 1.12fr 1fr; gap: 64px; align-items: center; padding-block: 86px 80px; }
 .eyebrow { margin: 0 0 22px; color: var(--accent); font-size: 13px; font-weight: 600; letter-spacing: .025em; }
 h1 { font-size: clamp(44px, 4.8vw, 66px); letter-spacing: -.055em; font-weight: 600; line-height: 1.08; margin: 0 0 26px; }
@@ -189,8 +208,8 @@ footer nav a { font-size: 12px; }
   .top { padding-block: 18px; gap: 12px; }
   .wordmark img { width: 140px; }
   .top nav { gap: 14px; }
-  .top nav a { font-size: 12px; }
-  .top nav a[href="#so-gehts"], .top nav a[href="#fragen"] { display: none; }
+  .top nav a { font-size: 12px; white-space: nowrap; }
+  .top nav a[href="#so-gehts"], .top nav a[href="#fragen"], .top nav a[href="#how-it-works"], .top nav a[href="#faq"] { display: none; }
   .hero { padding-top: 44px; gap: 36px; }
   .eyebrow { font-size: 12px; margin-bottom: 18px; }
   h1 { font-size: clamp(36px, 10.5vw, 54px); }
@@ -222,6 +241,9 @@ footer nav a { font-size: 12px; }
   footer .wrap { align-items: flex-start; flex-direction: column; gap: 12px; }
   footer nav { gap: 24px; }
   .prose { padding-block: 44px 64px; }
+}
+@media (max-width: 400px) {
+  .top nav a[href="https://github.com/tobymarks/inlaut"] { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
