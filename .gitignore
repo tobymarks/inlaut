@@ -1,6 +1,7 @@
 .venv/
 spike/takes/
 spike/try_apple
+spike/eval_apple
 spike/__pycache__/
 scripts/__pycache__/
 *.wav
