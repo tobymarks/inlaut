@@ -1,17 +1,22 @@
-"""Finder layout for the German drag-to-install disk image (dmgbuild settings)."""
+"""Finder layout for the drag-to-install disk image (dmgbuild settings).
+
+-D folder=Programme (German, default) or -D folder=Applications (English)
+names the link to /Applications so it matches the artwork's text.
+"""
 from pathlib import Path
 
 application = Path(defines["app"]).resolve()
 format = "UDZO"
 filesystem = "HFS+"
+folder = defines.get("folder", "Programme")
 files = [str(application)]
-symlinks = {"Programme": "/Applications"}
+symlinks = {folder: "/Applications"}
 icon = str(application / "Contents/Resources/Inlaut.icns")
 background = defines["background"]  # dmgbuild also picks up the @2x PNG.
 # Do not set FinderInfo on the signed app, even to hide its extension: codesign
 # rejects that extra metadata. Finder normally hides application extensions.
 hide_extensions = []
-icon_locations = {application.name: (176, 252), "Programme": (484, 252)}
+icon_locations = {application.name: (176, 252), folder: (484, 252)}
 window_rect = ((200, 180), (660, 462))  # 430 pt artwork + Finder's title bar.
 default_view = "icon-view"
 show_status_bar = False

@@ -28,7 +28,7 @@ def manifest(root):
     return result
 
 
-def validate(image, source_app):
+def validate(image, source_app, folder="Programme"):
     run("hdiutil", "verify", str(image))
     attached = plistlib.loads(run("hdiutil", "attach", "-readonly", "-nobrowse",
                                  "-noautoopen", "-plist", str(image)))
@@ -39,10 +39,10 @@ def validate(image, source_app):
         assert len(mounts) == 1, "Expected one mounted volume"
         volume = mounts[0]
         assert {p.name for p in volume.iterdir() if not p.name.startswith(".")} == {
-            "Inlaut.app", "Programme"
+            "Inlaut.app", folder
         }, "Unexpected visible disk image contents"
-        assert (volume / "Programme").is_symlink(), "Installation target is not a link"
-        assert os.readlink(volume / "Programme") == "/Applications", "Wrong installation target"
+        assert (volume / folder).is_symlink(), "Installation target is not a link"
+        assert os.readlink(volume / folder) == "/Applications", "Wrong installation target"
         app = volume / "Inlaut.app"
         assert manifest(app) == manifest(source_app), "DMG payload differs from the exported app"
         run("codesign", "--verify", "--deep", "--strict", str(app))
@@ -54,7 +54,7 @@ def validate(image, source_app):
             assert view["backgroundType"] == 2 and view["backgroundImageAlias"], "Missing background"
             assert view["arrangeBy"] == "none" and view["gridSpacing"] < 100, "Invalid icon arrangement"
             assert store["Inlaut.app"]["Iloc"] == (176, 252), "Wrong app position"
-            assert store["Programme"]["Iloc"] == (484, 252), "Wrong folder position"
+            assert store[folder]["Iloc"] == (484, 252), "Wrong folder position"
             window = store["."]["bwsp"]
             assert window["WindowBounds"] == "{{200, 180}, {660, 462}}", "Wrong window bounds"
             assert not window["ShowToolbar"] and not window["ShowSidebar"], "Unexpected Finder chrome"
@@ -65,6 +65,6 @@ def validate(image, source_app):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        sys.exit("Usage: validate-dmg.py IMAGE.dmg SOURCE.app")
-    validate(Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve())
+    if len(sys.argv) not in (3, 4):
+        sys.exit("Usage: validate-dmg.py IMAGE.dmg SOURCE.app [FOLDER]")
+    validate(Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve(), *sys.argv[3:])

@@ -25,4 +25,15 @@ if len(base64.b64decode(signature, validate=True)) != 64:
     sys.exit('Missing or invalid Ed25519 archive signature.')
 if item.findtext('s:minimumSystemVersion', namespaces=ns) != info['LSMinimumSystemVersion']:
     sys.exit('Minimum macOS version differs from the app.')
+# Per-language release notes are links; Sparkle verifies them against the
+# signature, so every staged notes file needs a signed link in the feed.
+links = {link.get('{http://www.w3.org/XML/1998/namespace}lang'): link
+         for link in item.findall('s:releaseNotesLink', namespaces=ns)}
+for notes in sorted(archive.parent.glob(f"{archive.stem}.??.html")):
+    language = notes.stem.rsplit('.', 1)[1]
+    link = links.get(language)
+    if link is None or link.text.strip() != f"https://inlaut.de/updates/notes/{notes.name}":
+        sys.exit(f'Missing or wrong release notes link for {language}.')
+    if int(link.get(f"{{{ns['s']}}}length", '0')) != notes.stat().st_size or not link.get(f"{{{ns['s']}}}edSignature"):
+        sys.exit(f'Release notes for {language} are not signed.')
 print(f"Appcast metadata valid for {archive.name} (build {info['CFBundleVersion']}).")
