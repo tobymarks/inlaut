@@ -190,7 +190,7 @@ footer nav a { font-size: 12px; }
   .wordmark img { width: 140px; }
   .top nav { gap: 14px; }
   .top nav a { font-size: 12px; }
-  .top nav a[href="#so-gehts"], .top nav a[href="#fragen"] { display: none; }
+  .top nav a[href="#so-gehts"], .top nav a[href="#fragen"], .top nav a[href="#how-it-works"], .top nav a[href="#faq"] { display: none; }
   .hero { padding-top: 44px; gap: 36px; }
   .eyebrow { font-size: 12px; margin-bottom: 18px; }
   h1 { font-size: clamp(36px, 10.5vw, 54px); }
