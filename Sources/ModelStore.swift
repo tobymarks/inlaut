@@ -7,9 +7,10 @@ struct ModelFile: Hashable, Sendable {
     let sha256: String
 }
 
-/// One Parakeet model (int8 ONNX for sherpa-onnx). Each is pinned to one
-/// revision with known checksums, so every install runs exactly the bits
-/// that were tested. Only one of them is kept on disk at a time.
+/// One Parakeet model as compiled Core ML components (Preprocessor, Encoder,
+/// Decoder, JointDecisionv3) for FluidAudio, run on the Neural Engine. Each
+/// is pinned to one revision with known checksums, so every install runs
+/// exactly the bits that were tested.
 struct SpeechModel: Identifiable, Hashable, Sendable {
     /// Also the directory name under Models/.
     let id: String
@@ -22,49 +23,58 @@ struct SpeechModel: Identifiable, Hashable, Sendable {
     /// Markdown credit line for Settings.
     let credit: String
 
-    /// German Parakeet (primeline fine-tune of nvidia/parakeet-tdt-0.6b-v3),
-    /// CC-BY-4.0. Also nearly as good as v2 on English and best on mixed
-    /// German/English sentences.
-    static let primeline = SpeechModel(
-        id: "parakeet-primeline-int8",
-        name: String(localized: "Parakeet German"),
+    /// moondream's post-training of NVIDIA Parakeet TDT 0.6B v3 (CC BY 4.0),
+    /// Core ML export by FluidInference. On the maintainer's own German,
+    /// English and mixed takes and on FLEURS it beat primeline (German) and
+    /// v2 (English), writes ß and full stops, and runs on the Neural Engine
+    /// with ~20× less CPU and ~550 MB less memory than the ONNX models.
+    static let ultra = SpeechModel(
+        id: "parakeet-ultra-coreml",
+        name: String(localized: "Parakeet Ultra"),
         languages: ["de", "en"],
-        repo: "flozen1981/parakeet-primeline-onnx",
-        revision: "d548e25b9bfe559aa274f361892dc4ed5d64743a",
+        repo: "FluidInference/parakeet-ultra-coreml",
+        revision: "95eaa59a39d4394f047a4dc5cce480388a60d1b6",
         files: [
-            ModelFile(name: "encoder.int8.onnx", size: 1_548_009,
-                      sha256: "d4232f86718da0330167fb10789d1a35cffe6a60cd58239957943a8d9bc24c63"),
-            ModelFile(name: "encoder.int8.onnx.data", size: 650_776_320,
-                      sha256: "d3b0d27912043d38a3c2ce4f2c03124be30bc1ff57d976302908954b2e8fe7bb"),
-            ModelFile(name: "decoder.int8.onnx", size: 11_845_275,
-                      sha256: "fb4ddefe200706cabb27ee3fc1c81efa50555a4c8a8e00b663cc795216fb9369"),
-            ModelFile(name: "joiner.int8.onnx", size: 6_355_277,
-                      sha256: "8220c0d117d81bdd0d8c770881932ac340f1ce4b36932941d561d11ad1aaffce"),
-            ModelFile(name: "tokens.txt", size: 102_132,
-                      sha256: "ba8e4007c65f4bb4358ffe2ecc13d9ccc7a10351151065242b5c3a943e685742"),
+            ModelFile(name: "Decoder.mlmodelc/analytics/coremldata.bin", size: 243,
+                      sha256: "fe92b6cfaa012abd5248c0bc877832f19807015abffc60d87b8ccc8ccb48b3b5"),
+            ModelFile(name: "Decoder.mlmodelc/weights/weight.bin", size: 23_604_992,
+                      sha256: "02a0d219f281b9665bc10c8768649403b2eebbbf4b44c627041d948e0de11bb4"),
+            ModelFile(name: "Decoder.mlmodelc/coremldata.bin", size: 560,
+                      sha256: "3b06e66768f0df7e21795f50e2b29300e33eeb1a2579dc42c695279c2d308497"),
+            ModelFile(name: "Decoder.mlmodelc/model.mil", size: 13_110,
+                      sha256: "956f600207f88396017ca5c96cfa3acd5bfee60835a5b44b762e033a8fb28955"),
+            ModelFile(name: "Encoder.mlmodelc/analytics/coremldata.bin", size: 243,
+                      sha256: "d87101d824d6723cf95304da33755c3c60e762663b9ef2b0c4bd0aa166a09a0d"),
+            ModelFile(name: "Encoder.mlmodelc/weights/weight.bin", size: 594_211_328,
+                      sha256: "315ba01f33cadbf601d43ac7f5c86208b7aa75fdaa34705c9869d5abe3521c9b"),
+            ModelFile(name: "Encoder.mlmodelc/coremldata.bin", size: 514,
+                      sha256: "397a84a4062f563cbc5f56077c674f09a61d85be5090f61d2f1932afb92ac0fe"),
+            ModelFile(name: "Encoder.mlmodelc/model.mil", size: 1_002_653,
+                      sha256: "f5d601568a4171d99a314c0fe3f6bc67715da2623732a3fb566e050ea83e5848"),
+            ModelFile(name: "JointDecisionv3.mlmodelc/analytics/coremldata.bin", size: 243,
+                      sha256: "68d38ca646aebafa7a9329e2efda50f5767c49e89fdb5f77f212072bb66f97c4"),
+            ModelFile(name: "JointDecisionv3.mlmodelc/weights/weight.bin", size: 12_642_764,
+                      sha256: "3f310b85b82341c53ec383025ab094a4e462ee1c592e1ad7c6bfe39cff66ca25"),
+            ModelFile(name: "JointDecisionv3.mlmodelc/coremldata.bin", size: 592,
+                      sha256: "5e3af5a4ce686f6c237cadbd9284e10d333bc0e1546633cd0e430e6194044bc4"),
+            ModelFile(name: "JointDecisionv3.mlmodelc/model.mil", size: 11_777,
+                      sha256: "791b3c3cf3eb2079c84623fc880f6bba008d1366e5f8b03e9a8ed8bd4d7194a0"),
+            ModelFile(name: "Preprocessor.mlmodelc/analytics/coremldata.bin", size: 243,
+                      sha256: "c9beeb989c8d66f8be11df59bc6df277ec76cee404f6865b46243835ef562f6d"),
+            ModelFile(name: "Preprocessor.mlmodelc/weights/weight.bin", size: 491_072,
+                      sha256: "129b76e3aeafa8afa3ea76d995b964b145fe83700d579f6ff42c4c38fa0968ea"),
+            ModelFile(name: "Preprocessor.mlmodelc/coremldata.bin", size: 486,
+                      sha256: "dbde3f2300842c1fd51ef3ff948a0bcffe65ffd2dca10707f2509f32c1d65b1d"),
+            ModelFile(name: "Preprocessor.mlmodelc/metadata.json", size: 2_841,
+                      sha256: "2a98699e22d279dd37fa1d238aeb1c6db1df0d6fad687775324157689d8f3acf"),
+            ModelFile(name: "Preprocessor.mlmodelc/model.mil", size: 28_181,
+                      sha256: "4b8518a956450fec57f06c2a21bdffc26973f7f1fa6842fb38fe917f896b6b93"),
+            ModelFile(name: "parakeet_vocab.json", size: 151_122,
+                      sha256: "7ec60e05f1b24480736ec0eed40900f4626bce1fa9a60fd700ec7e2a59198735"),
         ],
-        credit: String(localized: "[parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (primeline) based on [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), both CC BY 4.0"))
+        credit: String(localized: "[Parakeet Ultra](https://huggingface.co/moondream/parakeet-ultra) (moondream) based on [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), both CC BY 4.0, Core ML export by [FluidInference](https://huggingface.co/FluidInference/parakeet-ultra-coreml)"))
 
-    /// NVIDIA's English-only Parakeet, the lowest English error rate measured.
-    static let parakeetV2 = SpeechModel(
-        id: "parakeet-tdt-0.6b-v2-int8",
-        name: String(localized: "Parakeet English"),
-        languages: ["en"],
-        repo: "csukuangfj/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8",
-        revision: "1ab9323565ddb038682214b292f588070a538ce2",
-        files: [
-            ModelFile(name: "encoder.int8.onnx", size: 652_184_296,
-                      sha256: "a32b12d17bbbc309d0686fbbcc2987b5e9b8333a7da83fa6b089f0a2acd651ab"),
-            ModelFile(name: "decoder.int8.onnx", size: 7_257_753,
-                      sha256: "b6bb64963457237b900e496ee9994b59294526439fbcc1fecf705b31a15c6b4e"),
-            ModelFile(name: "joiner.int8.onnx", size: 1_739_080,
-                      sha256: "7946164367946e7f9f29a122407c3252b680dbae9a51343eb2488d057c3c43d2"),
-            ModelFile(name: "tokens.txt", size: 9_384,
-                      sha256: "ec182b70dd42113aff6c5372c75cac58c952443eb22322f57bbd7f53977d497d"),
-        ],
-        credit: "[NVIDIA Parakeet TDT 0.6B v2](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v2), CC BY 4.0")
-
-    static let catalogue = [primeline, parakeetV2]
+    static let catalogue = [ultra]
 
     static func with(id: String) -> SpeechModel? { catalogue.first { $0.id == id } }
 
@@ -112,6 +122,7 @@ struct SpeechModel: Identifiable, Hashable, Sendable {
                 throw EngineError("Checksum of \(file.name) does not match – the download is damaged.")
             }
             let target = url(file.name)
+            try FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
             try? FileManager.default.removeItem(at: target)
             try FileManager.default.moveItem(at: temp, to: target)
             done += file.size
@@ -136,6 +147,19 @@ enum ModelStore {
         for model in SpeechModel.catalogue where model != kept {
             try? FileManager.default.removeItem(at: model.directory(in: root))
         }
+        removeLegacy(in: root)
+    }
+
+    /// The sherpa-onnx models of 0.1–0.2 (primeline, v2). Nothing can run them
+    /// any more since the switch to Core ML.
+    static let legacyIDs = ["parakeet-primeline-int8", "parakeet-tdt-0.6b-v2-int8"]
+
+    static func hasLegacy(in root: URL = root) -> Bool {
+        legacyIDs.contains { FileManager.default.fileExists(atPath: root.appending(path: $0).path) }
+    }
+
+    static func removeLegacy(in root: URL = root) {
+        for id in legacyIDs { try? FileManager.default.removeItem(at: root.appending(path: id)) }
     }
 
     nonisolated static func sha256(of url: URL) throws -> String {

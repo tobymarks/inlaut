@@ -14,7 +14,6 @@ jobs:
       - name: Prepare dependencies
         run: |
           command -v xcodegen || brew install xcodegen
-          scripts/fetch-sherpa-onnx.sh
           xcodegen generate
       - name: Build and run isolated tests
         run: |

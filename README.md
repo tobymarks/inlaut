@@ -3,8 +3,8 @@
 A tiny macOS menu bar app for dictation that never leaves your Mac. Hold a key combination, speak, let go — the text appears in whatever text field has the cursor.
 
 - **Local only.** Speech is recognised on this Mac. No account, no cloud, nothing stored.
-- **German first.** Uses [parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline), a German fine-tune of NVIDIA Parakeet, which handles technical terms and anglicisms far better than the recogniser built into macOS. A 10-second dictation is text in about 0.3 s on an M3.
-- **Instant.** The model (≈ 670 MB, downloaded and checksum-verified once on first start) stays loaded, so dictation starts the moment you press the key. That costs about 900 MB of memory; speech recognition does no work while idle and the microphone is only open while you dictate.
+- **German and English, also mixed.** Uses [Parakeet Ultra](https://huggingface.co/moondream/parakeet-ultra), a post-training of NVIDIA Parakeet TDT 0.6B v3, as Core ML on the Neural Engine through [FluidAudio](https://github.com/FluidInference/FluidAudio). It handles technical terms and anglicisms far better than the recogniser built into macOS and writes ß. A 10-second dictation is text in well under 0.1 s on an M3; two minutes take about one second.
+- **Light.** The model (≈ 630 MB, downloaded and checksum-verified once on first start) stays loaded at about 50 MB of app memory and loads in 0.2 s, so dictation starts the moment you press the key. Speech recognition does no work while idle and the microphone is only open while you dictate.
 - **Replacements.** Fix what the recogniser keeps getting wrong ("Dum" → "DAM").
 - **Fallback.** Apple's on-device recogniser (`SpeechAnalyzer`) is prepared independently and used until Parakeet is ready. macOS may need to download its language assets. Selecting Apple releases the Parakeet model from memory once any current dictation finishes.
 - **Updates.** Sparkle checks daily for signed releases, with download and installation started by the user. Automatic checks can be disabled in Settings. No dictation data or system profile is sent.
@@ -24,7 +24,6 @@ Setup downloads the speech model (around 670 MB) and guides you through micropho
 Requires Xcode 26+ and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
-scripts/fetch-sherpa-onnx.sh   # pinned, checksum-verified sherpa-onnx C API into Vendor/
 xcodegen generate
 xcodebuild -project Inlaut.xcodeproj -scheme Inlaut -configuration Debug -derivedDataPath build build
 open build/Build/Products/Debug/Inlaut.app
@@ -97,7 +96,7 @@ The global shortcut uses Carbon hot keys and needs no permission.
 
 ## spike/
 
-Measurements that led to the engine choice (on technical German, Whisper-turbo-german made the fewest errors but needs ~2 GB and invents text from noise; Parakeet came close at half the memory and speed; Apple's recogniser failed most technical terms and ignores custom vocabulary): Apple `SpeechAnalyzer` against [parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (sherpa-onnx) and [whisper-large-v3-turbo-german](https://huggingface.co/primeline/whisper-large-v3-turbo-german) (MLX), on the same recordings. `try_parakeet.py` reuses `local_stt.py` from [winidi/dictate](https://github.com/winidi/dictate) (MIT).
+Measurements that led to the engine choice. `eval_takes.py` records the maintainer's own German, English and mixed takes; the Core ML comparison (Parakeet Ultra, v2, v3 and a Core ML export of primeline through FluidAudio against the sherpa-onnx models) is summarised in issue #5. The first comparison (on technical German, Whisper-turbo-german made the fewest errors but needs ~2 GB and invents text from noise; Parakeet came close at half the memory and speed; Apple's recogniser failed most technical terms and ignores custom vocabulary): Apple `SpeechAnalyzer` against [parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (sherpa-onnx) and [whisper-large-v3-turbo-german](https://huggingface.co/primeline/whisper-large-v3-turbo-german) (MLX), on the same recordings. `try_parakeet.py` reuses `local_stt.py` from [winidi/dictate](https://github.com/winidi/dictate) (MIT).
 
 ## License
 

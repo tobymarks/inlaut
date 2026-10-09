@@ -39,9 +39,12 @@ struct SettingsView: View {
                             Text("Free up memory")
                             Text("Releases around 650 MB after a pause in dictation. The next dictation starts right away; only its text can take up to 2 seconds longer.")
                         }
-                        Toggle(isOn: $state.keepModels) {
-                            Text("Keep both models")
-                            Text("For anyone who often switches between Deutsch and English: switching from the menu then takes a few seconds instead of a new download. If you mix languages, “Deutsch + English” suits you better. Needs up to \(Self.allModelsSize) on this Mac in total.")
+                        // Only matters once the catalogue offers a second model again.
+                        if SpeechModel.catalogue.count > 1 {
+                            Toggle(isOn: $state.keepModels) {
+                                Text("Keep both models")
+                                Text("For anyone who often switches between Deutsch and English: switching from the menu then takes a few seconds instead of a new download. If you mix languages, “Deutsch + English” suits you better. Needs up to \(Self.allModelsSize) on this Mac in total.")
+                            }
                         }
                     }
                 }
@@ -111,7 +114,7 @@ struct SettingsView: View {
                 } footer: {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Everything is recognized on this Mac. No recordings or texts are stored or sent.")
-                        Text(Self.markdown(String(localized: "Speech recognition: \(state.model.credit) · [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache 2.0) · ONNX Runtime (MIT)")))
+                        Text(Self.markdown(String(localized: "Speech recognition: \(state.model.credit) · [FluidAudio](https://github.com/FluidInference/FluidAudio) (Apache 2.0)")))
                             .font(.caption)
                     }
                     .foregroundStyle(.secondary)

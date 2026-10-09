@@ -50,9 +50,9 @@ enum DictationLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    /// primeline also handles English and mixed sentences; v2 is only
-    /// better for native English speakers (measured in #9/#10).
-    var model: SpeechModel { self == .english ? .parakeetV2 : .primeline }
+    /// Parakeet Ultra was the most accurate on German, English and mixed
+    /// takes alike (#5), so every language uses it and switching costs nothing.
+    var model: SpeechModel { .ultra }
 
     /// Apple's recogniser takes one locale; mixed speech is mostly German.
     var appleLocale: Locale { Locale(identifier: self == .english ? "en-US" : "de-DE") }
@@ -256,15 +256,20 @@ final class AppState {
         }
     }
 
-    /// The engine dictation actually uses: Parakeet once it is loaded or
-    /// loading from disk (a take waits for it), Apple while the model still
-    /// downloads (or when chosen), so dictating works from the first minute.
+    /// The engine dictation actually uses: Parakeet once it is loaded, or
+    /// while it reloads after a rest (~0.2 s, a take waits for it); Apple while
+    /// the model still downloads or is compiled for the Neural Engine the
+    /// first time (or when chosen), so dictating works from the first minute.
     var activeEngine: TranscriptionEngine? {
-        if engineChoice == .parakeet, parakeet.isLoaded || parakeet.isLoading || modelState == .resting {
+        if engineChoice == .parakeet, parakeet.isLoaded || modelState == .resting || (parakeet.isLoading && parakeetWasLoaded) {
             return parakeet
         }
         return appleReady ? apple : nil
     }
+    /// Set after the first load in this run; later loads are quick.
+    private var parakeetWasLoaded = false
+    /// Updating from the ONNX models: fetch Ultra without the setup window.
+    private var quietSetup = false
 
     private var apple: AppleSpeechEngine
     private var parakeet: ParakeetEngine
@@ -299,7 +304,8 @@ final class AppState {
         mode = Mode(rawValue: defaults.string(forKey: "mode") ?? "") ?? .hold
         engineChoice = EngineChoice(rawValue: defaults.string(forKey: "engine") ?? "") ?? .parakeet
         // Installs from before the language setting dictated German.
-        let existing = defaults.object(forKey: "engine") != nil || SpeechModel.primeline.isInstalled
+        let legacy = ModelStore.hasLegacy()
+        let existing = defaults.object(forKey: "engine") != nil || legacy
         let language = DictationLanguage(rawValue: defaults.string(forKey: "language") ?? "")
             ?? (existing ? .german : .system)
         self.language = language
@@ -311,6 +317,9 @@ final class AppState {
         let keepModels = defaults.bool(forKey: "keepModels")
         self.keepModels = keepModels
         if !keepModels { ModelStore.removeAll(except: model) }
+        // The ONNX models of 0.1–0.2 cannot run any more; Ultra replaces them.
+        ModelStore.removeLegacy()
+        quietSetup = legacy
         modelState = model.isInstalled ? .installed : .missing
         releaseModelWhenIdle = IdleRelease(rawValue: defaults.string(forKey: "releaseModelWhenIdle") ?? "") ?? .default
         playSounds = defaults.object(forKey: "playSounds") as? Bool ?? true
@@ -375,7 +384,7 @@ final class AppState {
         } else if model.isInstalled {
             loadParakeet()
         } else if download == nil {
-            showSetup()
+            if !quietSetup { showSetup() }
             startDownload()
         }
         updateStatus()
@@ -424,6 +433,7 @@ final class AppState {
                 modelState = .failed(failure.localizedDescription)
             } else if engineChoice == .parakeet {
                 modelState = .ready
+                parakeetWasLoaded = true
                 log.notice("parakeet loaded in \(Date().timeIntervalSince(started), format: .fixed(precision: 1))s")
                 if !isDictating { scheduleIdleRelease() }
             } else {
@@ -559,6 +569,7 @@ final class AppState {
         if !keepModels { ModelStore.removeAll(except: new) }
         log.notice("switched model")
         modelState = parakeet.isLoaded ? .ready : .installed
+        if parakeet.isLoaded { parakeetWasLoaded = true }
         // A load still running for the old engine restarts with the new one.
         if parakeetPreparation == nil { configureEngine() }
         updateStatus()

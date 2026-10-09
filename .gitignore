@@ -8,7 +8,6 @@ scripts/__pycache__/
 build/
 Inlaut.xcodeproj/
 .DS_Store
-Vendor/
 design/inlaut-design-v1.zip
 design/inlaut-brand-kit.zip
 site/.wrangler/

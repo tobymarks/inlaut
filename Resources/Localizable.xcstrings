@@ -854,22 +854,12 @@
         }
       }
     },
-    "Parakeet English": {
+    "Parakeet Ultra": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Parakeet English"
-          }
-        }
-      }
-    },
-    "Parakeet German": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parakeet Deutsch"
+            "value": "Parakeet Ultra"
           }
         }
       }
@@ -1184,12 +1174,12 @@
         }
       }
     },
-    "Speech recognition: %@ · [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache 2.0) · ONNX Runtime (MIT)": {
+    "Speech recognition: %@ · [FluidAudio](https://github.com/FluidInference/FluidAudio) (Apache 2.0)": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spracherkennung: %@ · [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache 2.0) · ONNX Runtime (MIT)"
+            "value": "Spracherkennung: %@ · [FluidAudio](https://github.com/FluidInference/FluidAudio) (Apache 2.0)"
           }
         }
       }
@@ -1260,16 +1250,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Textfeld gewechselt – Diktat mit ⌘V einfügen"
-          }
-        }
-      }
-    },
-    "The Parakeet model could not be loaded.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parakeet-Modell konnte nicht geladen werden."
           }
         }
       }
@@ -1414,12 +1394,12 @@
         }
       }
     },
-    "[parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (primeline) based on [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), both CC BY 4.0": {
+    "[Parakeet Ultra](https://huggingface.co/moondream/parakeet-ultra) (moondream) based on [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), both CC BY 4.0, Core ML export by [FluidInference](https://huggingface.co/FluidInference/parakeet-ultra-coreml)": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "[parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (primeline) auf Basis von [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), beide CC BY 4.0"
+            "value": "[Parakeet Ultra](https://huggingface.co/moondream/parakeet-ultra) (moondream) auf Basis von [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), beide CC BY 4.0, Core-ML-Export von [FluidInference](https://huggingface.co/FluidInference/parakeet-ultra-coreml)"
           }
         }
       }

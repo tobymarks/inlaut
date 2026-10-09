@@ -13,7 +13,6 @@ APP="$OUT/export/Inlaut.app"
 
 case "$MODE" in
   prepare)
-    scripts/fetch-sherpa-onnx.sh
     xcodegen generate
     mkdir -p "$OUT"
     xcodebuild -project Inlaut.xcodeproj -scheme Inlaut -configuration Release \
