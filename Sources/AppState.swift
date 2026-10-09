@@ -622,7 +622,9 @@ final class AppState {
     private func hotKeyPressed() {
         switch (mode, status) {
         case (.toggle, .recording): stopAndTranscribe()
-        case (_, .ready), (_, .failed): startRecording()
+        // While preparing, startRecording says that recognition is still
+        // loading instead of the key press doing nothing at all.
+        case (_, .ready), (_, .failed), (_, .preparing): startRecording()
         default: break
         }
     }
@@ -633,7 +635,7 @@ final class AppState {
 
     private func globeStart() {
         switch status {
-        case .ready, .failed: startRecording()
+        case .ready, .failed, .preparing: startRecording()
         default: break
         }
     }
@@ -664,6 +666,7 @@ final class AppState {
 
     private func startRecording() {
         guard let engine = activeEngine else {
+            log.notice("dictation not started: recognition still loading")
             fail(String(localized: "Speech recognition is still loading …"))
             return
         }
