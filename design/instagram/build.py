@@ -190,6 +190,28 @@ POSTS = {
 ],
 }
 
+# Stories (1080x1920). Top ~250 px and bottom ~340 px stay free for Instagram's own UI.
+STORY_CSS = CSS.replace("height: 1350px", "height: 1920px") + """
+.slide { padding: 260px 96px 360px; }
+h1 { font-size: 112px; } h2 { font-size: 88px; }
+.top { position: absolute; top: 150px; left: 96px; right: 96px; }
+.foot { position: absolute; bottom: 300px; left: 96px; right: 96px; font-size: 32px; }
+"""
+
+def story(theme, body):
+    logo = "inlaut-logo-mint.svg" if theme == "dark" else "inlaut-logo-petrol.svg"
+    return (f'<!doctype html><html lang="de"><meta charset="utf-8"><style>{STORY_CSS}</style><body>'
+            f'<div class="slide {theme}"><div class="top"><img src="{KIT}/{logo}" alt=""></div>'
+            f'<div class="body">{body}</div><div class="foot"><span>inlaut.de</span><span></span></div></div></body></html>')
+
+STORIES = {
+"story-1-neu": ("dark", f'{SYMBOL}<span class="tag">Neu</span><h1>Diktieren am Mac. <em>Ohne Cloud.</em></h1><p class="lead">inlaut schreibt, was du sagst – direkt dort, wo dein Cursor steht.</p>'),
+"story-2-so-gehts": ("light", '<p class="eyebrow">So geht’s</p><h2>Drei Schritte.</h2><div class="steps"><div class="step"><span class="num">1</span>🌐-Taste halten</div>'
+    '<div class="step"><span class="num">2</span>Sprechen</div><div class="step"><span class="num">3</span>Loslassen – fertig</div></div>'),
+"story-3-sz": ("dark", '<span class="tag">Neu in 0.1.1</span><h1>Straße statt <em>Strasse.</em></h1><p class="lead">inlaut schreibt eindeutige Wörter wie Straße, groß oder Grüße jetzt mit ß.</p>'),
+"story-4-download": ("dark", f'{SYMBOL}<h1>Kostenlos.<br><em>Open Source.</em></h1><p class="lead">Für Apple-Silicon-Macs ab macOS 26.</p><span class="pill">inlaut.de</span>'),
+}
+
 PROFILE = (f'<!doctype html><html><meta charset="utf-8"><style>html,body{{margin:0;width:1080px;height:1080px;background:#103D3B}}'
            f'body{{display:grid;place-items:center}} img{{width:600px}}</style><body><img src="{KIT}/inlaut-symbol-mint.svg" alt=""></body></html>')
 
@@ -209,6 +231,9 @@ if __name__ == "__main__":
             continue
         for i, (theme, body, right) in enumerate(slides, 1):
             render(page(theme, i, len(slides), body, right), f"{post}-{i}")
+    for name, (theme, body) in STORIES.items():
+        if not only or name in only or "stories" in only:
+            render(story(theme, body), name, 1080, 1920, HERE / "stories")
     if not only or "profil" in only:
         render(PROFILE, "profil", 1080, 1080, HERE)
     print("ok")
