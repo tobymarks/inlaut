@@ -33,7 +33,7 @@ struct SetupView: View {
                               subtitle: "Set it up once. Then dictate straight into any text field. Your voice stays on this Mac.")
 
             VStack(alignment: .leading, spacing: 14) {
-                Step(number: 1, done: state.modelState == .ready || state.modelState == .resting, title: "Download speech recognition") {
+                Step(number: 1, done: state.modelState == .ready, title: "Download speech recognition") {
                     ModelStatusView(state: state)
                 }
                 Step(number: 2, done: state.microphoneGranted, title: "Allow microphone") {
@@ -176,9 +176,6 @@ struct ModelStatusView: View {
                     Button("Activate") { state.startDownload() }
                 }
             }
-        case .resting:
-            Text("\(name) is resting to free up memory and loads again with your next dictation.")
-                .font(.callout).foregroundStyle(.secondary)
         case .ready:
             Text("\(name) is ready, \(size) on this Mac.").font(.callout).foregroundStyle(.secondary)
         case .failed(let message):

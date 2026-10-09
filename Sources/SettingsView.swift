@@ -33,12 +33,6 @@ struct SettingsView: View {
                     }
                     if state.engineChoice == .parakeet {
                         LabeledContent("Model") { ModelStatusView(state: state) }
-                        Picker(selection: $state.releaseModelWhenIdle) {
-                            ForEach(IdleRelease.allCases) { Text($0.label).tag($0) }
-                        } label: {
-                            Text("Free up memory")
-                            Text("Releases around 650 MB after a pause in dictation. The next dictation starts right away; only its text can take up to 2 seconds longer.")
-                        }
                         // Only matters once the catalogue offers a second model again.
                         if SpeechModel.catalogue.count > 1 {
                             Toggle(isOn: $state.keepModels) {
