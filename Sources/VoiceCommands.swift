@@ -59,6 +59,9 @@ enum VoiceCommands {
         if capitalize { line = capitalized(line) }
         if let end = line.last, ".!?:;,".contains(end) { return line }
         if let spoken = punctuationBefore.first(where: { ".!?:".contains($0) }) {
+            // Parakeet Ultra ends "Best regards" / "Hallo Frau Becker" with a
+            // full stop; as a salutation or sign-off it takes a comma.
+            if spoken == ".", wordCount(line) <= shortLine { return line + "," }
             return line + String(spoken)
         }
         // The recogniser put a comma: keep it after a salutation, otherwise

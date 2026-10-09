@@ -132,7 +132,18 @@ final class TextProcessingTests: XCTestCase {
     }
 
     func testEnglishVoiceCommandsFollowTheDictationLanguage() {
-        // As Parakeet v2 and primeline write it.
+        // Parakeet Ultra ends sentences with full stops around the commands.
+        let ultra = "Hi Sarah, new paragraph, thanks for the quick reply. I will send the file tomorrow. New paragraph. Best regards, new line, Tobias."
+        XCTAssertEqual(VoiceCommands.apply(to: ultra, languages: [.english]),
+                       "Hi Sarah,\n\nThanks for the quick reply. I will send the file tomorrow.\n\nBest regards,\nTobias")
+        // As Ultra wrote the real take: full stops around every command.
+        XCTAssertEqual(VoiceCommands.apply(to: "Hi Sarah, new paragraph, thanks for the quick reply. I will send the file tomorrow. New paragraph. Best regards. New line. Tobias.", languages: [.english]),
+                       "Hi Sarah,\n\nThanks for the quick reply. I will send the file tomorrow.\n\nBest regards,\nTobias")
+        XCTAssertEqual(VoiceCommands.apply(to: "Hallo Frau Becker. Neuer Absatz. Vielen Dank für Ihre Nachricht von gestern. Neuer Absatz. Viele Grüße. Neue Zeile. Tobias.", languages: [.german]),
+                       "Hallo Frau Becker,\n\nVielen Dank für Ihre Nachricht von gestern.\n\nViele Grüße,\nTobias")
+        // A question or exclamation stays as spoken.
+        XCTAssertEqual(VoiceCommands.apply(to: "Alles klar? Neue Zeile. Danke!", languages: [.german]), "Alles klar?\nDanke!")
+        // As Parakeet v2 and primeline wrote it.
         let raw = "Hi Sarah, new paragraph, thanks for the quick reply, I will send the file tomorrow, new paragraph, best regards, new line, tobias."
         XCTAssertEqual(VoiceCommands.apply(to: raw, languages: [.english]),
                        "Hi Sarah,\n\nThanks for the quick reply, I will send the file tomorrow.\n\nBest regards,\nTobias")
