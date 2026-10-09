@@ -142,9 +142,14 @@ enum ModelStore {
         let handle = try FileHandle(forReadingFrom: url)
         defer { try? handle.close() }
         var hasher = SHA256()
-        while let chunk = try handle.read(upToCount: 8 << 20), !chunk.isEmpty {
-            try Task.checkCancellation()
+        // Each read returns autoreleased data; without a pool per chunk a
+        // 600 MB model stays in memory until the thread's pool drains.
+        while try autoreleasepool(invoking: {
+            guard let chunk = try handle.read(upToCount: 8 << 20), !chunk.isEmpty else { return false }
             hasher.update(data: chunk)
+            return true
+        }) {
+            try Task.checkCancellation()
         }
         return hasher.finalize().map { String(format: "%02x", $0) }.joined()
     }
