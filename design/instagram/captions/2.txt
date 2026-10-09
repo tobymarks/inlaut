@@ -1,0 +1,9 @@
+Deine Worte bleiben auf deinem Mac. 🔒
+
+Viele Diktier-Dienste schicken deine Aufnahme zur Erkennung an einen Server. inlaut nicht: Das Sprachmodell läuft direkt auf deinem Mac. Das Mikrofon ist nur aktiv, solange du diktierst, und Aufnahmen und Texte werden weder gespeichert noch übertragen.
+
+Das musst du nicht einfach glauben: Der Code ist offen auf GitHub.
+
+Kostenlos laden: Link in der Bio 👉 inlaut.de
+
+#inlaut #Datenschutz #Privatsphäre #macOS #Diktieren #LokaleKI #OpenSource #MacApps

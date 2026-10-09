@@ -1,0 +1,10 @@
+Taste halten. Sprechen. Loslassen. 🎙️
+
+inlaut ist eine kleine App für die Mac-Menüleiste: Du hältst die 🌐-Taste, sprichst – und dein Text steht genau dort, wo dein Cursor ist. In Mail, Notizen, Word, im Browser oder im KI-Chat.
+
+Die Spracherkennung läuft komplett auf deinem Mac. Keine Cloud, kein Konto, kein Tracking. Und inlaut ist kostenlos und Open Source.
+
+👉 Download über den Link in der Bio: inlaut.de
+Für Apple-Silicon-Macs ab macOS 26.
+
+#inlaut #macOS #Mac #Diktieren #SpeechToText #Spracherkennung #Produktivität #Datenschutz #OpenSource #MacApps
