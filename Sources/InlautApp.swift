@@ -45,8 +45,8 @@ private struct MenuContent: View {
             EmptyView()
         }
         if state.keepModels, state.engineChoice == .parakeet {
-            Picker("Modell", selection: Binding(get: { state.selectedModel }, set: { state.selectModel($0) })) {
-                ForEach(SpeechModel.catalogue) { Text($0.name).tag($0) }
+            Picker("Sprache", selection: $state.language) {
+                ForEach(DictationLanguage.allCases) { Text($0.label).tag($0) }
             }
         }
         if let pending = state.modelSwitch, case .loading = pending.phase {

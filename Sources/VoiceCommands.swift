@@ -1,19 +1,35 @@
 import Foundation
 
-/// Spoken layout commands: "neue Zeile" → line break, "neuer Absatz" →
-/// blank line. The recogniser writes them as words with commas around
-/// ("Hallo Frau Becker, neuer Absatz, vielen Dank …"), so the punctuation
-/// next to each command is tidied as well.
+/// A language the user dictates in. Voice commands and the ß rule follow
+/// these, not the interface language.
+enum SpokenLanguage: String, Hashable, Sendable {
+    case german, english
+}
+
+/// Spoken layout commands: "neue Zeile" / "new line" → line break,
+/// "neuer Absatz" / "new paragraph" → blank line. The recogniser writes
+/// them as words with commas around ("Hallo Frau Becker, neuer Absatz,
+/// vielen Dank …"), so the punctuation next to each command is tidied as well.
 enum VoiceCommands {
-    private static let command = try! NSRegularExpression(
-        pattern: #"([\s,;:.!?]*)\b(neue[rn]?\s+absatz|neue\s+zeile)\b[\s,;:.!?]*"#,
-        options: [.caseInsensitive])
+    private static let patterns: [SpokenLanguage: String] = [
+        .german: #"neue[rn]?\s+absatz|neue\s+zeile"#,
+        .english: #"new\s+paragraph|new\s+line"#,
+    ]
+
+    private static func command(for languages: Set<SpokenLanguage>) -> NSRegularExpression? {
+        let alternatives = patterns.filter { languages.contains($0.key) }.map(\.value).sorted()
+        guard !alternatives.isEmpty else { return nil }
+        return try! NSRegularExpression(
+            pattern: #"([\s,;:.!?]*)\b("# + alternatives.joined(separator: "|") + #")\b[\s,;:.!?]*"#,
+            options: [.caseInsensitive])
+    }
 
     /// Lines this short are salutations or sign-offs ("Hallo Frau Becker,",
     /// "Viele Grüße,", "Tobias Marks"), which keep their comma or get no period.
     private static let shortLine = 4
 
-    static func apply(to text: String) -> String {
+    static func apply(to text: String, languages: Set<SpokenLanguage>) -> String {
+        guard let command = command(for: languages) else { return text }
         let ns = text as NSString
         let matches = command.matches(in: text, range: NSRange(location: 0, length: ns.length))
         guard !matches.isEmpty else { return text }
@@ -24,7 +40,8 @@ enum VoiceCommands {
             let line = ns.substring(with: NSRange(location: cursor, length: match.range.location - cursor))
             let before = ns.substring(with: match.range(at: 1))
             out += finish(line, punctuationBefore: before, capitalize: cursor > 0)
-            let isParagraph = ns.substring(with: match.range(at: 2)).lowercased().contains("absatz")
+            let spoken = ns.substring(with: match.range(at: 2)).lowercased()
+            let isParagraph = spoken.contains("absatz") || spoken.contains("paragraph")
             out += isParagraph ? "\n\n" : "\n"
             cursor = match.range.location + match.range.length
         }

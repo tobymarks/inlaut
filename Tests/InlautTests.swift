@@ -124,10 +124,25 @@ final class TextProcessingTests: XCTestCase {
     }
 
     func testVoiceCommandsAndUnchangedText() {
-        XCTAssertEqual(VoiceCommands.apply(to: "Hallo Frau Becker, neuer Absatz, vielen Dank für Ihre Nachricht."),
+        let german: Set<SpokenLanguage> = [.german]
+        XCTAssertEqual(VoiceCommands.apply(to: "Hallo Frau Becker, neuer Absatz, vielen Dank für Ihre Nachricht.", languages: german),
                        "Hallo Frau Becker,\n\nVielen Dank für Ihre Nachricht.")
-        XCTAssertEqual(VoiceCommands.apply(to: "Das bleibt unverändert."), "Das bleibt unverändert.")
-        XCTAssertEqual(VoiceCommands.apply(to: "Hallo, neue Zeile, neuer Absatz, Tobias."), "Hallo,\n\nTobias")
+        XCTAssertEqual(VoiceCommands.apply(to: "Das bleibt unverändert.", languages: german), "Das bleibt unverändert.")
+        XCTAssertEqual(VoiceCommands.apply(to: "Hallo, neue Zeile, neuer Absatz, Tobias.", languages: german), "Hallo,\n\nTobias")
+    }
+
+    func testEnglishVoiceCommandsFollowTheDictationLanguage() {
+        // As Parakeet v2 and primeline write it.
+        let raw = "Hi Sarah, new paragraph, thanks for the quick reply, I will send the file tomorrow, new paragraph, best regards, new line, tobias."
+        XCTAssertEqual(VoiceCommands.apply(to: raw, languages: [.english]),
+                       "Hi Sarah,\n\nThanks for the quick reply, I will send the file tomorrow.\n\nBest regards,\nTobias")
+        XCTAssertEqual(VoiceCommands.apply(to: "First point new line second point", languages: [.english]),
+                       "First point\nSecond point")
+        // German commands stay text in English mode and vice versa.
+        XCTAssertEqual(VoiceCommands.apply(to: raw, languages: [.german]), raw)
+        XCTAssertEqual(VoiceCommands.apply(to: "Hallo, neue Zeile, Tobias", languages: [.english]), "Hallo, neue Zeile, Tobias")
+        XCTAssertEqual(VoiceCommands.apply(to: "Hallo Sarah, new line, viele Grüße, neue Zeile, Tobias", languages: [.german, .english]),
+                       "Hallo Sarah,\nViele Grüße,\nTobias")
     }
 
     func testSharpSInWordsAndCompounds() {

@@ -13,18 +13,17 @@ struct SettingsView: View {
                 .padding(.bottom, 20)
             Form {
                 Section("Spracherkennung") {
+                    Picker("Sprache", selection: $state.language) {
+                        ForEach(DictationLanguage.allCases) { Text($0.label).tag($0) }
+                    }
                     Picker("Engine", selection: $state.engineChoice) {
                         ForEach(EngineChoice.allCases) { Text($0.label).tag($0) }
                     }
                     if state.engineChoice == .parakeet {
-                        Picker("Modell", selection: Binding(get: { state.selectedModel },
-                                                            set: { state.selectModel($0) })) {
-                            ForEach(SpeechModel.catalogue) { Text($0.name).tag($0) }
-                        }
-                        LabeledContent("Status") { ModelStatusView(state: state) }
+                        LabeledContent("Modell") { ModelStatusView(state: state) }
                         Toggle(isOn: $state.keepModels) {
                             Text("Beide Modelle behalten")
-                            Text("Für alle, die oft wechseln: Umschalten im Menü dauert dann nur ein paar Sekunden statt eines neuen Downloads. Braucht zusammen bis zu \(ByteCountFormatter.string(fromByteCount: SpeechModel.catalogue.reduce(0) { $0 + $1.totalBytes }, countStyle: .file)) auf diesem Mac.")
+                            Text("Für alle, die oft zwischen Deutsch und English wechseln: Umschalten im Menü dauert dann nur ein paar Sekunden statt eines neuen Downloads. Wer Sprachen mischt, ist mit „Deutsch + English“ besser bedient. Braucht zusammen bis zu \(ByteCountFormatter.string(fromByteCount: SpeechModel.catalogue.reduce(0) { $0 + $1.totalBytes }, countStyle: .file)) auf diesem Mac.")
                         }
                     }
                 }
@@ -55,11 +54,13 @@ struct SettingsView: View {
                 Section {
                     Toggle(isOn: $state.voiceCommands) {
                         Text("Zeilen und Absätze per Sprache")
-                        Text("„neue Zeile“ und „neuer Absatz“ werden zu Umbrüchen.")
+                        Text(state.language.commandHelp)
                     }
-                    Toggle(isOn: $state.sharpS) {
-                        Text("ß statt ss")
-                        Text("Schreibt eindeutige Wörter wie Straße, groß oder Grüße mit ß.")
+                    if state.language.spoken.contains(.german) {
+                        Toggle(isOn: $state.sharpS) {
+                            Text("ß statt ss")
+                            Text("Schreibt eindeutige Wörter wie Straße, groß oder Grüße mit ß.")
+                        }
                     }
                 }
 

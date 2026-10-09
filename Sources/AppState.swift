@@ -3,6 +3,7 @@ import AVFoundation
 import Observation
 import os
 import ServiceManagement
+import Speech
 
 enum Mode: String, CaseIterable, Identifiable {
     case hold, toggle
@@ -24,6 +25,49 @@ enum EngineChoice: String, CaseIterable, Identifiable {
         case .parakeet: "Parakeet – beste Qualität"
         case .apple: "Apple – geringer Speicherbedarf"
         }
+    }
+}
+
+/// What the user dictates in. Drives the Parakeet model, Apple's locale,
+/// the voice commands and (with #3) the interface language.
+enum DictationLanguage: String, CaseIterable, Identifiable {
+    case german, english, bilingual
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .german: "Deutsch"
+        case .english: "English"
+        case .bilingual: "Deutsch + English"
+        }
+    }
+
+    var spoken: Set<SpokenLanguage> {
+        switch self {
+        case .german: [.german]
+        case .english: [.english]
+        case .bilingual: [.german, .english]
+        }
+    }
+
+    /// primeline also handles English and mixed sentences; v2 is only
+    /// better for native English speakers (measured in #9/#10).
+    var model: SpeechModel { self == .english ? .parakeetV2 : .primeline }
+
+    /// Apple's recogniser takes one locale; mixed speech is mostly German.
+    var appleLocale: Locale { Locale(identifier: self == .english ? "en-US" : "de-DE") }
+
+    var commandHelp: String {
+        switch self {
+        case .german: "„neue Zeile“ und „neuer Absatz“ werden zu Umbrüchen."
+        case .english: "„new line“ und „new paragraph“ werden zu Umbrüchen."
+        case .bilingual: "„neue Zeile“, „neuer Absatz“, „new line“ und „new paragraph“ werden zu Umbrüchen."
+        }
+    }
+
+    /// First launch follows the macOS language.
+    static var system: DictationLanguage {
+        Locale.preferredLanguages.first?.hasPrefix("de") == true ? .german : .english
     }
 }
 
@@ -114,6 +158,13 @@ final class AppState {
     var mode: Mode {
         didSet { UserDefaults.standard.set(mode.rawValue, forKey: "mode") }
     }
+    var language: DictationLanguage {
+        didSet {
+            guard language != oldValue else { return }
+            UserDefaults.standard.set(language.rawValue, forKey: "language")
+            applyLanguage(previous: oldValue)
+        }
+    }
     var engineChoice: EngineChoice {
         didSet {
             UserDefaults.standard.set(engineChoice.rawValue, forKey: "engine")
@@ -163,7 +214,7 @@ final class AppState {
         return appleReady ? apple : nil
     }
 
-    private let apple = AppleSpeechEngine()
+    private var apple: AppleSpeechEngine
     private var parakeet: ParakeetEngine
     private var appleReady = false
     private var appleError: String?
@@ -194,7 +245,13 @@ final class AppState {
         shortcut = defaults.data(forKey: "shortcut").flatMap { try? JSONDecoder().decode(Shortcut.self, from: $0) } ?? .default
         mode = Mode(rawValue: defaults.string(forKey: "mode") ?? "") ?? .hold
         engineChoice = EngineChoice(rawValue: defaults.string(forKey: "engine") ?? "") ?? .parakeet
-        let model = SpeechModel.with(id: defaults.string(forKey: "model") ?? "") ?? .primeline
+        // Installs from before the language setting dictated German.
+        let existing = defaults.object(forKey: "engine") != nil || SpeechModel.primeline.isInstalled
+        let language = DictationLanguage(rawValue: defaults.string(forKey: "language") ?? "")
+            ?? (existing ? .german : .system)
+        self.language = language
+        apple = AppleSpeechEngine(locale: language.appleLocale)
+        let model = SpeechModel.with(id: defaults.string(forKey: "model") ?? "") ?? language.model
         self.model = model
         parakeet = ParakeetEngine(model: model)
         // Also clears what an interrupted switch left behind.
@@ -226,6 +283,24 @@ final class AppState {
         // locally installed Parakeet model or its download/setup window.
         prepareApple()
         configureEngine()
+        // Finishes a switch the last session did not complete.
+        if language.model != model { selectModel(language.model) }
+    }
+
+    private func applyLanguage(previous: DictationLanguage) {
+        selectModel(language.model)
+        if language.appleLocale != previous.appleLocale {
+            let released = previous.appleLocale
+            applePreparation?.cancel()
+            applePreparation = nil
+            apple = AppleSpeechEngine(locale: language.appleLocale)
+            appleReady = false
+            appleError = nil
+            // Our reservation only; the system keeps assets other apps use.
+            Task { _ = await AssetInventory.release(reservedLocale: released) }
+            prepareApple()
+        }
+        updateStatus()
     }
 
     private func configureEngine() {
@@ -249,15 +324,19 @@ final class AppState {
 
     func prepareApple() {
         guard !appleReady, applePreparation == nil else { return }
+        let engine = apple
         appleError = nil
         applePreparation = Task {
-            defer { applePreparation = nil }
-            do {
-                try await apple.prepare()
+            var failure: Error?
+            do { try await engine.prepare() } catch { failure = error }
+            // A language change replaced the engine meanwhile.
+            guard engine === apple else { return }
+            applePreparation = nil
+            if let failure {
+                appleError = failure.localizedDescription
+                log.error("apple prepare failed: \(failure.localizedDescription)")
+            } else {
                 appleReady = true
-            } catch {
-                appleError = error.localizedDescription
-                log.error("apple prepare failed: \(error.localizedDescription)")
             }
             updateStatus()
         }
@@ -324,10 +403,7 @@ final class AppState {
 
     // MARK: - Switching models
 
-    /// The model the settings show as chosen, including one still on its way.
-    var selectedModel: SpeechModel { modelSwitch?.model ?? model }
-
-    func selectModel(_ new: SpeechModel) {
+    private func selectModel(_ new: SpeechModel) {
         if new == model {
             cancelModelSwitch()
             return
@@ -602,8 +678,8 @@ final class AppState {
                 // Length and timing only — the dictated text is never logged.
                 log.notice("\(take.seconds, format: .fixed(precision: 1))s audio → \(raw.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
                 // The user's replacements come last, so they can override ß.
-                var text = voiceCommands ? VoiceCommands.apply(to: raw) : raw
-                if sharpS { text = SharpS.apply(to: text) }
+                var text = voiceCommands ? VoiceCommands.apply(to: raw, languages: language.spoken) : raw
+                if sharpS, language.spoken.contains(.german) { text = SharpS.apply(to: text) }
                 text = replacements.apply(to: text)
                 guard !text.isEmpty else {
                     status = .ready
