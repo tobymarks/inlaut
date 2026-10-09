@@ -33,6 +33,12 @@ struct SettingsView: View {
                     }
                     if state.engineChoice == .parakeet {
                         LabeledContent("Model") { ModelStatusView(state: state) }
+                        Picker(selection: $state.releaseModelWhenIdle) {
+                            ForEach(IdleRelease.allCases) { Text($0.label).tag($0) }
+                        } label: {
+                            Text("Free up memory")
+                            Text("Releases around 650 MB after a pause in dictation. The next dictation starts right away; only its text can take up to 2 seconds longer.")
+                        }
                         Toggle(isOn: $state.keepModels) {
                             Text("Keep both models")
                             Text("For anyone who often switches between Deutsch and English: switching from the menu then takes a few seconds instead of a new download. If you mix languages, “Deutsch + English” suits you better. Needs up to \(Self.allModelsSize) on this Mac in total.")

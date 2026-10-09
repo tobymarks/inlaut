@@ -81,9 +81,40 @@ enum DictationLanguage: String, CaseIterable, Identifiable {
     }
 }
 
+/// When to hand Parakeet's ~650 MB back to the system after the last dictation.
+enum IdleRelease: String, CaseIterable, Identifiable {
+    case never, fiveMinutes, fifteenMinutes, oneHour
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .never: String(localized: "Never")
+        case .fiveMinutes: String(localized: "After 5 minutes")
+        case .fifteenMinutes: String(localized: "After 15 minutes")
+        case .oneHour: String(localized: "After 1 hour")
+        }
+    }
+
+    var delay: Duration? {
+        switch self {
+        case .never: nil
+        case .fiveMinutes: .seconds(5 * 60)
+        case .fifteenMinutes: .seconds(15 * 60)
+        case .oneHour: .seconds(60 * 60)
+        }
+    }
+
+    /// Keeping the model loaded is right on most Macs; 8 GB ones get it back.
+    static var `default`: IdleRelease {
+        ProcessInfo.processInfo.physicalMemory <= 8 << 30 ? .fifteenMinutes : .never
+    }
+}
+
 enum ModelState: Equatable {
     case missing
     case installed
+    /// Released after a pause; the next dictation reloads it while recording.
+    case resting
     case downloading(Double)
     case loading
     case ready
@@ -191,6 +222,12 @@ final class AppState {
             if !keepModels, modelSwitch == nil { ModelStore.removeAll(except: model) }
         }
     }
+    var releaseModelWhenIdle: IdleRelease {
+        didSet {
+            UserDefaults.standard.set(releaseModelWhenIdle.rawValue, forKey: "releaseModelWhenIdle")
+            scheduleIdleRelease()
+        }
+    }
     var playSounds: Bool {
         didSet { UserDefaults.standard.set(playSounds, forKey: "playSounds") }
     }
@@ -219,10 +256,13 @@ final class AppState {
         }
     }
 
-    /// The engine dictation actually uses: Parakeet once it is loaded, Apple
-    /// until then (or when chosen), so dictating works from the first minute.
+    /// The engine dictation actually uses: Parakeet once it is loaded or
+    /// loading from disk (a take waits for it), Apple while the model still
+    /// downloads (or when chosen), so dictating works from the first minute.
     var activeEngine: TranscriptionEngine? {
-        if engineChoice == .parakeet, parakeet.isLoaded { return parakeet }
+        if engineChoice == .parakeet, parakeet.isLoaded || parakeet.isLoading || modelState == .resting {
+            return parakeet
+        }
         return appleReady ? apple : nil
     }
 
@@ -234,6 +274,7 @@ final class AppState {
     private var parakeetPreparation: Task<Void, Never>?
     private var download: Task<Void, Never>?
     private var switchTask: Task<Void, Never>?
+    private var idleRelease: Task<Void, Never>?
     let updater = AppUpdater()
     private let recorder = Recorder()
     private let hotKey = HotKey()
@@ -271,6 +312,7 @@ final class AppState {
         self.keepModels = keepModels
         if !keepModels { ModelStore.removeAll(except: model) }
         modelState = model.isInstalled ? .installed : .missing
+        releaseModelWhenIdle = IdleRelease(rawValue: defaults.string(forKey: "releaseModelWhenIdle") ?? "") ?? .default
         playSounds = defaults.object(forKey: "playSounds") as? Bool ?? true
         voiceCommands = defaults.object(forKey: "voiceCommands") as? Bool ?? true
         sharpS = defaults.object(forKey: "sharpS") as? Bool ?? !["CH", "LI"].contains(Locale.current.region?.identifier)
@@ -362,6 +404,8 @@ final class AppState {
     private func loadParakeet() {
         guard engineChoice == .parakeet, parakeetPreparation == nil, !parakeet.isLoaded else { return }
         let engine = parakeet
+        // Synchronously, so a take started right after this records against the load.
+        try? engine.startLoading()
         modelState = .loading
         updateStatus()
         parakeetPreparation = Task {
@@ -381,6 +425,7 @@ final class AppState {
             } else if engineChoice == .parakeet {
                 modelState = .ready
                 log.notice("parakeet loaded in \(Date().timeIntervalSince(started), format: .fixed(precision: 1))s")
+                if !isDictating { scheduleIdleRelease() }
             } else {
                 parakeet.unload()
                 modelState = .installed
@@ -416,6 +461,21 @@ final class AppState {
 
     func cancelDownload() {
         download?.cancel()
+    }
+
+    /// Releases Parakeet after the chosen pause; any dictation restarts the clock.
+    private func scheduleIdleRelease() {
+        idleRelease?.cancel()
+        idleRelease = nil
+        guard let delay = releaseModelWhenIdle.delay, engineChoice == .parakeet, parakeet.isLoaded else { return }
+        idleRelease = Task {
+            try? await Task.sleep(for: delay)
+            guard !Task.isCancelled, !isDictating, modelSwitch == nil, parakeet.isLoaded else { return }
+            parakeet.unload()
+            modelState = .resting
+            log.notice("parakeet released after idle")
+            updateStatus()
+        }
     }
 
     // MARK: - Switching models
@@ -502,6 +562,7 @@ final class AppState {
         // A load still running for the old engine restarts with the new one.
         if parakeetPreparation == nil { configureEngine() }
         updateStatus()
+        scheduleIdleRelease()
     }
 
     /// Nothing usable to keep (first download not finished): swap right away.
@@ -644,9 +705,13 @@ final class AppState {
         indicator.hide()
         status = .ready
         updateStatus()
+        scheduleIdleRelease()
     }
 
     private func startRecording() {
+        idleRelease?.cancel()
+        // A resting model reloads while the user speaks (~2 s, usually shorter than the take).
+        if engineChoice == .parakeet, modelState == .resting { loadParakeet() }
         guard let engine = activeEngine else {
             fail(String(localized: "Speech recognition is still loading …"))
             return
@@ -687,6 +752,7 @@ final class AppState {
                     transcription = nil
                     dictationID = nil
                     pasteTarget = nil
+                    scheduleIdleRelease()
                 }
             }
             do {

@@ -10,26 +10,39 @@ final class ParakeetEngine: TranscriptionEngine {
     let model: SpeechModel
     var name: String { model.name }
     private var recognizer: SherpaRecognizer?
+    /// A load in flight (~2 s). A take can already record meanwhile; only
+    /// its transcription waits for the model.
+    private var loading: Task<SherpaRecognizer, Error>?
 
     init(model: SpeechModel) {
         self.model = model
     }
 
     var isLoaded: Bool { recognizer != nil }
+    var isLoading: Bool { loading != nil }
 
-    func prepare() async throws {
-        guard recognizer == nil else { return }
+    /// Starts loading right away, so `begin` can hand out a session before
+    /// the model is ready.
+    func startLoading() throws {
+        guard recognizer == nil, loading == nil else { return }
         guard model.isInstalled else { throw EngineError("The Parakeet model has not been downloaded yet.") }
         let threads = min(4, ProcessInfo.processInfo.activeProcessorCount)
         let directory = model.directory
-        let loading = Task.detached(priority: .userInitiated) {
+        loading = Task.detached(priority: .userInitiated) {
             try Task.checkCancellation()
             return try SherpaRecognizer(directory: directory, threads: threads)
         }
+    }
+
+    func prepare() async throws {
+        guard recognizer == nil else { return }
+        try startLoading()
+        guard let task = loading else { return }
+        defer { if loading == task { loading = nil } }
         let prepared = try await withTaskCancellationHandler {
-            try await loading.value
+            try await task.value
         } onCancel: {
-            loading.cancel()
+            task.cancel()
         }
         try Task.checkCancellation()
         recognizer = prepared
@@ -38,22 +51,31 @@ final class ParakeetEngine: TranscriptionEngine {
     func unload() {
         // An active session retains its recognizer until its take finishes.
         recognizer = nil
+        loading?.cancel()
+        loading = nil
+        // ONNX Runtime frees ~650 MB, but malloc keeps the pages until asked.
+        Task.detached(priority: .utility) {
+            try? await Task.sleep(for: .seconds(2))
+            malloc_zone_pressure_relief(nil, 0)
+        }
     }
 
     func begin() throws -> TranscriptionSession {
-        guard let recognizer else { throw EngineError("Parakeet is not ready yet.") }
-        return ParakeetSession(recognizer: recognizer)
+        if let recognizer { return ParakeetSession { recognizer } }
+        if let loading { return ParakeetSession { try await loading.value } }
+        throw EngineError("Parakeet is not ready yet.")
     }
 }
 
 final class ParakeetSession: TranscriptionSession, @unchecked Sendable {
     let audioFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: SherpaRecognizer.sampleRate,
                                     channels: 1, interleaved: false)!
-    private let recognizer: SherpaRecognizer
+    private let recognizer: @Sendable () async throws -> SherpaRecognizer
     private let samples = Mutex<[Float]>([])
     private let cancellation = CancellationFlag()
 
-    init(recognizer: SherpaRecognizer) {
+    /// `recognizer` may still be loading; `finish` waits for it.
+    init(recognizer: @escaping @Sendable () async throws -> SherpaRecognizer) {
         self.recognizer = recognizer
         samples.withLock { $0.reserveCapacity(Int(SherpaRecognizer.sampleRate) * 30) }
     }
@@ -71,6 +93,8 @@ final class ParakeetSession: TranscriptionSession, @unchecked Sendable {
             return audio
         }
         return try await withTaskCancellationHandler {
+            try cancellation.check()
+            let recognizer = try await recognizer()
             try cancellation.check()
             return try await recognizer.transcribe(audio, cancellation: cancellation)
         } onCancel: {

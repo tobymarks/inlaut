@@ -11,6 +11,16 @@
         }
       }
     },
+    "%@ is resting to free up memory and loads again with your next dictation.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ruht, um Speicher freizugeben, und lädt beim nächsten Diktat neu."
+          }
+        }
+      }
+    },
     "%@, %@ on this Mac.": {
       "localizations": {
         "de": {
@@ -60,6 +70,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aktivieren"
+          }
+        }
+      }
+    },
+    "After 1 hour": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach 1 Stunde"
+          }
+        }
+      }
+    },
+    "After 15 minutes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach 15 Minuten"
+          }
+        }
+      }
+    },
+    "After 5 minutes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach 5 Minuten"
           }
         }
       }
@@ -484,6 +524,16 @@
         }
       }
     },
+    "Free up memory": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speicher freigeben"
+          }
+        }
+      }
+    },
     "Free up the 🌐 key for inlaut": {
       "localizations": {
         "de": {
@@ -670,6 +720,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Space nach rechts"
+          }
+        }
+      }
+    },
+    "Never": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie"
           }
         }
       }
@@ -920,6 +980,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Erkennung: %@"
+          }
+        }
+      }
+    },
+    "Releases around 650 MB after a pause in dictation. The next dictation starts right away; only its text can take up to 2 seconds longer.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gibt nach einer Diktierpause rund 650 MB frei. Das nächste Diktat startet sofort, nur sein Text kann bis zu 2 Sekunden länger brauchen."
           }
         }
       }
