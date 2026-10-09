@@ -15,9 +15,9 @@ The app and website use the **Sprachimpuls / Petrol & Mint** brand kit, with nat
 
 ## Download
 
-[Download inlaut 0.1.0](https://github.com/tobymarks/inlaut/releases/download/v0.1.0/Inlaut-0.1.0.dmg) for Apple Silicon and macOS 26 or later. Open the DMG, drag inlaut onto the “Programme” (Applications) folder, then open inlaut from Applications. You can eject the disk image after copying. Both the app and the DMG are Developer ID signed and notarized by Apple.
+[Download inlaut 0.1.1](https://github.com/tobymarks/inlaut/releases/download/v0.1.1/Inlaut-0.1.1.dmg) for Apple Silicon and macOS 26 or later. Open the DMG, drag inlaut onto the “Programme” (Applications) folder, then open inlaut from Applications. You can eject the disk image after copying. Both the app and the DMG are Developer ID signed and notarized by Apple.
 
-This is the first public version. Setup downloads the speech model (around 670 MB) and guides you through microphone and Accessibility permissions. [Release notes and checksums](https://github.com/tobymarks/inlaut/releases/tag/v0.1.0).
+Setup downloads the speech model (around 670 MB) and guides you through microphone and Accessibility permissions. [Release notes and checksums](https://github.com/tobymarks/inlaut/releases/tag/v0.1.1).
 
 ## Build
 

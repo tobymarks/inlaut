@@ -9,6 +9,21 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <description>Neue Versionen von inlaut für macOS.</description>
         <language>de</language>
         <item>
+            <title>0.1.1</title>
+            <pubDate>Fri, 09 Oct 2026 16:03:46 +0200</pubDate>
+            <link>https://inlaut.de</link>
+            <sparkle:version>2</sparkle:version>
+            <sparkle:shortVersionString>0.1.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <description><![CDATA[<h2>inlaut 0.1.1</h2>
+<ul>
+  <li>ß statt ss: Eindeutige Wörter wie Straße, groß, Grüße oder regelmäßig werden jetzt mit ß geschrieben, auch in zusammengesetzten Wörtern. Abschaltbar in den Einstellungen; in der Schweiz und in Liechtenstein standardmäßig aus.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/tobymarks/inlaut/releases/download/v0.1.1/Inlaut-0.1.1.zip" length="11985229" type="application/octet-stream" sparkle:edSignature="KflpNMtstvd2AyeXXfp5ElZMNwqRvqIm/e9uTVkiaZg2yp0F7vuYOyuaZobl+5qFVoJaquQ090rYvI3exBRPBA=="/>
+        </item>
+        <item>
             <title>0.1.0</title>
             <pubDate>Thu, 08 Oct 2026 21:50:03 +0200</pubDate>
             <link>https://inlaut.de</link>
@@ -32,6 +47,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: GK455lPi0kyD2zKngWSWe3V5k+4hK/MOt3aNn8f2cSM0rOWjubWF/5mPY+pNTZYqm1rl9G9/IQ0lEpAtLuv3CQ==
-length: 1935
+edSignature: 6TjuKk7NICnyQBhG7ltFx1J4Pk6K22Dnr12HKj3nm8MKeFn5KxgffBh98Vp9GMrgpwvWTZlczqtXr3+6gSBKCA==
+length: 2990
 -->
