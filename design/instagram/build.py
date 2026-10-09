@@ -10,6 +10,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 OUT = HERE / "posts"
 KIT = (HERE.parent / "inlaut-brand-kit" / "logo").as_uri()
 SCREENS = (HERE.parent.parent / "site" / "public" / "screens").as_uri()
+PERSONAS = (HERE.parent.parent / "site" / "public" / "personas").as_uri()
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 CSS = """
@@ -212,6 +213,68 @@ STORIES = {
 "story-4-download": ("dark", f'{SYMBOL}<h1>Kostenlos.<br><em>Open Source.</em></h1><p class="lead">Für Apple-Silicon-Macs ab macOS 26.</p><span class="pill">inlaut.de</span>'),
 }
 
+# WhatsApp status (1080x1920), shared privately by the maintainer. WhatsApp puts its
+# header over the top ~220 px and the reply field over the bottom ~260 px.
+WA_CSS = STORY_CSS + """
+.wa { padding: 0; }
+.glow { position: absolute; left: -140px; top: 330px; width: 1360px; opacity: .07; }
+.wa-top { position: absolute; top: 250px; left: 96px; right: 96px; }
+.wa-top img { height: 52px; }
+.wa-body { position: absolute; left: 96px; right: 96px; top: 430px; }
+.wa-symbol { width: 300px; filter: drop-shadow(0 0 40px rgba(188,235,217,.45)); margin-bottom: 56px; }
+.wa h1 { font-size: 124px; }
+.ticks { margin-top: 64px; display: flex; flex-direction: column; gap: 26px; }
+.tick { display: flex; gap: 24px; align-items: center; font-size: 44px; font-weight: 500; }
+.tick b { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; font-size: 32px; background: #BCEBD9; color: #103D3B; }
+.url { position: absolute; left: 96px; right: 96px; bottom: 300px; display: flex; align-items: center; justify-content: space-between;
+  padding: 34px 44px; border-radius: 40px; background: #BCEBD9; color: #103D3B; }
+.url span { font-size: 30px; font-weight: 500; line-height: 1.3; }
+.url strong { font-size: 76px; font-weight: 700; letter-spacing: -0.04em; }
+.photo { position: absolute; left: 0; top: 0; width: 1080px; height: 960px; overflow: hidden; }
+.photo img { position: absolute; height: 960px; top: 0; }
+.photo::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(16,61,59,.55) 0, rgba(16,61,59,0) 26%, rgba(16,61,59,0) 55%, #103D3B 92%); }
+.ki { position: absolute; z-index: 2; left: 96px; top: 340px; font-size: 26px; font-weight: 600; padding: 10px 20px;
+  border-radius: 999px; background: rgba(12,32,31,.72); color: #F6F7F4; }
+.persona-text { position: absolute; left: 96px; right: 96px; top: 830px; }
+.who { font-size: 30px; font-weight: 600; color: #BCEBD9; margin-bottom: 20px; }
+.persona-text h2 { font-size: 84px; }
+.persona-text .ticks { margin-top: 44px; gap: 20px; }
+.persona-text .tick { font-size: 38px; }
+.persona-text .tick b { width: 52px; height: 52px; font-size: 28px; }
+"""
+
+def wa(body):
+    return (f'<!doctype html><html lang="de"><meta charset="utf-8"><style>{WA_CSS}</style><body>'
+            f'<div class="slide dark wa">{body}</div></body></html>')
+
+def ticks(*rows):
+    return '<div class="ticks">' + "".join(f'<div class="tick"><b>✓</b>{r}</div>' for r in rows) + "</div>"
+
+def persona(name, left, who, headline, *rows):
+    # left shifts the 1286 px wide photo so the face stays clear of the KI label.
+    return wa(f'<div class="photo"><img src="{PERSONAS}/{name}.webp" style="left:{left}px" alt=""></div>'
+              f'<span class="ki">KI-generiertes Bild</span><div class="persona-text"><p class="who">{who}</p>'
+              f'<h2>{headline}</h2>' + ticks(*rows) + "</div>" + URL)
+
+URL = '<div class="url"><span>Kostenlos für<br>Apple-Silicon-Macs</span><strong>inlaut.de</strong></div>'
+
+WHATSAPP = {
+"status-1-grafik": wa(
+    f'<img class="glow" src="{KIT}/inlaut-symbol-mint.svg" alt="">'
+    f'<div class="wa-top"><img src="{KIT}/inlaut-logo-mint.svg" alt=""></div>'
+    f'<div class="wa-body"><img class="wa-symbol" src="{KIT}/inlaut-symbol-mint.svg" alt="">'
+    '<h1>Sprechen<br><em>statt tippen.</em></h1>'
+    '<p class="lead">Taste halten, sprechen, loslassen – inlaut schreibt deinen Text direkt in jede App auf dem Mac.</p>'
+    + ticks("Läuft lokal, ohne Cloud", "Kostenlos &amp; Open Source", "Auf Deutsch abgestimmt") + "</div>" + URL),
+"status-2-valerie": persona("valerie", -200, "Valerie · Vertrieb, viel unterwegs", "Mails am Gate.<br><em>Auch ohne Netz.</em>",
+    "Diktieren in jeder App", "Erkennung lokal auf dem Mac", "Funktioniert offline", "Kostenlos, ohne Konto"),
+"status-3-hanna": persona("hanna", -110, "Hanna · Biobäuerin mit Hofladen", "Hofladen-Posts.<br><em>Auch im Funkloch.</em>",
+    "Texte einfach einsprechen", "Funktioniert ohne Internet", "Erkennung lokal auf dem Mac", "Kostenlos, ohne Konto"),
+"status-4-lukas": persona("lukas", 0, "Lukas · Werkstudent im Startup", "Fachbegriffe?<br><em>Immer richtig.</em>",
+    "Ersetzungen für Namen und Fachwörter", "Diktieren in jeder App", "Erkennung lokal auf dem Mac", "Kostenlos, ohne Konto"),
+}
+
 PROFILE = (f'<!doctype html><html><meta charset="utf-8"><style>html,body{{margin:0;width:1080px;height:1080px;background:#103D3B}}'
            f'body{{display:grid;place-items:center}} img{{width:600px}}</style><body><img src="{KIT}/inlaut-symbol-mint.svg" alt=""></body></html>')
 
@@ -234,6 +297,9 @@ if __name__ == "__main__":
     for name, (theme, body) in STORIES.items():
         if not only or name in only or "stories" in only:
             render(story(theme, body), name, 1080, 1920, HERE / "stories")
+    for name, html in WHATSAPP.items():
+        if not only or name in only or "whatsapp" in only:
+            render(html, name, 1080, 1920, HERE.parent / "whatsapp")
     if not only or "profil" in only:
         render(PROFILE, "profil", 1080, 1080, HERE)
     print("ok")
