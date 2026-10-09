@@ -57,7 +57,7 @@ final class AppUpdater: NSObject, ObservableObject, SPUUpdaterDelegate, @preconc
     }
 
     func updater(_ updater: SPUUpdater, mayPerform updateCheck: SPUUpdateCheck) throws {
-        if isBusy { throw EngineError("Bitte zuerst das Diktat beenden.") }
+        if isBusy { throw EngineError("Please finish the dictation first.") }
     }
 
     func updater(_ updater: SPUUpdater, shouldPostponeRelaunchForUpdate item: SUAppcastItem,
@@ -90,7 +90,8 @@ struct CheckForUpdatesButton: View {
     @ObservedObject var updater: AppUpdater
 
     var body: some View {
-        Button(updater.availableVersion.map { "Update auf \($0) verfügbar …" } ?? "Nach Updates suchen …") {
+        Button(updater.availableVersion.map { String(localized: "Update to \($0) Available …") }
+               ?? String(localized: "Check for Updates …")) {
             updater.checkForUpdates()
         }
         .disabled(!updater.canCheckForUpdates || updater.isBusy)
@@ -103,7 +104,7 @@ struct UpdateSettingsView: View {
     var body: some View {
         Section {
             LabeledContent("Version", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "–")
-            Toggle("Automatisch nach Updates suchen", isOn: Binding(
+            Toggle("Automatically check for updates", isOn: Binding(
                 get: { updater.automaticallyChecksForUpdates },
                 set: { updater.setAutomaticallyChecksForUpdates($0) }
             ))
@@ -113,8 +114,8 @@ struct UpdateSettingsView: View {
             Text("Updates")
         } footer: {
             Text(updater.isEnabled
-                 ? "Prüft täglich auf neue Versionen. Download und Installation startest du selbst. Dabei werden keine Diktate übertragen."
-                 : "Updates sind in diesem Entwicklungsbuild deaktiviert.")
+                 ? "Checks for new versions daily. You start the download and installation yourself. No dictations are ever sent."
+                 : "Updates are disabled in this development build.")
                 .foregroundStyle(.secondary)
         }
     }

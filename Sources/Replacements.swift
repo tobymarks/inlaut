@@ -40,11 +40,11 @@ struct ReplacementsField: View {
                 }
             }
             HStack(spacing: 6) {
-                TextField("erkannt, z. B. Dum", text: $from)
+                TextField("recognized, e.g. Dum", text: $from)
                     .focused($fromFocused)
                     .onSubmit(add)
                 Image(systemName: "arrow.right").foregroundStyle(.secondary)
-                TextField("geschrieben, z. B. DAM", text: $to)
+                TextField("written, e.g. DAM", text: $to)
                     .onSubmit(add)
                 Button(action: add) { Image(systemName: "plus") }
                     .disabled(from.trimmingCharacters(in: .whitespaces).isEmpty)
@@ -82,7 +82,7 @@ private struct Bubble: View {
             }
             .buttonStyle(.plain)
             .onHover { hovering = $0 }
-            .help("Entfernen")
+            .help("Remove")
         }
         .padding(.leading, 10)
         .padding(.trailing, 6)

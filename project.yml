@@ -5,6 +5,8 @@ options:
   deploymentTarget:
     macOS: "26.0"
   createIntermediateGroups: true
+  # English source strings; German comes from the String Catalogs.
+  developmentLanguage: en
 packages:
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
@@ -21,6 +23,8 @@ settings:
     ENABLE_HARDENED_RUNTIME: YES
     DEAD_CODE_STRIPPING: YES
     ARCHS: arm64
+    SWIFT_EMIT_LOC_STRINGS: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
   configs:
     Release:
       CODE_SIGN_IDENTITY: "Developer ID Application"
@@ -52,6 +56,8 @@ targets:
     sources:
       - Sources
       - path: Resources/Assets.xcassets
+      - path: Resources/Localizable.xcstrings
+      - path: Resources/InfoPlist.xcstrings
       # Native Icon Composer document using the brand kit's unmasked vector layer.
       - path: Resources/Inlaut.icon
         buildPhase: resources
@@ -87,8 +93,8 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.productivity
-        NSMicrophoneUsageDescription: inlaut hört nur zu, solange du die Tastenkombination nutzt. Die Aufnahme wird auf diesem Mac in Text umgewandelt und verlässt ihn nicht.
-        NSSpeechRecognitionUsageDescription: inlaut wandelt deine Sprache mit der Spracherkennung von macOS auf diesem Mac in Text um.
+        NSMicrophoneUsageDescription: inlaut only listens while you use the shortcut. The recording is turned into text on this Mac and never leaves it.
+        NSSpeechRecognitionUsageDescription: inlaut turns your speech into text on this Mac with the macOS speech recognition.
         SUFeedURL: https://inlaut.de/updates/appcast.xml
         SUPublicEDKey: 0BXRecMp8/xobMyn1LWMXUlWzRNC5JDPlwC48CwzqwU=
         SUEnableAutomaticChecks: true

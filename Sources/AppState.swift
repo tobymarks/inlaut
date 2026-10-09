@@ -8,13 +8,13 @@ import Speech
 enum Mode: String, CaseIterable, Identifiable {
     case hold, toggle
     var id: String { rawValue }
-    var label: String { self == .hold ? "Halten zum Sprechen" : "Drücken zum Starten/Stoppen" }
+    var label: String { self == .hold ? String(localized: "Hold to talk") : String(localized: "Press to start/stop") }
 }
 
 enum Trigger: String, CaseIterable, Identifiable {
     case globe, shortcut
     var id: String { rawValue }
-    var label: String { self == .globe ? "🌐-Taste (fn)" : "Tastenkombination" }
+    var label: String { self == .globe ? String(localized: "🌐 key (fn)") : String(localized: "Key combination") }
 }
 
 enum EngineChoice: String, CaseIterable, Identifiable {
@@ -22,8 +22,8 @@ enum EngineChoice: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .parakeet: "Parakeet – beste Qualität"
-        case .apple: "Apple – geringer Speicherbedarf"
+        case .parakeet: String(localized: "Parakeet – best quality")
+        case .apple: String(localized: "Apple – low memory use")
         }
     }
 }
@@ -59,9 +59,19 @@ enum DictationLanguage: String, CaseIterable, Identifiable {
 
     var commandHelp: String {
         switch self {
-        case .german: "„neue Zeile“ und „neuer Absatz“ werden zu Umbrüchen."
-        case .english: "„new line“ und „new paragraph“ werden zu Umbrüchen."
-        case .bilingual: "„neue Zeile“, „neuer Absatz“, „new line“ und „new paragraph“ werden zu Umbrüchen."
+        case .german: String(localized: "“neue Zeile” and “neuer Absatz” become line breaks.")
+        case .english: String(localized: "“new line” and “new paragraph” become line breaks.")
+        case .bilingual: String(localized: "“neue Zeile”, “neuer Absatz”, “new line” and “new paragraph” become line breaks.")
+        }
+    }
+
+    /// The interface follows German or English; bilingual keeps whatever the
+    /// interface currently is.
+    var interfaceLanguage: String? {
+        switch self {
+        case .german: "de"
+        case .english: "en"
+        case .bilingual: nil
         }
     }
 
@@ -103,9 +113,9 @@ enum Status: Equatable {
     var label: String {
         switch self {
         case .preparing(let s): s
-        case .ready: "Bereit"
-        case .recording: "Hört zu …"
-        case .transcribing: "Erkennt …"
+        case .ready: String(localized: "Ready")
+        case .recording: String(localized: "Listening …")
+        case .transcribing: String(localized: "Transcribing …")
         case .failed(let s): s
         }
     }
@@ -123,11 +133,11 @@ enum Status: Equatable {
 
     var accessibilityLabel: String {
         switch self {
-        case .preparing: "inlaut: wird vorbereitet"
-        case .ready: "inlaut: bereit"
-        case .recording: "inlaut: nimmt auf"
-        case .transcribing: "inlaut: erkennt"
-        case .failed: "inlaut: nicht verfügbar"
+        case .preparing: String(localized: "inlaut: preparing")
+        case .ready: String(localized: "inlaut: ready")
+        case .recording: String(localized: "inlaut: recording")
+        case .transcribing: String(localized: "inlaut: transcribing")
+        case .failed: String(localized: "inlaut: unavailable")
         }
     }
 }
@@ -135,13 +145,15 @@ enum Status: Equatable {
 @MainActor
 @Observable
 final class AppState {
-    private(set) var status: Status = .preparing("Startet …") {
+    private(set) var status: Status = .preparing(String(localized: "Starting …")) {
         didSet { updater.isBusy = isDictating }
     }
     /// The Parakeet model in use (or being set up for first use).
     private(set) var model: SpeechModel
     private(set) var modelState: ModelState
     private(set) var modelSwitch: ModelSwitch?
+    /// macOS only picks up a new interface language at launch.
+    private(set) var interfaceRestartNeeded = false
     private(set) var lastText = ""
     private(set) var accessibilityGranted = TextInserter.isTrusted
     private(set) var microphoneGranted = AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
@@ -278,7 +290,7 @@ final class AppState {
     }
 
     private func start() {
-        status = .preparing("Lädt Spracherkennung …")
+        status = .preparing(String(localized: "Loading speech recognition …"))
         // Independent tasks: Apple's asset installation must never delay a
         // locally installed Parakeet model or its download/setup window.
         prepareApple()
@@ -288,6 +300,11 @@ final class AppState {
     }
 
     private func applyLanguage(previous: DictationLanguage) {
+        if let code = language.interfaceLanguage {
+            // The per-app language, the same one System Settings sets.
+            UserDefaults.standard.set([code], forKey: "AppleLanguages")
+            interfaceRestartNeeded = Bundle.main.preferredLocalizations.first != code
+        }
         selectModel(language.model)
         if language.appleLocale != previous.appleLocale {
             let released = previous.appleLocale
@@ -519,7 +536,7 @@ final class AppState {
         } else if engineChoice == .parakeet, case .failed(let message) = modelState {
             status = .failed(message)
         } else {
-            status = .preparing("Lädt Spracherkennung …")
+            status = .preparing(String(localized: "Loading speech recognition …"))
         }
     }
 
@@ -558,6 +575,22 @@ final class AppState {
         Task {
             _ = await AVCaptureDevice.requestAccess(for: .audio)
             refreshPermissions()
+        }
+    }
+
+    func relaunch() {
+        guard !isDictating else { return }
+        // A fresh instance once this one has quit; `open` would otherwise
+        // just reactivate the running app.
+        let script = "while kill -0 \(ProcessInfo.processInfo.processIdentifier) 2>/dev/null; do sleep 0.1; done; open \"$0\""
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/sh")
+        process.arguments = ["-c", script, Bundle.main.bundlePath]
+        do {
+            try process.run()
+            NSApp.terminate(nil)
+        } catch {
+            log.error("relaunch failed: \(error.localizedDescription)")
         }
     }
 
@@ -615,7 +648,7 @@ final class AppState {
 
     private func startRecording() {
         guard let engine = activeEngine else {
-            fail("Spracherkennung lädt noch …")
+            fail(String(localized: "Speech recognition is still loading …"))
             return
         }
         do {
@@ -670,7 +703,7 @@ final class AppState {
                     indicator.hide()
                     return
                 }
-                if take.peak == 0 { throw EngineError("Nur Stille – fehlt die Mikrofon-Berechtigung?") }
+                if take.peak == 0 { throw EngineError("Only silence – is microphone access missing?") }
                 let started = Date()
                 let raw = try await session.finish()
                 try Task.checkCancellation()
@@ -683,7 +716,7 @@ final class AppState {
                 text = replacements.apply(to: text)
                 guard !text.isEmpty else {
                     status = .ready
-                    indicator.showMessage("Nichts erkannt")
+                    indicator.showMessage(String(localized: "Nothing recognized"))
                     return
                 }
                 // Hide before pasting so the panel never sits over the target.

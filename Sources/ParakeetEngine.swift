@@ -19,7 +19,7 @@ final class ParakeetEngine: TranscriptionEngine {
 
     func prepare() async throws {
         guard recognizer == nil else { return }
-        guard model.isInstalled else { throw EngineError("Das Parakeet-Modell ist noch nicht geladen.") }
+        guard model.isInstalled else { throw EngineError("The Parakeet model has not been downloaded yet.") }
         let threads = min(4, ProcessInfo.processInfo.activeProcessorCount)
         let directory = model.directory
         let loading = Task.detached(priority: .userInitiated) {
@@ -41,7 +41,7 @@ final class ParakeetEngine: TranscriptionEngine {
     }
 
     func begin() throws -> TranscriptionSession {
-        guard let recognizer else { throw EngineError("Parakeet ist noch nicht bereit.") }
+        guard let recognizer else { throw EngineError("Parakeet is not ready yet.") }
         return ParakeetSession(recognizer: recognizer)
     }
 }
@@ -120,7 +120,7 @@ final class SherpaRecognizer: @unchecked Sendable {
         config.decoding_method = UnsafePointer(strings[6])
 
         guard let handle = SherpaOnnxCreateOfflineRecognizer(&config) else {
-            throw EngineError("Parakeet-Modell konnte nicht geladen werden.")
+            throw EngineError("The Parakeet model could not be loaded.")
         }
         self.handle = handle
         // The first decode is about twice as slow without a warm-up.

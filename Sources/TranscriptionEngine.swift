@@ -23,6 +23,6 @@ protocol TranscriptionSession: AnyObject, Sendable {
 
 struct EngineError: LocalizedError {
     let message: String
-    init(_ message: String) { self.message = message }
+    init(_ message: String.LocalizationValue) { self.message = String(localized: message) }
     var errorDescription: String? { message }
 }

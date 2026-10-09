@@ -16,7 +16,7 @@ final class AppleSpeechEngine: TranscriptionEngine {
 
     func prepare() async throws {
         guard let supported = await SpeechTranscriber.supportedLocale(equivalentTo: locale) else {
-            throw EngineError("Die Sprache \(locale.identifier) wird von der Spracherkennung nicht unterstützt.")
+            throw EngineError("Speech recognition does not support \(locale.identifier).")
         }
         let transcriber = Self.makeTranscriber(supported)
         if let request = try await AssetInventory.assetInstallationRequest(supporting: [transcriber]) {
@@ -24,14 +24,14 @@ final class AppleSpeechEngine: TranscriptionEngine {
         }
         try Task.checkCancellation()
         guard let format = await SpeechAnalyzer.bestAvailableAudioFormat(compatibleWith: [transcriber]) else {
-            throw EngineError("Kein passendes Audioformat für die Spracherkennung.")
+            throw EngineError("No suitable audio format for speech recognition.")
         }
         resolvedLocale = supported
         self.format = format
     }
 
     func begin() throws -> TranscriptionSession {
-        guard let resolvedLocale, let format else { throw EngineError("Spracherkennung ist noch nicht bereit.") }
+        guard let resolvedLocale, let format else { throw EngineError("Speech recognition is not ready yet.") }
         return AppleSpeechSession(transcriber: Self.makeTranscriber(resolvedLocale), format: format)
     }
 

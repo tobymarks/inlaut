@@ -14,7 +14,7 @@ enum ShortcutConflicts {
     static func check(_ shortcut: Shortcut) -> Finding? {
         if let name = systemShortcut(matching: shortcut) { return .system(name) }
         if shortcut.keyCode == UInt32(kVK_Space), shortcut.modifiers == UInt32(optionKey) {
-            return .commonApp("⌥Space ist oft von Raycast, Alfred oder ChatGPT belegt.")
+            return .commonApp(String(localized: "⌥Space is often taken by Raycast, Alfred or ChatGPT."))
         }
         return nil
     }
@@ -32,7 +32,7 @@ enum ShortcutConflicts {
                 && (entry[kHISymbolicHotKeyModifiers as String] as? Int).map { UInt32($0) & relevant } == shortcut.modifiers
         }
         guard taken else { return nil }
-        return name(for: shortcut) ?? defaultNames[Combo(shortcut)].map { "„\($0)“" } ?? "einen Systemkurzbefehl"
+        return name(for: shortcut) ?? defaultNames[Combo(shortcut)].map { String(localized: "“\($0)”") } ?? String(localized: "a system shortcut")
     }
 
     private struct Combo: Hashable {
@@ -44,22 +44,22 @@ enum ShortcutConflicts {
     /// Shortcuts the user never changed are missing from the preferences
     /// file, so their factory keys are matched here.
     private static let defaultNames: [Combo: String] = [
-        Combo(kVK_Space, cmdKey): "Spotlight",
-        Combo(kVK_Space, cmdKey | optionKey): "Finder-Suchfenster",
-        Combo(kVK_Space, controlKey): "Vorherige Eingabequelle",
-        Combo(kVK_Space, controlKey | optionKey): "Nächste Eingabequelle",
-        Combo(kVK_ANSI_3, cmdKey | shiftKey): "Bildschirmfoto sichern",
-        Combo(kVK_ANSI_3, cmdKey | shiftKey | controlKey): "Bildschirmfoto kopieren",
-        Combo(kVK_ANSI_4, cmdKey | shiftKey): "Bereich als Bild sichern",
-        Combo(kVK_ANSI_4, cmdKey | shiftKey | controlKey): "Bereich kopieren",
-        Combo(kVK_ANSI_5, cmdKey | shiftKey): "Bildschirmfoto-Optionen",
-        Combo(kVK_UpArrow, controlKey): "Mission Control",
-        Combo(kVK_DownArrow, controlKey): "Programmfenster",
-        Combo(kVK_LeftArrow, controlKey): "Space nach links",
-        Combo(kVK_RightArrow, controlKey): "Space nach rechts",
-        Combo(kVK_ANSI_D, cmdKey | optionKey): "Dock ein-/ausblenden",
-        Combo(kVK_ANSI_Grave, cmdKey): "Nächstes Fenster",
-        Combo(kVK_F11, 0): "Schreibtisch anzeigen",
+        Combo(kVK_Space, cmdKey): String(localized: "Spotlight"),
+        Combo(kVK_Space, cmdKey | optionKey): String(localized: "Finder search window"),
+        Combo(kVK_Space, controlKey): String(localized: "Previous input source"),
+        Combo(kVK_Space, controlKey | optionKey): String(localized: "Next input source"),
+        Combo(kVK_ANSI_3, cmdKey | shiftKey): String(localized: "Save screenshot"),
+        Combo(kVK_ANSI_3, cmdKey | shiftKey | controlKey): String(localized: "Copy screenshot"),
+        Combo(kVK_ANSI_4, cmdKey | shiftKey): String(localized: "Save area as picture"),
+        Combo(kVK_ANSI_4, cmdKey | shiftKey | controlKey): String(localized: "Copy area"),
+        Combo(kVK_ANSI_5, cmdKey | shiftKey): String(localized: "Screenshot options"),
+        Combo(kVK_UpArrow, controlKey): String(localized: "Mission Control"),
+        Combo(kVK_DownArrow, controlKey): String(localized: "Application windows"),
+        Combo(kVK_LeftArrow, controlKey): String(localized: "Move left a space"),
+        Combo(kVK_RightArrow, controlKey): String(localized: "Move right a space"),
+        Combo(kVK_ANSI_D, cmdKey | optionKey): String(localized: "Show/hide Dock"),
+        Combo(kVK_ANSI_Grave, cmdKey): String(localized: "Next window"),
+        Combo(kVK_F11, 0): String(localized: "Show desktop"),
     ]
 
     /// The symbolic hot key list has no names; the preferences file has IDs
@@ -88,13 +88,13 @@ enum ShortcutConflicts {
     }
 
     private static let names: [Int: String] = [
-        27: "Nächstes Fenster", 28: "Bildschirmfoto sichern", 29: "Bildschirmfoto kopieren",
-        30: "Bereich als Bild sichern", 31: "Bereich kopieren", 32: "Mission Control",
-        33: "Programmfenster", 36: "Schreibtisch anzeigen", 52: "Dock ein-/ausblenden",
-        60: "Vorherige Eingabequelle", 61: "Nächste Eingabequelle", 64: "Spotlight",
-        65: "Finder-Suchfenster", 79: "Space nach links", 81: "Space nach rechts",
-        160: "Launchpad", 163: "Mitteilungszentrale", 175: "Nicht stören",
-        184: "Bildschirmfoto-Optionen",
+        27: String(localized: "Next window"), 28: String(localized: "Save screenshot"), 29: String(localized: "Copy screenshot"),
+        30: String(localized: "Save area as picture"), 31: String(localized: "Copy area"), 32: String(localized: "Mission Control"),
+        33: String(localized: "Application windows"), 36: String(localized: "Show desktop"), 52: String(localized: "Show/hide Dock"),
+        60: String(localized: "Previous input source"), 61: String(localized: "Next input source"), 64: String(localized: "Spotlight"),
+        65: String(localized: "Finder search window"), 79: String(localized: "Move left a space"), 81: String(localized: "Move right a space"),
+        160: String(localized: "Launchpad"), 163: String(localized: "Notification Center"), 175: String(localized: "Do Not Disturb"),
+        184: String(localized: "Screenshot options"),
     ]
 }
 
@@ -109,10 +109,10 @@ enum GlobeKeySetting {
 
     static var actionName: String {
         switch action {
-        case 1: "die Eingabequelle wechseln"
-        case 2: "Emoji & Symbole zeigen"
-        case 3: "die Diktierfunktion von macOS starten"
-        default: "eine Systemaktion ausführen"
+        case 1: String(localized: "change the input source")
+        case 2: String(localized: "show Emoji & Symbols")
+        case 3: String(localized: "start macOS Dictation")
+        default: String(localized: "perform a system action")
         }
     }
 

@@ -12,7 +12,7 @@ final class SetupWindow {
             let window = NSWindow(contentViewController: NSHostingController(rootView: SetupView(state: state) { [weak self] in
                 self?.window?.close()
             }))
-            window.title = "inlaut einrichten"
+            window.title = String(localized: "Set Up inlaut")
             window.styleMask = [.titled, .closable]
             window.isReleasedWhenClosed = false
             window.center()
@@ -29,35 +29,35 @@ struct SetupView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            InlautBrandHeader(title: "Deine Stimme. Direkt als Text.",
-                              subtitle: "Einmal einrichten. Danach diktierst du direkt in dein Textfeld. Deine Sprache bleibt auf diesem Mac.")
+            InlautBrandHeader(title: "Your voice. Straight to text.",
+                              subtitle: "Set it up once. Then dictate straight into any text field. Your voice stays on this Mac.")
 
             VStack(alignment: .leading, spacing: 14) {
-                Step(number: 1, done: state.modelState == .ready, title: "Spracherkennung laden") {
+                Step(number: 1, done: state.modelState == .ready, title: "Download speech recognition") {
                     ModelStatusView(state: state)
                 }
-                Step(number: 2, done: state.microphoneGranted, title: "Mikrofon erlauben") {
+                Step(number: 2, done: state.microphoneGranted, title: "Allow microphone") {
                     if !state.microphoneGranted {
-                        Button("Mikrofon erlauben …") { state.requestMicrophone() }
+                        Button("Allow Microphone …") { state.requestMicrophone() }
                     }
                 }
                 if state.trigger == .globe {
-                    Step(number: 3, done: !GlobeKeySetting.conflicts, title: "🌐-Taste für inlaut freigeben") {
+                    Step(number: 3, done: !GlobeKeySetting.conflicts, title: "Free up the 🌐 key for inlaut") {
                         if GlobeKeySetting.conflicts {
                             VStack(alignment: .leading, spacing: 6) {
-                                Text("Unter Tastatur „🌐-Taste drücken“ auf „Keine Aktion“ stellen.")
+                                Text("Under Keyboard, set “Press 🌐 key to” to “Do Nothing”.")
                                     .font(.callout).foregroundStyle(.secondary)
-                                Button("Tastatur-Einstellungen öffnen …") { GlobeKeySetting.openKeyboardSettings() }
+                                Button("Open Keyboard Settings …") { GlobeKeySetting.openKeyboardSettings() }
                             }
                         }
                     }
                 }
-                Step(number: state.trigger == .globe ? 4 : 3, done: state.accessibilityGranted, title: "Einfügen in andere Apps erlauben") {
+                Step(number: state.trigger == .globe ? 4 : 3, done: state.accessibilityGranted, title: "Allow pasting into other apps") {
                     if !state.accessibilityGranted {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Unter Bedienungshilfen „inlaut“ einschalten.")
+                            Text("Turn on “inlaut” under Accessibility.")
                                 .font(.callout).foregroundStyle(.secondary)
-                            Button("Bedienungshilfen öffnen …") { state.requestAccessibility() }
+                            Button("Open Accessibility Settings …") { state.requestAccessibility() }
                         }
                     }
                 }
@@ -67,13 +67,19 @@ struct SetupView: View {
             .background(Color.inlautSurface, in: .rect(cornerRadius: 18))
 
             HStack {
-                Text(state.trigger == .globe
-                     ? "Diktieren: **🌐 halten** · zweimal tippen für freihändig"
-                     : "Diktieren: **\(state.shortcut.display)** \(state.mode == .hold ? "halten" : "drücken")")
+                Group {
+                    if state.trigger == .globe {
+                        Text("Dictate: **hold 🌐** · double-tap for hands-free")
+                    } else if state.mode == .hold {
+                        Text("Dictate: hold **\(state.shortcut.display)**")
+                    } else {
+                        Text("Dictate: press **\(state.shortcut.display)**")
+                    }
+                }
                     .font(.callout)
                     .foregroundStyle(Color.inlautMuted)
                 Spacer()
-                Button("Fertig", action: done)
+                Button("Done", action: done)
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.defaultAction)
             }
@@ -95,7 +101,7 @@ struct SetupView: View {
 private struct Step<Content: View>: View {
     let number: Int
     let done: Bool
-    let title: String
+    let title: LocalizedStringKey
     @ViewBuilder let content: Content
 
     var body: some View {
@@ -111,7 +117,7 @@ private struct Step<Content: View>: View {
                 }
             }
             .frame(width: 26, height: 26)
-            .accessibilityLabel(done ? "Erledigt" : "Schritt \(number)")
+            .accessibilityLabel(done ? Text("Completed") : Text("Step \(number)"))
             VStack(alignment: .leading, spacing: 6) {
                 Text(title).fontWeight(.semibold).foregroundStyle(Color.inlautInk)
                 content
@@ -130,7 +136,7 @@ struct ModelStatusView: View {
         VStack(alignment: .leading, spacing: 8) {
             current
             ForEach(state.otherInstalledModels) { model in
-                Text("Auch gespeichert: \(model.name), \(Self.size(of: model))")
+                Text("Also stored: \(model.name), \(Self.size(of: model))")
                     .font(.callout).foregroundStyle(.secondary)
             }
             if let pending = state.modelSwitch {
@@ -145,37 +151,37 @@ struct ModelStatusView: View {
         switch state.modelState {
         case .missing:
             HStack {
-                Text("\(name), \(size) einmalig").font(.callout).foregroundStyle(.secondary)
-                Button("Laden") { state.startDownload() }
+                Text("\(name), \(size) one-time download").font(.callout).foregroundStyle(.secondary)
+                Button("Download") { state.startDownload() }
             }
         case .downloading(let fraction):
             VStack(alignment: .leading, spacing: 8) {
                 ProgressView(value: fraction).frame(maxWidth: 240)
-                    .accessibilityLabel("Sprachmodell herunterladen")
+                    .accessibilityLabel("Downloading speech model")
                 HStack(spacing: 12) {
-                    Text("\(Int(fraction * 100)) % von \(size)").font(.callout).monospacedDigit()
+                    Text("\(Int(fraction * 100)) % of \(size)").font(.callout).monospacedDigit()
                         .foregroundStyle(.secondary)
-                    Button("Abbrechen") { state.cancelDownload() }.controlSize(.small)
+                    Button("Cancel") { state.cancelDownload() }.controlSize(.small)
                 }
             }
         case .loading:
             HStack(spacing: 6) {
                 ProgressView().controlSize(.small)
-                Text("\(name) wird geladen …").font(.callout).foregroundStyle(.secondary)
+                Text("Loading \(name) …").font(.callout).foregroundStyle(.secondary)
             }
         case .installed:
             HStack {
-                Text("\(name), \(size) auf diesem Mac.").font(.callout).foregroundStyle(.secondary)
+                Text("\(name), \(size) on this Mac.").font(.callout).foregroundStyle(.secondary)
                 if state.engineChoice == .parakeet {
-                    Button("Aktivieren") { state.startDownload() }
+                    Button("Activate") { state.startDownload() }
                 }
             }
         case .ready:
-            Text("\(name) ist bereit, \(size) auf diesem Mac.").font(.callout).foregroundStyle(.secondary)
+            Text("\(name) is ready, \(size) on this Mac.").font(.callout).foregroundStyle(.secondary)
         case .failed(let message):
             VStack(alignment: .leading, spacing: 4) {
                 Text(message).font(.callout).foregroundStyle(.red)
-                Button("Erneut versuchen") { state.startDownload() }
+                Button("Try Again") { state.startDownload() }
             }
         }
     }
@@ -196,27 +202,27 @@ private struct ModelSwitchView: View {
         switch pending.phase {
         case .downloading(let fraction):
             VStack(alignment: .leading, spacing: 8) {
-                Text("Wechsel zu \(name). Bis dahin diktierst du weiter mit \(state.model.name).")
+                Text("Switching to \(name). Until then you keep dictating with \(state.model.name).")
                     .font(.callout).foregroundStyle(.secondary)
                 ProgressView(value: fraction).frame(maxWidth: 240)
-                    .accessibilityLabel("\(name) herunterladen")
+                    .accessibilityLabel("Downloading \(name)")
                 HStack(spacing: 12) {
-                    Text("\(Int(fraction * 100)) % von \(size)").font(.callout).monospacedDigit()
+                    Text("\(Int(fraction * 100)) % of \(size)").font(.callout).monospacedDigit()
                         .foregroundStyle(.secondary)
-                    Button("Abbrechen") { state.cancelModelSwitch() }.controlSize(.small)
+                    Button("Cancel") { state.cancelModelSwitch() }.controlSize(.small)
                 }
             }
         case .loading:
             HStack(spacing: 6) {
                 ProgressView().controlSize(.small)
-                Text("\(name) wird geladen …").font(.callout).foregroundStyle(.secondary)
+                Text("Loading \(name) …").font(.callout).foregroundStyle(.secondary)
             }
         case .failed(let message):
             VStack(alignment: .leading, spacing: 4) {
-                Text("Wechsel zu \(name) fehlgeschlagen: \(message)").font(.callout).foregroundStyle(.red)
+                Text("Switching to \(name) failed: \(message)").font(.callout).foregroundStyle(.red)
                 HStack {
-                    Button("Erneut versuchen") { state.retryModelSwitch() }
-                    Button("Abbrechen") { state.cancelModelSwitch() }
+                    Button("Try Again") { state.retryModelSwitch() }
+                    Button("Cancel") { state.cancelModelSwitch() }
                 }
             }
         }

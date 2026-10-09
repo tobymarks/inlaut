@@ -19,10 +19,10 @@ final class Recorder {
         let input = engine.inputNode
         let inFormat = input.outputFormat(forBus: 0)
         guard inFormat.sampleRate > 0, inFormat.channelCount > 0 else {
-            throw EngineError("Kein Mikrofon gefunden.")
+            throw EngineError("No microphone found.")
         }
         guard let converter = AVAudioConverter(from: inFormat, to: session.audioFormat) else {
-            throw EngineError("Audioformat des Mikrofons wird nicht unterstützt.")
+            throw EngineError("The microphone's audio format is not supported.")
         }
         let meter = Meter()
         input.installTap(onBus: 0, bufferSize: 4096, format: inFormat,

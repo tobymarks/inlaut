@@ -2,7 +2,7 @@
 
 Brand name is always written in lowercase: "inlaut", even at the start of a sentence (UI, website, docs, social posts, comments). Technical identifiers keep their existing form (`Inlaut.app`, scheme/target `Inlaut`, `Inlaut.icon`).
 
-macOS menu bar dictation, fully local. Swift 6, SwiftUI + AppKit, macOS 26+, Apple Silicon. Maintainer: Tobias Marks (talks German; UI strings are German for now, code, comments, commits and issues are English). License GPL-3.0-or-later. Roadmap: GitHub issues on `tobymarks/inlaut`.
+macOS menu bar dictation, fully local. Swift 6, SwiftUI + AppKit, macOS 26+, Apple Silicon. Maintainer: Tobias Marks (talks German; code, comments, commits and issues are English). UI strings are written in English in the source; German lives in `Resources/Localizable.xcstrings` (and `InfoPlist.xcstrings` for permission texts). Non-view strings use `String(localized:)`, `EngineError` takes a `String.LocalizationValue`. After adding UI text, build and run `python3 scripts/check-localizations.py`, then add the German entry (xcodebuild does not update the catalog, only the Xcode app does). License GPL-3.0-or-later. Roadmap: GitHub issues on `tobymarks/inlaut`.
 
 ## Build and run
 
@@ -47,6 +47,7 @@ An agent cannot press the shortcut or 🌐 key (synthetic events lack permission
 
 ## Architecture
 
+- `DictationLanguage` (Deutsch / English / Deutsch + English) drives the Parakeet model (primeline / v2 / primeline), Apple's locale, voice commands and the interface language (per-app `AppleLanguages`, applied after a relaunch). `SpeechModel` in `ModelStore.swift` is the pinned model catalogue; a switch downloads and loads the new model while the old one keeps dictating, then deletes the old one unless "Keep both models" is on.
 - `AppState` — settings (UserDefaults), engine choice, model download state, dictation flow (start → record → 150 ms trailing audio → finish → voice commands → replacements → paste).
 - Engines behind `TranscriptionEngine`/`TranscriptionSession`:
   - `ParakeetEngine` (default) — parakeet-primeline int8 ONNX via sherpa-onnx C API on CPU, 4 threads, kept loaded. Long audio split into 90 s pieces at pauses, quiet audio gained to peak 0.5, empty long pieces retried in 20 s parts (ported from winidi/dictate `local_stt.py`).

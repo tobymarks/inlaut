@@ -1,0 +1,1602 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ is ready, %@ on this Mac.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ist bereit, %@ auf diesem Mac."
+          }
+        }
+      }
+    },
+    "%@, %@ on this Mac.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, %@ auf diesem Mac."
+          }
+        }
+      }
+    },
+    "%@, %@ one-time download": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, %@ einmalig"
+          }
+        }
+      }
+    },
+    "%lld": {
+      "shouldTranslate": false
+    },
+    "%lld %% of %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld %% von %@"
+          }
+        }
+      }
+    },
+    "**Hold** to talk, release to paste. **Double-tap** for hands-free dictation, a single tap ends it. 🌐 together with another key keeps working as fn.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "**Halten** zum Sprechen, loslassen fügt ein. **Zweimal tippen** zum freihändigen Diktieren, einmal tippen beendet. 🌐 zusammen mit einer anderen Taste bleibt normale fn-Nutzung."
+          }
+        }
+      }
+    },
+    "Activate": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktivieren"
+          }
+        }
+      }
+    },
+    "Allow Accessibility …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bedienungshilfen erlauben …"
+          }
+        }
+      }
+    },
+    "Allow Microphone …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mikrofon erlauben …"
+          }
+        }
+      }
+    },
+    "Allow microphone": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mikrofon erlauben"
+          }
+        }
+      }
+    },
+    "Allow pasting into other apps": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einfügen in andere Apps erlauben"
+          }
+        }
+      }
+    },
+    "Allow …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erlauben …"
+          }
+        }
+      }
+    },
+    "Allowed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erlaubt"
+          }
+        }
+      }
+    },
+    "Also stored: %@, %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auch gespeichert: %@, %@"
+          }
+        }
+      }
+    },
+    "Apple – low memory use": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple – geringer Speicherbedarf"
+          }
+        }
+      }
+    },
+    "Application windows": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Programmfenster"
+          }
+        }
+      }
+    },
+    "At the text cursor": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Am Textcursor"
+          }
+        }
+      }
+    },
+    "Automatically check for updates": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatisch nach Updates suchen"
+          }
+        }
+      }
+    },
+    "Behavior": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verhalten"
+          }
+        }
+      }
+    },
+    "Bottom center": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unten mittig"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abbrechen"
+          }
+        }
+      }
+    },
+    "Check for Updates …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach Updates suchen …"
+          }
+        }
+      }
+    },
+    "Checks for new versions daily. You start the download and installation yourself. No dictations are ever sent.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prüft täglich auf neue Versionen. Download und Installation startest du selbst. Dabei werden keine Diktate übertragen."
+          }
+        }
+      }
+    },
+    "Checksum of %@ does not match – the download is damaged.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prüfsumme von %@ stimmt nicht – Download beschädigt."
+          }
+        }
+      }
+    },
+    "Completed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erledigt"
+          }
+        }
+      }
+    },
+    "Copy Last Dictation": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letztes Diktat kopieren"
+          }
+        }
+      }
+    },
+    "Copy area": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereich kopieren"
+          }
+        }
+      }
+    },
+    "Copy screenshot": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildschirmfoto kopieren"
+          }
+        }
+      }
+    },
+    "Dictate with": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diktieren mit"
+          }
+        }
+      }
+    },
+    "Dictate your way.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So diktierst du."
+          }
+        }
+      }
+    },
+    "Dictate: **hold 🌐** · double-tap for hands-free": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diktieren: **🌐 halten** · zweimal tippen für freihändig"
+          }
+        }
+      }
+    },
+    "Dictate: hold **%@**": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diktieren: **%@** halten"
+          }
+        }
+      }
+    },
+    "Dictate: press **%@**": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diktieren: **%@** drücken"
+          }
+        }
+      }
+    },
+    "Dictate: 🌐 key": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diktieren: 🌐-Taste"
+          }
+        }
+      }
+    },
+    "Discard Dictation": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diktat verwerfen"
+          }
+        }
+      }
+    },
+    "Do Not Disturb": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht stören"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fertig"
+          }
+        }
+      }
+    },
+    "Download": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laden"
+          }
+        }
+      }
+    },
+    "Download Parakeet Model …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parakeet-Modell laden …"
+          }
+        }
+      }
+    },
+    "Download failed (HTTP %lld).": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download fehlgeschlagen (HTTP %lld)."
+          }
+        }
+      }
+    },
+    "Download speech recognition": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spracherkennung laden"
+          }
+        }
+      }
+    },
+    "Downloading %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ herunterladen"
+          }
+        }
+      }
+    },
+    "Downloading %@: %lld %%": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wird geladen: %lld %%"
+          }
+        }
+      }
+    },
+    "Downloading speech model": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprachmodell herunterladen"
+          }
+        }
+      }
+    },
+    "Engine": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Engine"
+          }
+        }
+      }
+    },
+    "Everything is recognized on this Mac. No recordings or texts are stored or sent.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles wird auf diesem Mac erkannt. Es werden keine Aufnahmen oder Texte gespeichert oder übertragen."
+          }
+        }
+      }
+    },
+    "Finder search window": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finder-Suchfenster"
+          }
+        }
+      }
+    },
+    "Fixes what recognition regularly gets wrong – whole words, case-insensitive.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Korrigiert, was die Erkennung regelmäßig falsch schreibt – ganze Wörter, Groß-/Kleinschreibung egal."
+          }
+        }
+      }
+    },
+    "For anyone who often switches between Deutsch and English: switching from the menu then takes a few seconds instead of a new download. If you mix languages, “Deutsch + English” suits you better. Needs up to %@ on this Mac in total.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für alle, die oft zwischen Deutsch und English wechseln: Umschalten im Menü dauert dann nur ein paar Sekunden statt eines neuen Downloads. Wer Sprachen mischt, ist mit „Deutsch + English“ besser bedient. Braucht zusammen bis zu %@ auf diesem Mac."
+          }
+        }
+      }
+    },
+    "Free up the 🌐 key for inlaut": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🌐-Taste für inlaut freigeben"
+          }
+        }
+      }
+    },
+    "Hold to talk": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halten zum Sprechen"
+          }
+        }
+      }
+    },
+    "Indicator while dictating": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anzeige beim Diktieren"
+          }
+        }
+      }
+    },
+    "Keep both models": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beide Modelle behalten"
+          }
+        }
+      }
+    },
+    "Key combination": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tastenkombination"
+          }
+        }
+      }
+    },
+    "Language": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprache"
+          }
+        }
+      }
+    },
+    "Launch at login": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beim Anmelden starten"
+          }
+        }
+      }
+    },
+    "Launchpad": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Launchpad"
+          }
+        }
+      }
+    },
+    "Lines and paragraphs by voice": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeilen und Absätze per Sprache"
+          }
+        }
+      }
+    },
+    "Listening": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hört zu"
+          }
+        }
+      }
+    },
+    "Listening …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hört zu …"
+          }
+        }
+      }
+    },
+    "Loading %@ …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wird geladen …"
+          }
+        }
+      }
+    },
+    "Loading speech recognition …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lädt Spracherkennung …"
+          }
+        }
+      }
+    },
+    "Microphone": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mikrofon"
+          }
+        }
+      }
+    },
+    "Mission Control": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mission Control"
+          }
+        }
+      }
+    },
+    "Mode": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modus"
+          }
+        }
+      }
+    },
+    "Model": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modell"
+          }
+        }
+      }
+    },
+    "Move left a space": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Space nach links"
+          }
+        }
+      }
+    },
+    "Move right a space": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Space nach rechts"
+          }
+        }
+      }
+    },
+    "Next input source": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächste Eingabequelle"
+          }
+        }
+      }
+    },
+    "Next window": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächstes Fenster"
+          }
+        }
+      }
+    },
+    "No microphone found.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Mikrofon gefunden."
+          }
+        }
+      }
+    },
+    "No suitable audio format for speech recognition.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein passendes Audioformat für die Spracherkennung."
+          }
+        }
+      }
+    },
+    "Nothing recognized": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nichts erkannt"
+          }
+        }
+      }
+    },
+    "Notification Center": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitteilungszentrale"
+          }
+        }
+      }
+    },
+    "On the clipboard – allow Accessibility to paste": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Zwischenablage – zum Einfügen Bedienungshilfen erlauben"
+          }
+        }
+      }
+    },
+    "On the clipboard – paste the dictation with ⌘V": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Zwischenablage – Diktat mit ⌘V einfügen"
+          }
+        }
+      }
+    },
+    "On the clipboard – release the modifier keys and paste with ⌘V": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Zwischenablage – Sondertasten loslassen und mit ⌘V einfügen"
+          }
+        }
+      }
+    },
+    "Only silence – is microphone access missing?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur Stille – fehlt die Mikrofon-Berechtigung?"
+          }
+        }
+      }
+    },
+    "Open Accessibility Settings …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bedienungshilfen öffnen …"
+          }
+        }
+      }
+    },
+    "Open Keyboard Settings …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tastatur-Einstellungen öffnen …"
+          }
+        }
+      }
+    },
+    "Parakeet English": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parakeet English"
+          }
+        }
+      }
+    },
+    "Parakeet German": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parakeet Deutsch"
+          }
+        }
+      }
+    },
+    "Parakeet is not ready yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parakeet ist noch nicht bereit."
+          }
+        }
+      }
+    },
+    "Parakeet – best quality": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parakeet – beste Qualität"
+          }
+        }
+      }
+    },
+    "Pasting into other apps": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einfügen in andere Apps"
+          }
+        }
+      }
+    },
+    "Please finish the dictation first.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitte zuerst das Diktat beenden."
+          }
+        }
+      }
+    },
+    "Press a key combination …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tastenkombination drücken …"
+          }
+        }
+      }
+    },
+    "Press to start/stop": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drücken zum Starten/Stoppen"
+          }
+        }
+      }
+    },
+    "Previous input source": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorherige Eingabequelle"
+          }
+        }
+      }
+    },
+    "Quit": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beenden"
+          }
+        }
+      }
+    },
+    "Ready": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereit"
+          }
+        }
+      }
+    },
+    "Recognition, keys and words – set up to suit you.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spracherkennung, Tasten und Wörter – passend zu dir."
+          }
+        }
+      }
+    },
+    "Recognition: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erkennung: %@"
+          }
+        }
+      }
+    },
+    "Remove": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entfernen"
+          }
+        }
+      }
+    },
+    "Replacements": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ersetzungen"
+          }
+        }
+      }
+    },
+    "Restart Now": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jetzt neu starten"
+          }
+        }
+      }
+    },
+    "Save area as picture": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereich als Bild sichern"
+          }
+        }
+      }
+    },
+    "Save screenshot": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildschirmfoto sichern"
+          }
+        }
+      }
+    },
+    "Screenshot options": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildschirmfoto-Optionen"
+          }
+        }
+      }
+    },
+    "Set Up Permissions …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Berechtigungen einrichten …"
+          }
+        }
+      }
+    },
+    "Set Up inlaut": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "inlaut einrichten"
+          }
+        }
+      }
+    },
+    "Set it up once. Then dictate straight into any text field. Your voice stays on this Mac.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einmal einrichten. Danach diktierst du direkt in dein Textfeld. Deine Sprache bleibt auf diesem Mac."
+          }
+        }
+      }
+    },
+    "Settings …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen …"
+          }
+        }
+      }
+    },
+    "Shortcut": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurzbefehl"
+          }
+        }
+      }
+    },
+    "Shortcut: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurzbefehl: %@"
+          }
+        }
+      }
+    },
+    "Show desktop": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schreibtisch anzeigen"
+          }
+        }
+      }
+    },
+    "Show/hide Dock": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dock ein-/ausblenden"
+          }
+        }
+      }
+    },
+    "Sounds at start and end": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Töne beim Start und Ende"
+          }
+        }
+      }
+    },
+    "Speech Recognition": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spracherkennung"
+          }
+        }
+      }
+    },
+    "Speech recognition does not support %@.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Sprache %@ wird von der Spracherkennung nicht unterstützt."
+          }
+        }
+      }
+    },
+    "Speech recognition is not ready yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spracherkennung ist noch nicht bereit."
+          }
+        }
+      }
+    },
+    "Speech recognition is still loading …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spracherkennung lädt noch …"
+          }
+        }
+      }
+    },
+    "Speech recognition: %@ · [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache 2.0) · ONNX Runtime (MIT)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spracherkennung: %@ · [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache 2.0) · ONNX Runtime (MIT)"
+          }
+        }
+      }
+    },
+    "Spotlight": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spotlight"
+          }
+        }
+      }
+    },
+    "Starting …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Startet …"
+          }
+        }
+      }
+    },
+    "Step %lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schritt %lld"
+          }
+        }
+      }
+    },
+    "Switching to %@ failed: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wechsel zu %@ fehlgeschlagen: %@"
+          }
+        }
+      }
+    },
+    "Switching to %@. Until then you keep dictating with %@.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wechsel zu %@. Bis dahin diktierst du weiter mit %@."
+          }
+        }
+      }
+    },
+    "Switching to %@: %lld %%": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wechsel zu %@: %lld %%"
+          }
+        }
+      }
+    },
+    "Text field changed – paste the dictation with ⌘V": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Textfeld gewechselt – Diktat mit ⌘V einfügen"
+          }
+        }
+      }
+    },
+    "The Parakeet model could not be loaded.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parakeet-Modell konnte nicht geladen werden."
+          }
+        }
+      }
+    },
+    "The Parakeet model has not been downloaded yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Parakeet-Modell ist noch nicht geladen."
+          }
+        }
+      }
+    },
+    "The interface switches language after a restart.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Oberfläche wechselt die Sprache nach einem Neustart."
+          }
+        }
+      }
+    },
+    "The microphone's audio format is not supported.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audioformat des Mikrofons wird nicht unterstützt."
+          }
+        }
+      }
+    },
+    "Transcribing …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erkennt …"
+          }
+        }
+      }
+    },
+    "Trigger": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auslösen"
+          }
+        }
+      }
+    },
+    "Try Again": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut versuchen"
+          }
+        }
+      }
+    },
+    "Turn on “inlaut” under Accessibility.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unter Bedienungshilfen „inlaut“ einschalten."
+          }
+        }
+      }
+    },
+    "Under Keyboard, set “Press 🌐 key to” to “Do Nothing”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unter Tastatur „🌐-Taste drücken“ auf „Keine Aktion“ stellen."
+          }
+        }
+      }
+    },
+    "Update to %@ Available …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Update auf %@ verfügbar …"
+          }
+        }
+      }
+    },
+    "Updates": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updates"
+          }
+        }
+      }
+    },
+    "Updates are disabled in this development build.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updates sind in diesem Entwicklungsbuild deaktiviert."
+          }
+        }
+      }
+    },
+    "Version": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        }
+      }
+    },
+    "Writes unambiguous words such as Straße, groß or Grüße with ß.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schreibt eindeutige Wörter wie Straße, groß oder Grüße mit ß."
+          }
+        }
+      }
+    },
+    "Your voice. Straight to text.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Stimme. Direkt als Text."
+          }
+        }
+      }
+    },
+    "[parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (primeline) based on [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), both CC BY 4.0": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "[parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (primeline) auf Basis von [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), beide CC BY 4.0"
+          }
+        }
+      }
+    },
+    "a system shortcut": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "einen Systemkurzbefehl"
+          }
+        }
+      }
+    },
+    "change the input source": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "die Eingabequelle wechseln"
+          }
+        }
+      }
+    },
+    "inlaut": {
+      "shouldTranslate": false
+    },
+    "inlaut is recording": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "inlaut nimmt auf"
+          }
+        }
+      }
+    },
+    "inlaut is transcribing": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "inlaut erkennt"
+          }
+        }
+      }
+    },
+    "inlaut: preparing": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "inlaut: wird vorbereitet"
+          }
+        }
+      }
+    },
+    "inlaut: ready": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "inlaut: bereit"
+          }
+        }
+      }
+    },
+    "inlaut: recording": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "inlaut: nimmt auf"
+          }
+        }
+      }
+    },
+    "inlaut: transcribing": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "inlaut: erkennt"
+          }
+        }
+      }
+    },
+    "inlaut: unavailable": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "inlaut: nicht verfügbar"
+          }
+        }
+      }
+    },
+    "macOS already uses %@ for %@. Please choose another combination – or turn off the system shortcut under Keyboard → Keyboard Shortcuts.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ nutzt macOS schon für %@. Bitte eine andere Kombination wählen – oder den Systemkurzbefehl unter Tastatur → Tastaturkurzbefehle abschalten."
+          }
+        }
+      }
+    },
+    "macOS also uses %@ for %@ – they may get in each other's way.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ nutzt macOS auch für %@ – das kann sich in die Quere kommen."
+          }
+        }
+      }
+    },
+    "macOS currently uses the 🌐 key to %@. Under Keyboard, set “Press 🌐 key to” to **Do Nothing**.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS lässt die 🌐-Taste gerade %@. Stell unter Tastatur „🌐-Taste drücken“ auf **Keine Aktion**."
+          }
+        }
+      }
+    },
+    "perform a system action": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "eine Systemaktion ausführen"
+          }
+        }
+      }
+    },
+    "recognized, e.g. Dum": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "erkannt, z. B. Dum"
+          }
+        }
+      }
+    },
+    "show Emoji & Symbols": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Emoji & Symbole zeigen"
+          }
+        }
+      }
+    },
+    "start macOS Dictation": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "die Diktierfunktion von macOS starten"
+          }
+        }
+      }
+    },
+    "written, e.g. DAM": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "geschrieben, z. B. DAM"
+          }
+        }
+      }
+    },
+    "ß instead of ss": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ß statt ss"
+          }
+        }
+      }
+    },
+    "“%@”": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„%@“"
+          }
+        }
+      }
+    },
+    "“neue Zeile” and “neuer Absatz” become line breaks.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„neue Zeile“ und „neuer Absatz“ werden zu Umbrüchen."
+          }
+        }
+      }
+    },
+    "“neue Zeile”, “neuer Absatz”, “new line” and “new paragraph” become line breaks.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„neue Zeile“, „neuer Absatz“, „new line“ und „new paragraph“ werden zu Umbrüchen."
+          }
+        }
+      }
+    },
+    "“new line” and “new paragraph” become line breaks.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„new line“ und „new paragraph“ werden zu Umbrüchen."
+          }
+        }
+      }
+    },
+    "⌥Space is often taken by Raycast, Alfred or ChatGPT.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⌥Space ist oft von Raycast, Alfred oder ChatGPT belegt."
+          }
+        }
+      }
+    },
+    "🌐 key (fn)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🌐-Taste (fn)"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

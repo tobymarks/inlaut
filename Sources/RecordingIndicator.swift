@@ -5,7 +5,7 @@ import SwiftUI
 enum IndicatorPosition: String, CaseIterable, Identifiable {
     case bottomCenter, caret
     var id: String { rawValue }
-    var label: String { self == .bottomCenter ? "Unten mittig" : "Am Textcursor" }
+    var label: String { self == .bottomCenter ? String(localized: "Bottom center") : String(localized: "At the text cursor") }
 }
 
 /// A small floating pill, so you can see that inlaut is listening even in
@@ -257,7 +257,7 @@ private struct IndicatorView: View {
         case .recording:
             HStack(spacing: 10) {
                 Circle().fill(Color.inlautRecording).frame(width: 6, height: 6)
-                Text("Hört zu")
+                Text("Listening")
                 HStack(alignment: .center, spacing: 2.5) {
                     ForEach(model.levels.indices, id: \.self) { i in
                         Capsule()
@@ -274,7 +274,7 @@ private struct IndicatorView: View {
         case .transcribing:
             HStack(spacing: 8) {
                 ProgressView().controlSize(.small)
-                Text("Erkennt …")
+                Text("Transcribing …")
             }
             .frame(minWidth: 112)
             .transition(.opacity)
@@ -289,8 +289,8 @@ private struct IndicatorView: View {
 
     private var accessibilityText: String {
         switch model.phase {
-        case .recording: "inlaut nimmt auf"
-        case .transcribing: "inlaut erkennt"
+        case .recording: String(localized: "inlaut is recording")
+        case .transcribing: String(localized: "inlaut is transcribing")
         case .message(let text): text
         }
     }

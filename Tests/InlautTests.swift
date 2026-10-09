@@ -56,7 +56,7 @@ final class TextInserterTests: XCTestCase {
         env.targetUnchanged = { false }
         env.postPaste = { XCTFail("Must not paste into another field"); return true }
         let result = try await TextInserter.insert("Diktat", pasteboard: board, environment: env)
-        XCTAssertEqual(result, .copied("Textfeld gewechselt – Diktat mit ⌘V einfügen"))
+        XCTAssertEqual(result, .copied("Text field changed – paste the dictation with ⌘V"))
         XCTAssertEqual(board.string(forType: .string), "Diktat")
     }
 

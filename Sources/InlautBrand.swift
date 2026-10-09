@@ -2,8 +2,8 @@ import SwiftUI
 
 /// Use the kit's vector wordmark; all interface copy stays in the system font.
 struct InlautBrandHeader: View {
-    let title: String
-    let subtitle: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {

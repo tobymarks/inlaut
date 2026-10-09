@@ -27,7 +27,7 @@ struct SpeechModel: Identifiable, Hashable, Sendable {
     /// German/English sentences.
     static let primeline = SpeechModel(
         id: "parakeet-primeline-int8",
-        name: "Parakeet Deutsch",
+        name: String(localized: "Parakeet German"),
         languages: ["de", "en"],
         repo: "flozen1981/parakeet-primeline-onnx",
         revision: "d548e25b9bfe559aa274f361892dc4ed5d64743a",
@@ -43,12 +43,12 @@ struct SpeechModel: Identifiable, Hashable, Sendable {
             ModelFile(name: "tokens.txt", size: 102_132,
                       sha256: "ba8e4007c65f4bb4358ffe2ecc13d9ccc7a10351151065242b5c3a943e685742"),
         ],
-        credit: "[parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (primeline) auf Basis von [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), beide CC BY 4.0")
+        credit: String(localized: "[parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (primeline) based on [NVIDIA Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), both CC BY 4.0"))
 
     /// NVIDIA's English-only Parakeet, the lowest English error rate measured.
     static let parakeetV2 = SpeechModel(
         id: "parakeet-tdt-0.6b-v2-int8",
-        name: "Parakeet English",
+        name: String(localized: "Parakeet English"),
         languages: ["en"],
         repo: "csukuangfj/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8",
         revision: "1ab9323565ddb038682214b292f588070a538ce2",
@@ -109,7 +109,7 @@ struct SpeechModel: Identifiable, Hashable, Sendable {
             }
             try Task.checkCancellation()
             guard hash == file.sha256 else {
-                throw EngineError("Prüfsumme von \(file.name) stimmt nicht – Download beschädigt.")
+                throw EngineError("Checksum of \(file.name) does not match – the download is damaged.")
             }
             let target = url(file.name)
             try? FileManager.default.removeItem(at: target)
@@ -188,7 +188,7 @@ private final class Download: NSObject, URLSessionDownloadDelegate, @unchecked S
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         // The system deletes `location` when this method returns.
         if let http = downloadTask.response as? HTTPURLResponse, http.statusCode != 200 {
-            finish(.failure(EngineError("Download fehlgeschlagen (HTTP \(http.statusCode)).")))
+            finish(.failure(EngineError("Download failed (HTTP \(http.statusCode)).")))
             return
         }
         let kept = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)

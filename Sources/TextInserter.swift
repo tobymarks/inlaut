@@ -49,7 +49,7 @@ enum TextInserter {
         try Task.checkCancellation()
         guard environment.isTrusted() else {
             copy(text, to: pasteboard)
-            return .copied("In Zwischenablage – zum Einfügen Bedienungshilfen erlauben")
+            return .copied(String(localized: "On the clipboard – allow Accessibility to paste"))
         }
         // Wait before modifying the clipboard. Anything copied while the user
         // releases the hotkey is now included in the snapshot and preserved.
@@ -57,18 +57,18 @@ enum TextInserter {
         try Task.checkCancellation()
         guard released else {
             copy(text, to: pasteboard)
-            return .copied("In Zwischenablage – Sondertasten loslassen und mit ⌘V einfügen")
+            return .copied(String(localized: "On the clipboard – release the modifier keys and paste with ⌘V"))
         }
         guard environment.targetUnchanged() else {
             copy(text, to: pasteboard)
-            return .copied("Textfeld gewechselt – Diktat mit ⌘V einfügen")
+            return .copied(String(localized: "Text field changed – paste the dictation with ⌘V"))
         }
 
         let saved = snapshot(pasteboard)
         copy(text, to: pasteboard)
         let ours = pasteboard.changeCount
         guard environment.postPaste() else {
-            return .copied("In Zwischenablage – Diktat mit ⌘V einfügen")
+            return .copied(String(localized: "On the clipboard – paste the dictation with ⌘V"))
         }
 
         // Restoration also runs on cancellation, including an originally empty
