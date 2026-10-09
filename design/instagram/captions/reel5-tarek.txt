@@ -1,0 +1,9 @@
+Commit-Message, Ticket, Slack-Antwort? Einfach sprechen. 💻
+
+Tarek zeigt, wie inlaut beim Entwickeln hilft: Die Erkennung ist auf Deutsch trainiert und kommt auch mit Fachbegriffen klar. Sie läuft komplett lokal auf dem Mac – kein Server, kein Konto. Und der Code liegt offen auf GitHub.
+
+Hinweis: Tarek ist eine KI-generierte Persona, Bild und Stimme wurden mit KI erstellt. Die App ist echt. 😉
+
+👉 Kostenlos: inlaut.de
+
+#inlaut #Developer #Softwareentwicklung #macOS #OpenSource #Diktieren #Produktivität #Datenschutz
