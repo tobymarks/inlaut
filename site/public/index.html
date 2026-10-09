@@ -3,9 +3,63 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>inlaut – Deine Stimme. Direkt als Text.</title>
-  <meta name="description" content="Taste halten, sprechen, loslassen: inlaut schreibt dein Diktat ins aktive Textfeld. Lokal auf deinem Mac, ohne Konto und ohne Cloud. Kostenlos und Open Source.">
+  <title>inlaut – Diktier-App für den Mac: Sprache zu Text, lokal und offline</title>
+  <meta name="description" content="Diktieren auf dem Mac, auf Deutsch: Taste halten, sprechen, loslassen, und inlaut schreibt den Text in jede App. Die Spracherkennung läuft lokal, auch ohne Internet. Ohne Konto, ohne Cloud. Kostenlos und Open Source.">
   <link rel="canonical" href="https://inlaut.de/">
+  <meta name="robots" content="max-image-preview:large">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://inlaut.de/#website",
+        "url": "https://inlaut.de/",
+        "name": "inlaut",
+        "inLanguage": "de-DE",
+        "publisher": { "@id": "https://inlaut.de/#tobias-marks" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://inlaut.de/#tobias-marks",
+        "name": "Tobias Marks",
+        "url": "https://github.com/tobymarks"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://inlaut.de/#app",
+        "name": "inlaut",
+        "alternateName": "Inlaut",
+        "description": "Diktier-App für die Menüleiste des Mac. Taste halten, sprechen, loslassen: Die Spracherkennung läuft lokal auf dem Mac und fügt den Text in das aktive Textfeld jeder App ein. Auf Deutsch abgestimmt, ohne Konto und ohne Cloud.",
+        "url": "https://inlaut.de/",
+        "image": "https://inlaut.de/og-image.png",
+        "screenshot": "https://inlaut.de/screens/diktat.png",
+        "applicationCategory": "UtilitiesApplication",
+        "applicationSubCategory": "Spracherkennung, Diktat",
+        "operatingSystem": "macOS 26 oder neuer (Apple Silicon)",
+        "softwareVersion": "0.1.1",
+        "inLanguage": "de",
+        "isAccessibleForFree": true,
+        "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "downloadUrl": "https://github.com/tobymarks/inlaut/releases/download/v0.1.1/Inlaut-0.1.1.dmg",
+        "installUrl": "https://inlaut.de/#so-gehts",
+        "fileSize": "670MB (Sprachmodell, wird beim ersten Start geladen)",
+        "featureList": [
+          "Diktieren per Tastenkombination oder fn-Taste (halten oder zweimal tippen für freihändiges Diktat)",
+          "Spracherkennung lokal auf dem Mac, funktioniert ohne Internet",
+          "Auf Deutsch abgestimmtes Sprachmodell (Parakeet), alternativ Apple-Spracherkennung",
+          "Text landet direkt im aktiven Textfeld jeder App",
+          "Eigene Ersetzungen für Fachbegriffe und Namen",
+          "Sprachbefehle „neue Zeile“ und „neuer Absatz“",
+          "Keine Speicherung oder Übertragung von Aufnahmen und Diktaten"
+        ],
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+        "author": { "@id": "https://inlaut.de/#tobias-marks" },
+        "sameAs": ["https://github.com/tobymarks/inlaut", "https://www.instagram.com/inlaut.de/"]
+      }
+    ]
+  }
+  </script>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="/icon-180.png">
@@ -22,7 +76,112 @@
   <meta property="og:image:height" content="672">
   <meta property="og:image:alt" content="inlaut: Deine Stimme. Direkt als Text. Diktieren, lokal auf deinem Mac.">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="/style.css?v=sprachimpuls">
+  <link rel="stylesheet" href="/style.css?v=personas">
+  <script type="application/ld+json" id="faq-schema">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://inlaut.de/#fragen",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Ist inlaut kostenlos?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. inlaut ist kostenlos, ohne Abo, ohne Konto und ohne Werbung. Der Quellcode ist Open Source unter der Lizenz GPL-3.0 und liegt auf GitHub."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Funktioniert das Diktieren ohne Internet?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. Die Spracherkennung läuft vollständig auf deinem Mac. Internet braucht inlaut nur, um beim ersten Start das Sprachmodell (rund 670 MB) zu laden und um nach Updates zu suchen."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Werden meine Aufnahmen in eine Cloud geschickt?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nein. Deine Stimme wird auf dem Mac in Text umgewandelt. Aufnahmen und Diktate werden weder übertragen noch als Verlauf gespeichert. Das Mikrofon ist nur aktiv, solange du diktierst."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "In welchen Apps kann ich diktieren?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In jeder App mit Textfeld: Mail, Notizen, Pages, Word, Outlook, Teams, Slack, im Browser oder im Chatfenster eines KI-Assistenten. inlaut fügt den Text dort ein, wo dein Cursor steht. Dafür braucht es einmalig die Berechtigung unter Bedienungshilfen. Ohne sie bleibt der Text in der Zwischenablage."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Wie starte ich ein Diktat?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Halte deine Tastenkombination oder die 🌐 fn-Taste gedrückt, sprich und lass los. Für längere Texte tippst du zweimal auf die fn-Taste und diktierst freihändig. Ein weiterer Tastendruck beendet die Aufnahme."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Wie gut versteht inlaut Deutsch und Fachbegriffe?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Das Standardmodell Parakeet ist auf Deutsch abgestimmt und kommt auch mit Fachbegriffen meist gut zurecht. Wenn ein Wort trotzdem falsch erkannt wird, legst du eine eigene Ersetzung an. Danach stimmt die Schreibweise jedes Mal."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kann ich Zeilenumbrüche und Absätze diktieren?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. Sag „neue Zeile“ oder „neuer Absatz“, und inlaut setzt den Umbruch an der Stelle."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Was ist der Unterschied zur Diktierfunktion von macOS?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "macOS bringt eine eigene Diktierfunktion mit. inlaut ist eine Alternative mit einem auf Deutsch abgestimmten Sprachmodell, eigenen Ersetzungen, Befehlen für Zeilen und Absätze und einer frei wählbaren Taste. Du kannst beides ausprobieren und nutzen, was besser zu dir passt."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Welchen Mac brauche ich?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Einen Mac mit Apple Silicon (M1 oder neuer) und macOS 26 oder neuer. Das Sprachmodell belegt rund 670 MB auf dem Speicher. Wer weniger Platz hat, wählt in den Einstellungen die lokale Apple-Spracherkennung."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Welche Sprachen unterstützt inlaut?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Zurzeit Deutsch. Englisch ist geplant."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Gibt es inlaut für Windows, iPhone oder iPad?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nein. inlaut ist eine App für die Menüleiste des Mac."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Wie installiere ich inlaut?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Lade die DMG-Datei, öffne sie und zieh das inlaut-Symbol in den Ordner „Programme“. Beim ersten Start führt dich inlaut durch das Laden des Sprachmodells und die Berechtigungen für Mikrofon und Einfügen. Einmal am Tag sieht inlaut nach Updates und fragt, bevor es eins installiert."
+      }
+    }
+  ]
+}
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt">Zum Inhalt</a>
@@ -31,7 +190,9 @@
       <picture><source srcset="/brand/inlaut-logo-mint.svg" media="(prefers-color-scheme: dark)"><img src="/brand/inlaut-logo-petrol.svg" width="168" height="40" alt="inlaut"></picture>
     </a>
     <nav aria-label="Hauptnavigation">
+      <a href="#fuer-wen">Für wen</a>
       <a href="#so-gehts">So funktioniert’s</a>
+      <a href="#fragen">Fragen</a>
       <a href="https://github.com/tobymarks/inlaut">GitHub <span aria-hidden="true">↗</span></a>
     </nav>
   </header>
@@ -80,6 +241,67 @@
       </div>
     </section>
 
+    <section class="wrap personas" id="fuer-wen" aria-labelledby="personas-title">
+      <div class="section-heading"><p class="eyebrow">Für wen ist inlaut?</p><h2 id="personas-title">Für alle, die schneller sprechen als tippen.</h2><p>Mails, Angebote, Tickets, Kapitel oder Notizen: Sechs Beispiele, wo Diktieren auf dem Mac Zeit und Nerven spart.</p></div>
+      <div class="persona-grid">
+        <article class="persona">
+          <figure class="persona-image"><img src="/personas/tarek.webp" width="1200" height="896" alt="KI-generiertes Bild: Tarek, Softwareentwickler, spricht am Stehschreibtisch im Homeoffice in Richtung seines Laptops" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
+          <h3>Tarek <span>Softwareentwickler</span></h3>
+          <dl>
+            <dt>Aufgabe</dt><dd>Tickets, Commit-Messages, Code-Reviews, Antworten in Slack und Prompts für KI-Assistenten.</dd>
+            <dt>Herausforderung</dt><dd>Neben dem Code entsteht jeden Tag viel Text, oft voller Fachbegriffe. Projektinterna sollen nicht auf fremden Servern landen.</dd>
+            <dt>Mit inlaut</dt><dd>Er spricht die Beschreibung direkt ins Ticket oder Chatfenster. Ersetzungen bringen Tool- und Projektnamen in die richtige Schreibweise. Die Erkennung läuft lokal, und der Code liegt offen auf GitHub.</dd>
+          </dl>
+        </article>
+        <article class="persona">
+          <figure class="persona-image"><img src="/personas/mehmet.webp" width="1200" height="896" alt="KI-generiertes Bild: Mehmet, Tischlermeister, sitzt im Büro seiner Werkstatt am Laptop und spricht" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
+          <h3>Mehmet <span>Tischlermeister</span></h3>
+          <dl>
+            <dt>Aufgabe</dt><dd>Angebote, Kundenmails und Auftragsnotizen, meistens nach Feierabend.</dd>
+            <dt>Herausforderung</dt><dd>Nach einem langen Tag in der Werkstatt ist Tippen das Letzte, worauf er Lust hat. Ein weiteres Abo will er dafür nicht.</dd>
+            <dt>Mit inlaut</dt><dd>Taste halten, erzählen, loslassen: Der Text steht in der Mail oder im Angebot. Mit „neuer Absatz“ bekommt er gleich Struktur. inlaut ist kostenlos, ohne Abo und ohne Konto.</dd>
+          </dl>
+        </article>
+        <article class="persona">
+          <figure class="persona-image"><img src="/personas/henriette.webp" width="1200" height="896" alt="KI-generiertes Bild: Henriette, Autorin, sitzt im Arbeitszimmer mit Bücherwand am Schreibtisch und spricht" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
+          <h3>Henriette <span>Autorin</span></h3>
+          <dl>
+            <dt>Aufgabe</dt><dd>Kapitel, Entwürfe und Ideen für ihr nächstes Buch.</dd>
+            <dt>Herausforderung</dt><dd>Beim Erzählen fließen die Gedanken schneller als beim Tippen. Unveröffentlichte Manuskripte sollen privat bleiben.</dd>
+            <dt>Mit inlaut</dt><dd>Zweimal fn, und sie diktiert freihändig ganze Passagen. „Neuer Absatz“ gliedert den Text schon beim Sprechen. Nichts davon verlässt ihren Mac.</dd>
+          </dl>
+        </article>
+        <article class="persona">
+          <figure class="persona-image"><img src="/personas/selin.webp" width="1200" height="896" alt="KI-generiertes Bild: Selin, Business-Coach, sitzt nach einer Sitzung im hellen Coaching-Raum und spricht in Richtung ihres Laptops" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
+          <h3>Selin <span>Business-Coach</span></h3>
+          <dl>
+            <dt>Aufgabe</dt><dd>Gesprächsnotizen nach Sitzungen, Follow-up-Mails und Angebote.</dd>
+            <dt>Herausforderung</dt><dd>Die wichtigsten Gedanken müssen direkt nach dem Gespräch festgehalten werden. Und die Inhalte sind vertraulich.</dd>
+            <dt>Mit inlaut</dt><dd>Sie spricht ihre Notizen in jede App, egal ob Notizbuch, Mail oder CRM. Die Erkennung läuft auf dem Mac. Aufnahmen werden weder gespeichert noch übertragen.</dd>
+          </dl>
+        </article>
+        <article class="persona">
+          <figure class="persona-image"><img src="/personas/valerie.webp" width="1200" height="896" alt="KI-generiertes Bild: Valerie, im Vertrieb viel unterwegs, sitzt am Flughafen-Gate mit dem Laptop auf den Knien und spricht leise" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
+          <h3>Valerie <span>Vertrieb, viel unterwegs</span></h3>
+          <dl>
+            <dt>Aufgabe</dt><dd>Mails, Besuchsberichte und Notizen zwischen zwei Terminen.</dd>
+            <dt>Herausforderung</dt><dd>Am Gate, im Zug oder im Flugzeug ist das Netz schlecht oder gar nicht da.</dd>
+            <dt>Mit inlaut</dt><dd>Nach dem einmaligen Laden des Sprachmodells funktioniert die Erkennung ohne Internet. Die Mail ist geschrieben, bevor das Boarding beginnt.</dd>
+          </dl>
+        </article>
+        <article class="persona">
+          <figure class="persona-image"><img src="/personas/lukas.webp" width="1200" height="896" alt="KI-generiertes Bild: Lukas, Werkstudent, sitzt im Coworking-Space am langen Holztisch und spricht lächelnd in Richtung seines Laptops" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
+          <h3>Lukas <span>Werkstudent im Startup</span></h3>
+          <dl>
+            <dt>Aufgabe</dt><dd>Notizen, Dokumentation, Hausarbeiten und Nachrichten im Team-Chat.</dd>
+            <dt>Herausforderung</dt><dd>Fachbegriffe, Kundennamen und der eigene Produktname werden ständig falsch geschrieben.</dd>
+            <dt>Mit inlaut</dt><dd>Einmal als eigene Ersetzung eintragen, danach stimmt die Schreibweise in jeder App. Kostenlos, also auch fürs Studium.</dd>
+          </dl>
+        </article>
+      </div>
+      <p class="persona-note">Die Personen sind fiktive Beispiele. Ihre Bilder sind mit KI erzeugt und mit „KI“ gekennzeichnet.</p>
+    </section>
+
     <section class="wrap shots" aria-labelledby="shots-title">
       <div class="section-heading"><p class="eyebrow">So sieht es aus.</p><h2 id="shots-title">Leise im Hintergrund.</h2><p>Eine kleine Anzeige, solange du sprichst. Ein Menü in der Menüleiste. Und ein Fenster für deine Einstellungen.</p></div>
       <div class="shot-grid">
@@ -96,6 +318,24 @@
         <li><span class="step-number" aria-hidden="true">2</span><div><h3>Deine Taste halten und sprechen.</h3><p>Nutze deine Tastenkombination oder richte die <kbd>🌐 fn</kbd>-Taste ein. Zweimal auf die fn-Taste tippen startet ein freihändiges Diktat.</p></div></li>
         <li><span class="step-number" aria-hidden="true">3</span><div><h3>Loslassen. Der Text steht da.</h3><p>inlaut wandelt deine Worte in Text um und fügt ihn am Cursor ein. Beim freihändigen Diktieren beendet ein weiterer Tastendruck die Aufnahme.</p></div></li>
       </ol>
+    </section>
+
+    <section class="wrap faq" id="fragen" aria-labelledby="faq-title">
+      <div class="section-heading"><p class="eyebrow">Häufige Fragen.</p><h2 id="faq-title">Gut zu wissen.</h2><p>Was inlaut kann, was es braucht und wo deine Daten bleiben.</p></div>
+      <div class="faq-list">
+        <details><summary>Ist inlaut kostenlos?</summary><p>Ja. inlaut ist kostenlos, ohne Abo, ohne Konto und ohne Werbung. Der Quellcode ist Open Source unter der Lizenz GPL-3.0 und liegt auf GitHub.</p></details>
+        <details><summary>Funktioniert das Diktieren ohne Internet?</summary><p>Ja. Die Spracherkennung läuft vollständig auf deinem Mac. Internet braucht inlaut nur, um beim ersten Start das Sprachmodell (rund 670 MB) zu laden und um nach Updates zu suchen.</p></details>
+        <details><summary>Werden meine Aufnahmen in eine Cloud geschickt?</summary><p>Nein. Deine Stimme wird auf dem Mac in Text umgewandelt. Aufnahmen und Diktate werden weder übertragen noch als Verlauf gespeichert. Das Mikrofon ist nur aktiv, solange du diktierst.</p></details>
+        <details><summary>In welchen Apps kann ich diktieren?</summary><p>In jeder App mit Textfeld: Mail, Notizen, Pages, Word, Outlook, Teams, Slack, im Browser oder im Chatfenster eines KI-Assistenten. inlaut fügt den Text dort ein, wo dein Cursor steht. Dafür braucht es einmalig die Berechtigung unter Bedienungshilfen. Ohne sie bleibt der Text in der Zwischenablage.</p></details>
+        <details><summary>Wie starte ich ein Diktat?</summary><p>Halte deine Tastenkombination oder die <kbd>🌐 fn</kbd>-Taste gedrückt, sprich und lass los. Für längere Texte tippst du zweimal auf die fn-Taste und diktierst freihändig. Ein weiterer Tastendruck beendet die Aufnahme.</p></details>
+        <details><summary>Wie gut versteht inlaut Deutsch und Fachbegriffe?</summary><p>Das Standardmodell Parakeet ist auf Deutsch abgestimmt und kommt auch mit Fachbegriffen meist gut zurecht. Wenn ein Wort trotzdem falsch erkannt wird, legst du eine eigene Ersetzung an. Danach stimmt die Schreibweise jedes Mal.</p></details>
+        <details><summary>Kann ich Zeilenumbrüche und Absätze diktieren?</summary><p>Ja. Sag „neue Zeile“ oder „neuer Absatz“, und inlaut setzt den Umbruch an der Stelle.</p></details>
+        <details><summary>Was ist der Unterschied zur Diktierfunktion von macOS?</summary><p>macOS bringt eine eigene Diktierfunktion mit. inlaut ist eine Alternative mit einem auf Deutsch abgestimmten Sprachmodell, eigenen Ersetzungen, Befehlen für Zeilen und Absätze und einer frei wählbaren Taste. Du kannst beides ausprobieren und nutzen, was besser zu dir passt.</p></details>
+        <details><summary>Welchen Mac brauche ich?</summary><p>Einen Mac mit Apple Silicon (M1 oder neuer) und macOS 26 oder neuer. Das Sprachmodell belegt rund 670 MB auf dem Speicher. Wer weniger Platz hat, wählt in den Einstellungen die lokale Apple-Spracherkennung.</p></details>
+        <details><summary>Welche Sprachen unterstützt inlaut?</summary><p>Zurzeit Deutsch. Englisch ist geplant.</p></details>
+        <details><summary>Gibt es inlaut für Windows, iPhone oder iPad?</summary><p>Nein. inlaut ist eine App für die Menüleiste des Mac.</p></details>
+        <details><summary>Wie installiere ich inlaut?</summary><p>Lade die DMG-Datei, öffne sie und zieh das inlaut-Symbol in den Ordner „Programme“. Beim ersten Start führt dich inlaut durch das Laden des Sprachmodells und die Berechtigungen für Mikrofon und Einfügen. Einmal am Tag sieht inlaut nach Updates und fragt, bevor es eins installiert.</p></details>
+      </div>
     </section>
 
     <section class="wrap project" aria-labelledby="project-title">

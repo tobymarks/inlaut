@@ -23,7 +23,7 @@ pkill -x Inlaut; open build/Build/Products/Debug/Inlaut.app
 
 ## Website
 
-`site/` is the static site for https://inlaut.de (German, no cookies, no tracking, no third-party requests). Served by Cloudflare Workers static assets in the private Cloudflare account (tobias@familiemarks.com). The domain is registered at INWX, and its nameservers point to Cloudflare. Deploy with `cd site && npx wrangler deploy` (wrangler is logged in via OAuth). The Impressum uses the apollon address with c/o, agreed with the maintainer. hallo@inlaut.de is forwarded by Cloudflare Email Routing to the maintainer's private address.
+`site/` is the static site for https://inlaut.de (German, no cookies, no tracking, no third-party requests). Served by Cloudflare Workers static assets in the private Cloudflare account (tobias@familiemarks.com). The domain is registered at INWX, and its nameservers point to Cloudflare. Deploy with `cd site && npx wrangler deploy` (wrangler is logged in via OAuth). The Impressum uses the apollon address with c/o, agreed with the maintainer. hallo@inlaut.de is forwarded by Cloudflare Email Routing to the maintainer's private address. After editing the FAQ (`#fragen`), run `python3 scripts/sync-faq-schema.py` so the FAQPage JSON-LD matches the visible text. AI-generated images (personas) carry the `.ki-badge`, an alt text starting with "KI-generiertes Bild:" and IPTC `trainedAlgorithmicMedia` XMP.
 
 ## Git and GitHub
 

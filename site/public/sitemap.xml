@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://inlaut.de/</loc>
+    <lastmod>2026-10-09</lastmod>
+    <image:image><image:loc>https://inlaut.de/screens/diktat.webp</image:loc></image:image>
+    <image:image><image:loc>https://inlaut.de/screens/einstellungen.webp</image:loc></image:image>
+    <image:image><image:loc>https://inlaut.de/personas/tarek.webp</image:loc></image:image>
+    <image:image><image:loc>https://inlaut.de/personas/mehmet.webp</image:loc></image:image>
+    <image:image><image:loc>https://inlaut.de/personas/henriette.webp</image:loc></image:image>
+    <image:image><image:loc>https://inlaut.de/personas/selin.webp</image:loc></image:image>
+    <image:image><image:loc>https://inlaut.de/personas/valerie.webp</image:loc></image:image>
+    <image:image><image:loc>https://inlaut.de/personas/lukas.webp</image:loc></image:image>
+  </url>
+</urlset>
