@@ -22,6 +22,8 @@
 - [Häufige Fragen](https://inlaut.de/#fragen)
 - [Diktier-Apps für den Mac im Vergleich](https://inlaut.de/vergleich): inlaut, Apple Diktat, Wispr Flow, Superwhisper und MacWhisper nebeneinander, mit Quellen der Anbieter
 - [Dictation apps for the Mac compared](https://inlaut.de/en/compare): the same comparison in English
+- [inlaut als Alternative zu Wispr Flow](https://inlaut.de/wispr-flow-alternative): lokal statt Cloud, kostenlos, Open Source; was Wispr Flow kann und inlaut nicht
+- [inlaut as a Wispr Flow alternative](https://inlaut.de/en/wispr-flow-alternative): the same page in English
 - [Quellcode auf GitHub](https://github.com/tobymarks/inlaut): README, Releases, Roadmap (Issues)
 - [Aktuelle Version herunterladen (DMG)](https://github.com/tobymarks/inlaut/releases/latest)
 

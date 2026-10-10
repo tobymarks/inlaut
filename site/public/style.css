@@ -184,7 +184,8 @@ footer nav a { font-size: 12px; }
 .prose-wide { max-width: 1160px; }
 .prose-wide > :not(.compare-scroll) { max-width: 760px; }
 .prose .lead { max-width: none; }
-.prose ul { margin: 0 0 20px; padding-left: 1.2em; }
+.prose h3 { font-size: 16px; font-weight: 600; margin: 24px 0 6px; line-height: 1.4; letter-spacing: -.01em; }
+.prose ul, .prose ol { margin: 0 0 20px; padding-left: 1.2em; }
 .prose li { margin-bottom: 8px; }
 .prose .sources li { overflow-wrap: anywhere; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -196,6 +197,10 @@ footer nav a { font-size: 12px; }
 .compare thead th { font-size: 15px; font-weight: 600; background: var(--wash); white-space: nowrap; }
 .compare tbody th { font-weight: 600; width: 13%; }
 .compare td { width: 17.4%; }
+.compare-two { min-width: 620px; }
+.compare-two tbody th { width: 24%; }
+.compare-two td { width: 38%; }
+.prose-wide > .compare-scroll:has(.compare-two) { max-width: 860px; }
 @media (min-width: 1440px) { .hero { padding-block: 110px 100px; } }
 @media (max-width: 1050px) {
   .wrap { width: calc(100% - 64px); }
