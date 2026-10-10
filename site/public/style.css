@@ -181,6 +181,21 @@ footer nav a { font-size: 12px; }
 .prose h2 { font-size: 20px; font-weight: 600; margin: 36px 0 12px; line-height: 1.4; letter-spacing: -.02em; }
 .prose p { margin: 0 0 20px; overflow-wrap: break-word; }
 .prose .note { color: var(--muted); font-size: 14px; }
+.prose-wide { max-width: 1160px; }
+.prose-wide > :not(.compare-scroll) { max-width: 760px; }
+.prose .lead { max-width: none; }
+.prose ul { margin: 0 0 20px; padding-left: 1.2em; }
+.prose li { margin-bottom: 8px; }
+.prose .sources li { overflow-wrap: anywhere; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.compare-scroll { overflow-x: auto; margin: 0 0 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.compare-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.compare { width: 100%; min-width: 980px; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+.compare th, .compare td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.compare tbody tr:last-child th, .compare tbody tr:last-child td { border-bottom: 0; }
+.compare thead th { font-size: 15px; font-weight: 600; background: var(--wash); white-space: nowrap; }
+.compare tbody th { font-weight: 600; width: 13%; }
+.compare td { width: 17.4%; }
 @media (min-width: 1440px) { .hero { padding-block: 110px 100px; } }
 @media (max-width: 1050px) {
   .wrap { width: calc(100% - 64px); }

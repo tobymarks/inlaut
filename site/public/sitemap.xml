@@ -27,4 +27,18 @@
     <image:image><image:loc>https://inlaut.de/screens/diktat-en.webp</image:loc></image:image>
     <image:image><image:loc>https://inlaut.de/screens/einstellungen-en.webp</image:loc></image:image>
   </url>
+  <url>
+    <loc>https://inlaut.de/vergleich</loc>
+    <lastmod>2026-10-10</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/vergleich"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/compare"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/vergleich"/>
+  </url>
+  <url>
+    <loc>https://inlaut.de/en/compare</loc>
+    <lastmod>2026-10-10</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/vergleich"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/compare"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/vergleich"/>
+  </url>
 </urlset>
