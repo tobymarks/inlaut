@@ -2,6 +2,8 @@
 
 A tiny macOS menu bar app for dictation that never leaves your Mac. Hold a key combination, speak, let go — the text appears in whatever text field has the cursor.
 
+inlaut is free and open source (GPL-3.0). It is a local alternative to cloud dictation apps such as Wispr Flow, and to Superwhisper or MacWhisper if dictation into any app is all you need: no account, no subscription, no AI rewriting. Website: [inlaut.de](https://inlaut.de) (German) and [inlaut.de/en](https://inlaut.de/en); a sourced [comparison of Mac dictation apps](https://inlaut.de/en/compare) lists where each one recognises speech and what it costs.
+
 - **Local only.** Speech is recognised on this Mac. No account, no cloud, nothing stored.
 - **German and English, also mixed.** Uses [Parakeet Ultra](https://huggingface.co/moondream/parakeet-ultra), a post-training of NVIDIA Parakeet TDT 0.6B v3, as Core ML on the Neural Engine through [FluidAudio](https://github.com/FluidInference/FluidAudio). It handles technical terms and anglicisms far better than the recogniser built into macOS and writes ß. A 10-second dictation is text in well under 0.1 s on an M3; two minutes take about one second.
 - **Light.** The model (≈ 630 MB, downloaded and checksum-verified once on first start) stays loaded at about 50 MB of app memory and loads in 0.2 s, so dictation starts the moment you press the key. Speech recognition does no work while idle and the microphone is only open while you dictate.
@@ -15,9 +17,9 @@ The app and website use the **Sprachimpuls / Petrol & Mint** brand kit, with nat
 
 ## Download
 
-[Download inlaut 0.1.1](https://github.com/tobymarks/inlaut/releases/download/v0.1.1/Inlaut-0.1.1.dmg) for Apple Silicon and macOS 26 or later. Open the DMG, drag inlaut onto the “Programme” (Applications) folder, then open inlaut from Applications. You can eject the disk image after copying. Both the app and the DMG are Developer ID signed and notarized by Apple.
+[Download inlaut 0.3.0](https://github.com/tobymarks/inlaut/releases/download/v0.3.0/Inlaut-0.3.0-en.dmg) ([German disk image](https://github.com/tobymarks/inlaut/releases/download/v0.3.0/Inlaut-0.3.0.dmg)) for Apple Silicon and macOS 26 or later. Open the DMG, drag inlaut onto the Applications folder, then open inlaut from Applications. You can eject the disk image after copying. Both the app and the DMG are Developer ID signed and notarized by Apple.
 
-Setup downloads the speech model (around 670 MB) and guides you through microphone and Accessibility permissions. [Release notes and checksums](https://github.com/tobymarks/inlaut/releases/tag/v0.1.1).
+Setup downloads the speech model (around 630 MB) and guides you through microphone and Accessibility permissions. [Release notes and checksums](https://github.com/tobymarks/inlaut/releases/latest).
 
 ## Build
 
@@ -80,7 +82,7 @@ Publishing order:
 1. Test recording, hold/toggle, 🌐, paste into a native app and a browser, cancel, and Settings on the exported app. For later releases, also test updating from the previous public version using a separate installation.
 2. Create a GitHub Release for the matching source tag. Upload `Inlaut-<version>.dmg`, `Inlaut-<version>-en.dmg`, their `.dmg.sha256` files, `Inlaut-<version>.zip` and `SHA256SUMS`. Download both public packages and verify their checksums and notarization. The DMG is the website download; the ZIP is retained for Sparkle updates.
 3. Copy the generated `appcast.xml` to `site/public/updates/appcast.xml` **without editing it** (the feed itself is signed). It keeps earlier entries and their version-specific GitHub URLs. Copy per-language notes from the staging directory (`Inlaut-<version>.<lang>.html`, not the files in `release-notes/`: `generate_appcast` adds a comment before signing) unchanged to `site/public/updates/notes/`.
-4. Point the download links in `site/public/index.html` (German DMG) and `site/public/en/index.html` (English DMG) at the public images, then deploy the site with `cd site && npx wrangler deploy`.
+4. Point the download links in `site/public/index.html` (German DMG) and `site/public/en/index.html` (English DMG) at the public images, then deploy the site with `cd site && npx wrangler deploy`. Update the download links under “Download” in this README too.
 5. Verify the live download link, DMG and feed before announcing the release. The package step produces the signed feed; do not deploy an unsigned template to released clients.
 
 The DMG layout is defined in `scripts/dmg-settings.py`; `scripts/render-dmg-background.swift` renders the brand artwork at 1x and 2x. `scripts/validate-dmg.py` mounts the image read-only and checks the exact app payload, code signature, notarization ticket, `/Applications` link and Finder layout. Visually inspect the mounted image on a Retina display before publishing.

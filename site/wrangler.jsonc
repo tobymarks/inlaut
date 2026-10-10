@@ -9,7 +9,7 @@
     "not_found_handling": "404-page"
   },
   "routes": [
-    { "pattern": "inlaut.de", "custom_domain": true },
-    { "pattern": "www.inlaut.de", "custom_domain": true }
+    // www.inlaut.de belongs to the www-redirect Worker next to this directory.
+    { "pattern": "inlaut.de", "custom_domain": true }
   ]
 }

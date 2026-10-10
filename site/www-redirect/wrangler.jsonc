@@ -1,0 +1,10 @@
+// Redirects www.inlaut.de to inlaut.de, so search engines see one host.
+// Deploy: npx wrangler deploy (from this directory)
+{
+  "name": "inlaut-www-redirect",
+  "main": "index.js",
+  "compatibility_date": "2026-10-01",
+  "routes": [
+    { "pattern": "www.inlaut.de", "custom_domain": true }
+  ]
+}

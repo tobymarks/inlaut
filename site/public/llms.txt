@@ -20,6 +20,8 @@
 - [Website und Download](https://inlaut.de/): Funktionen, Anwendungsbeispiele, häufige Fragen
 - [English website](https://inlaut.de/en): features, examples, FAQ
 - [Häufige Fragen](https://inlaut.de/#fragen)
+- [Diktier-Apps für den Mac im Vergleich](https://inlaut.de/vergleich): inlaut, Apple Diktat, Wispr Flow, Superwhisper und MacWhisper nebeneinander, mit Quellen der Anbieter
+- [Dictation apps for the Mac compared](https://inlaut.de/en/compare): the same comparison in English
 - [Quellcode auf GitHub](https://github.com/tobymarks/inlaut): README, Releases, Roadmap (Issues)
 - [Aktuelle Version herunterladen (DMG)](https://github.com/tobymarks/inlaut/releases/latest)
 
