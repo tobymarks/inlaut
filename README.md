@@ -2,6 +2,8 @@
 
 A tiny macOS menu bar app for dictation that never leaves your Mac. Hold a key combination, speak, let go — the text appears in whatever text field has the cursor.
 
+<p align="center"><img src="site/public/screens/diktat-en.webp" width="720" alt="Illustration: a note in the Notes app is being dictated, with inlaut's “Listening” indicator below the text"></p>
+
 inlaut is free and open source (GPL-3.0). It is a local alternative to cloud dictation apps such as Wispr Flow, and to Superwhisper or MacWhisper if dictation into any app is all you need: no account, no subscription, no AI rewriting. Website: [inlaut.de](https://inlaut.de) (German) and [inlaut.de/en](https://inlaut.de/en); a sourced [comparison of Mac dictation apps](https://inlaut.de/en/compare) lists where each one recognises speech and what it costs.
 
 - **Local only.** Speech is recognised on this Mac. No account, no cloud, nothing stored.
@@ -11,6 +13,8 @@ inlaut is free and open source (GPL-3.0). It is a local alternative to cloud dic
 - **Fallback.** Apple's on-device recogniser (`SpeechAnalyzer`) is prepared independently and used until Parakeet is ready. macOS may need to download its language assets. Selecting Apple releases the Parakeet model from memory once any current dictation finishes.
 - **Updates.** Sparkle checks daily for signed releases, with download and installation started by the user. Automatic checks can be disabled in Settings. No dictation data or system profile is sent.
 
+<p align="center"><img src="site/public/screens/einstellungen-en.webp" width="480" alt="inlaut settings: language, engine, model, trigger key and behaviour"></p>
+
 ## Design
 
 The app and website use the **Sprachimpuls / Petrol & Mint** brand kit, with native system typography and light/dark appearances. See [design/README.md](design/README.md) for the source assets and reproducible integration.
@@ -18,6 +22,12 @@ The app and website use the **Sprachimpuls / Petrol & Mint** brand kit, with nat
 ## Download
 
 [Download inlaut 0.3.0](https://github.com/tobymarks/inlaut/releases/download/v0.3.0/Inlaut-0.3.0-en.dmg) ([German disk image](https://github.com/tobymarks/inlaut/releases/download/v0.3.0/Inlaut-0.3.0.dmg)) for Apple Silicon and macOS 26 or later. Open the DMG, drag inlaut onto the Applications folder, then open inlaut from Applications. You can eject the disk image after copying. Both the app and the DMG are Developer ID signed and notarized by Apple.
+
+Or with Homebrew:
+
+```bash
+brew install --cask tobymarks/tap/inlaut
+```
 
 Setup downloads the speech model (around 630 MB) and guides you through microphone and Accessibility permissions. [Release notes and checksums](https://github.com/tobymarks/inlaut/releases/latest).
 
@@ -82,12 +92,16 @@ Publishing order:
 1. Test recording, hold/toggle, 🌐, paste into a native app and a browser, cancel, and Settings on the exported app. For later releases, also test updating from the previous public version using a separate installation.
 2. Create a GitHub Release for the matching source tag. Upload `Inlaut-<version>.dmg`, `Inlaut-<version>-en.dmg`, their `.dmg.sha256` files, `Inlaut-<version>.zip` and `SHA256SUMS`. Download both public packages and verify their checksums and notarization. The DMG is the website download; the ZIP is retained for Sparkle updates.
 3. Copy the generated `appcast.xml` to `site/public/updates/appcast.xml` **without editing it** (the feed itself is signed). It keeps earlier entries and their version-specific GitHub URLs. Copy per-language notes from the staging directory (`Inlaut-<version>.<lang>.html`, not the files in `release-notes/`: `generate_appcast` adds a comment before signing) unchanged to `site/public/updates/notes/`.
-4. Point the download links in `site/public/index.html` (German DMG) and `site/public/en/index.html` (English DMG) at the public images, then deploy the site with `cd site && npx wrangler deploy`. Update the download links under “Download” in this README too.
+4. Point the download links in `site/public/index.html` (German DMG) and `site/public/en/index.html` (English DMG) at the public images, then deploy the site with `cd site && npx wrangler deploy`. Update the download links under “Download” in this README too. Then update version and both checksums in the Homebrew cask ([tobymarks/homebrew-tap](https://github.com/tobymarks/homebrew-tap), `Casks/inlaut.rb`).
 5. Verify the live download link, DMG and feed before announcing the release. The package step produces the signed feed; do not deploy an unsigned template to released clients.
 
 The DMG layout is defined in `scripts/dmg-settings.py`; `scripts/render-dmg-background.swift` renders the brand artwork at 1x and 2x. `scripts/validate-dmg.py` mounts the image read-only and checks the exact app payload, code signature, notarization ticket, `/Applications` link and Finder layout. Visually inspect the mounted image on a Retina display before publishing.
 
 Useful references: [Sparkle setup](https://sparkle-project.org/documentation/), [Sparkle publishing](https://sparkle-project.org/documentation/publishing/), [Apple notarization](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow), [dmgbuild layout settings](https://dmgbuild.readthedocs.io/en/latest/settings.html).
+
+## Numbers
+
+The site has no tracking, so the only public numbers are GitHub's: release downloads, stars and repo traffic. GitHub keeps no download history and only 14 days of traffic. `scripts/metrics.py` appends a daily snapshot to `metrics/snapshots.jsonl` (gitignored) and `scripts/metrics.py --report` prints the history. On the maintainer's Mac a LaunchAgent (`de.tobymarks.inlaut.metrics`) runs it every morning. DMG downloads are new installs, ZIP downloads are Sparkle updates and so roughly the active users of the previous version; both include bots and our own tests.
 
 ## Permissions
 
