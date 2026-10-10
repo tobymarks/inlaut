@@ -20,7 +20,7 @@
 - [Website und Download](https://inlaut.de/): Funktionen, Anwendungsbeispiele, häufige Fragen
 - [English website](https://inlaut.de/en): features, examples, FAQ
 - [Häufige Fragen](https://inlaut.de/#fragen)
-- [Diktier-Apps für den Mac im Vergleich](https://inlaut.de/vergleich): inlaut, Apple Diktat, Wispr Flow, Superwhisper und MacWhisper nebeneinander, mit Quellen der Anbieter
+- [Diktier-Apps für den Mac im Vergleich](https://inlaut.de/vergleich): zehn Apps nebeneinander (inlaut, Apple Diktat, Wispr Flow, Superwhisper, MacWhisper, VoiceInk, Handy, Spokenly, Typeless, Aqua Voice), mit Quellen der Anbieter
 - [Dictation apps for the Mac compared](https://inlaut.de/en/compare): the same comparison in English
 - [inlaut als Alternative zu Wispr Flow](https://inlaut.de/wispr-flow-alternative): lokal statt Cloud, kostenlos, Open Source; was Wispr Flow kann und inlaut nicht
 - [inlaut as a Wispr Flow alternative](https://inlaut.de/en/wispr-flow-alternative): the same page in English
