@@ -8,8 +8,8 @@
 - Preis: kostenlos, kein Abo, kein Konto. Lizenz GPL-3.0-or-later.
 - Plattform: Mac mit Apple Silicon, macOS 26 oder neuer. Kein Windows, kein iPhone/iPad.
 - Sprachen: Deutsch, Englisch und beide gemischt (Einstellung Deutsch / English / Deutsch + English). Die Oberfläche gibt es auf Deutsch und Englisch.
-- Spracherkennung: Parakeet-Modelle, lokal auf der CPU: primeline (auf Deutsch abgestimmt, versteht auch Englisch und gemischte Sätze, rund 670 MB) bzw. NVIDIA Parakeet TDT 0.6B v2 für Englisch (rund 660 MB). Alternativ die lokale Apple-Spracherkennung.
-- Datenschutz: Aufnahmen und Diktate werden weder übertragen noch als Verlauf gespeichert. Das Mikrofon ist nur beim Diktieren aktiv. Internet nur für den Modell-Download (beim ersten Start und beim Sprachwechsel) und die Update-Suche.
+- Spracherkennung: Parakeet Ultra (ein Modell für Deutsch, Englisch und gemischte Sätze, rund 630 MB), läuft lokal als Core ML auf der Neural Engine des Mac. Alternativ die lokale Apple-Spracherkennung.
+- Datenschutz: Aufnahmen und Diktate werden weder übertragen noch als Verlauf gespeichert. Das Mikrofon ist nur beim Diktieren aktiv. Internet nur für den einmaligen Modell-Download und die Update-Suche.
 - Bedienung: Tastenkombination oder fn-/Globus-Taste halten und sprechen; zweimal fn tippen = freihändiges Diktat.
 - Text landet am Cursor in jeder App (Mail, Notizen, Word, Pages, Slack, Teams, Browser, KI-Chats). Braucht dafür die Bedienungshilfen-Berechtigung.
 - Eigene Ersetzungen für Fachbegriffe und Namen; Sprachbefehle „neue Zeile“ und „neuer Absatz“ bzw. „new line“ und „new paragraph“.

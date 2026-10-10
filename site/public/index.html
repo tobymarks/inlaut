@@ -40,17 +40,17 @@
         "applicationCategory": "UtilitiesApplication",
         "applicationSubCategory": "Spracherkennung, Diktat",
         "operatingSystem": "macOS 26 oder neuer (Apple Silicon)",
-        "softwareVersion": "0.2.0",
+        "softwareVersion": "0.3.0",
         "inLanguage": ["de", "en"],
         "isAccessibleForFree": true,
         "license": "https://www.gnu.org/licenses/gpl-3.0.html",
-        "downloadUrl": "https://github.com/tobymarks/inlaut/releases/download/v0.2.0/Inlaut-0.2.0.dmg",
+        "downloadUrl": "https://github.com/tobymarks/inlaut/releases/download/v0.3.0/Inlaut-0.3.0.dmg",
         "installUrl": "https://inlaut.de/#so-gehts",
-        "fileSize": "670MB (Sprachmodell, wird beim ersten Start geladen)",
+        "fileSize": "630MB (Sprachmodell, wird beim ersten Start geladen)",
         "featureList": [
           "Diktieren per Tastenkombination oder fn-Taste (halten oder zweimal tippen für freihändiges Diktat)",
           "Spracherkennung lokal auf dem Mac, funktioniert ohne Internet",
-          "Auf Deutsch abgestimmtes Sprachmodell (Parakeet), das auch Englisch und gemischte Sätze versteht; für Englisch ein eigenes Modell; alternativ Apple-Spracherkennung",
+          "Ein Sprachmodell (Parakeet Ultra) für Deutsch, Englisch und gemischte Sätze, das sparsam auf der Neural Engine läuft; alternativ Apple-Spracherkennung",
           "Text landet direkt im aktiven Textfeld jeder App",
           "Eigene Ersetzungen für Fachbegriffe und Namen",
           "Sprachbefehle „neue Zeile“ und „neuer Absatz“ (englisch: „new line“, „new paragraph“)",
@@ -100,7 +100,7 @@
       "name": "Funktioniert das Diktieren ohne Internet?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Ja. Die Spracherkennung läuft vollständig auf deinem Mac. Internet braucht inlaut nur, um beim ersten Start das Sprachmodell (rund 670 MB) zu laden und um nach Updates zu suchen."
+        "text": "Ja. Die Spracherkennung läuft vollständig auf deinem Mac. Internet braucht inlaut nur, um beim ersten Start das Sprachmodell (rund 630 MB) zu laden und um nach Updates zu suchen."
       }
     },
     {
@@ -132,7 +132,7 @@
       "name": "Wie gut versteht inlaut Deutsch und Fachbegriffe?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Das Standardmodell Parakeet ist auf Deutsch abgestimmt und kommt auch mit Fachbegriffen meist gut zurecht. Wenn ein Wort trotzdem falsch erkannt wird, legst du eine eigene Ersetzung an. Danach stimmt die Schreibweise jedes Mal."
+        "text": "Das Standardmodell Parakeet Ultra versteht Deutsch und Englisch und kommt auch mit Fachbegriffen meist gut zurecht. Wenn ein Wort trotzdem falsch erkannt wird, legst du eine eigene Ersetzung an. Danach stimmt die Schreibweise jedes Mal."
       }
     },
     {
@@ -148,7 +148,7 @@
       "name": "Was ist der Unterschied zur Diktierfunktion von macOS?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "macOS bringt eine eigene Diktierfunktion mit. inlaut ist eine Alternative mit einem auf Deutsch abgestimmten Sprachmodell, eigenen Ersetzungen, Befehlen für Zeilen und Absätze und einer frei wählbaren Taste. Du kannst beides ausprobieren und nutzen, was besser zu dir passt."
+        "text": "macOS bringt eine eigene Diktierfunktion mit. inlaut ist eine Alternative mit einem eigenen Sprachmodell für Deutsch und Englisch, eigenen Ersetzungen, Befehlen für Zeilen und Absätze und einer frei wählbaren Taste. Du kannst beides ausprobieren und nutzen, was besser zu dir passt."
       }
     },
     {
@@ -156,7 +156,7 @@
       "name": "Welchen Mac brauche ich?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Einen Mac mit Apple Silicon (M1 oder neuer) und macOS 26 oder neuer. Das Sprachmodell belegt rund 670 MB auf dem Speicher. Wer weniger Platz hat, wählt in den Einstellungen die lokale Apple-Spracherkennung."
+        "text": "Einen Mac mit Apple Silicon (M1 oder neuer) und macOS 26 oder neuer. Das Sprachmodell belegt rund 630 MB auf dem Speicher. Wer weniger Platz hat, wählt in den Einstellungen die lokale Apple-Spracherkennung."
       }
     },
     {
@@ -209,10 +209,10 @@
         <h1 id="hero-title">Deine Stimme.<br><span>Direkt als Text.</span></h1>
         <p class="lead">Ein Gedanke, eine Nachricht, eine ganze Seite. Taste halten, sprechen, loslassen. inlaut schreibt dort, wo dein Cursor steht.</p>
         <div class="actions">
-          <a class="button" href="https://github.com/tobymarks/inlaut/releases/download/v0.2.0/Inlaut-0.2.0.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Für macOS laden <span aria-hidden="true">↓</span></a>
+          <a class="button" href="https://github.com/tobymarks/inlaut/releases/download/v0.3.0/Inlaut-0.3.0.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Für macOS laden <span aria-hidden="true">↓</span></a>
           <a class="text-link" href="#so-gehts">So funktioniert’s <span aria-hidden="true">↓</span></a>
         </div>
-        <p class="availability">Kostenlos <span aria-hidden="true">·</span> Version 0.2.0 für Apple Silicon ab macOS 26</p>
+        <p class="availability">Kostenlos <span aria-hidden="true">·</span> Version 0.3.0 für Apple Silicon ab macOS 26</p>
       </div>
 
       <figure class="dictation-demo" aria-label="Beispiel: Aus gesprochener Sprache wird eine Notiz">
@@ -239,7 +239,7 @@
       <div class="section-heading"><h2 id="features-title">Platz für deine Gedanken.</h2><p>inlaut hält sich im Hintergrund. Und ist da, wenn du etwas zu sagen hast.</p></div>
       <div class="features">
         <article class="feature"><h3>Dein Mac hört zu. Sonst niemand.</h3><p>Die Spracherkennung läuft auf deinem Mac. Aufnahmen und Diktate werden weder als Verlauf gespeichert noch übertragen. Das Mikrofon ist nur beim Diktieren aktiv.</p></article>
-        <article class="feature"><h3>Für Deutsch gemacht. Englisch kann es auch.</h3><p>Das Parakeet-Sprachmodell ist auf Deutsch abgestimmt und versteht auch Englisch, sogar gemischt im selben Satz. Alternativ nutzt du die lokale Apple-Spracherkennung mit geringerem Speicherbedarf.</p></article>
+        <article class="feature"><h3>Deutsch, Englisch oder beides.</h3><p>Ein Sprachmodell versteht Deutsch und Englisch, sogar gemischt im selben Satz. Es läuft auf der Neural Engine deines Mac: schnell und sparsam. Alternativ nutzt du die lokale Apple-Spracherkennung.</p></article>
         <article class="feature"><h3>Da, wo du gerade schreibst.</h3><p>Mail, Notiz oder Dokument: Dein Diktat landet direkt im aktiven Textfeld. Du bleibst in der App, in der du gerade arbeitest.</p></article>
         <article class="feature"><h3>Deine Wörter. Deine Schreibweise.</h3><p>Eigene Ersetzungen korrigieren wiederkehrende Fehler. Mit „neue Zeile“ und „neuer Absatz“ gibst du deinem Text schon beim Sprechen Struktur.</p></article>
       </div>
@@ -249,15 +249,15 @@
       <div class="section-heading"><h2 id="shots-title">Leise im Hintergrund.</h2><p>Eine kleine Anzeige, solange du sprichst. Ein Menü in der Menüleiste. Und ein Fenster für deine Einstellungen.</p></div>
       <div class="shot-grid">
         <figure class="shot shot-wide"><img src="/screens/diktat.webp" width="1536" height="1024" alt="Notizen-Fenster mit diktiertem Text, darunter die inlaut-Anzeige „Hört zu“ mit Pegelbalken" loading="lazy"><figcaption>Diktieren in Notizen (Illustration)</figcaption></figure>
-        <figure class="shot"><img src="/screens/menue.webp" width="836" height="620" alt="Geöffnetes inlaut-Menü in der Menüleiste mit Status, Einstellungen und Beenden" loading="lazy"><figcaption>Das Menü in der Menüleiste (Illustration)</figcaption></figure>
-        <figure class="shot"><img src="/screens/einstellungen.webp?v=2" width="1120" height="1480" alt="inlaut-Einstellungen mit Sprache, Spracherkennung, Auslöser und Verhalten" loading="lazy"><figcaption>Einstellungen</figcaption></figure>
+        <figure class="shot"><img src="/screens/menue.webp?v=3" width="836" height="620" alt="Geöffnetes inlaut-Menü in der Menüleiste mit Status, Einstellungen und Beenden" loading="lazy"><figcaption>Das Menü in der Menüleiste (Illustration)</figcaption></figure>
+        <figure class="shot"><img src="/screens/einstellungen.webp?v=3" width="1120" height="1480" alt="inlaut-Einstellungen mit Sprache, Spracherkennung, Auslöser und Verhalten" loading="lazy"><figcaption>Einstellungen</figcaption></figure>
       </div>
     </section>
 
     <section class="wrap how" id="so-gehts" aria-labelledby="how-title">
       <div class="section-heading"><h2 id="how-title">Halten. Sprechen.<br>Loslassen.</h2><p>Eine Taste reicht. Den Rest erledigt inlaut auf deinem Mac.</p><picture class="how-symbol"><source srcset="/brand/inlaut-symbol-mint.svg" media="(prefers-color-scheme: dark)"><img src="/brand/inlaut-symbol-petrol.svg" width="112" height="70" alt="" loading="lazy"></picture></div>
       <ol class="steps">
-        <li><span class="step-number" aria-hidden="true">1</span><div><h3>Laden und einmal einrichten.</h3><p>DMG-Datei öffnen und das inlaut-Symbol auf den Ordner „Programme“ ziehen. Starte inlaut dann aus „Programme“. Die App lädt das Sprachmodell (rund 670 MB) und führt dich durch die Berechtigungen für Mikrofon und Einfügen.</p></div></li>
+        <li><span class="step-number" aria-hidden="true">1</span><div><h3>Laden und einmal einrichten.</h3><p>DMG-Datei öffnen und das inlaut-Symbol auf den Ordner „Programme“ ziehen. Starte inlaut dann aus „Programme“. Die App lädt das Sprachmodell (rund 630 MB) und führt dich durch die Berechtigungen für Mikrofon und Einfügen.</p></div></li>
         <li><span class="step-number" aria-hidden="true">2</span><div><h3>Deine Taste halten und sprechen.</h3><p>Nutze deine Tastenkombination oder richte die <kbd>🌐 fn</kbd>-Taste ein. Zweimal auf die fn-Taste tippen startet ein freihändiges Diktat.</p></div></li>
         <li><span class="step-number" aria-hidden="true">3</span><div><h3>Loslassen. Der Text steht da.</h3><p>inlaut wandelt deine Worte in Text um und fügt ihn am Cursor ein. Beim freihändigen Diktieren beendet ein weiterer Tastendruck die Aufnahme.</p></div></li>
       </ol>
@@ -331,14 +331,14 @@
       <div class="section-heading"><h2 id="faq-title">Häufige Fragen</h2><p>Was inlaut kann, was es braucht und wo deine Daten bleiben.</p></div>
       <div class="faq-list">
         <details><summary>Ist inlaut kostenlos?</summary><p>Ja. inlaut ist kostenlos, ohne Abo, ohne Konto und ohne Werbung. Der Quellcode ist Open Source unter der Lizenz GPL-3.0 und liegt auf GitHub.</p></details>
-        <details><summary>Funktioniert das Diktieren ohne Internet?</summary><p>Ja. Die Spracherkennung läuft vollständig auf deinem Mac. Internet braucht inlaut nur, um beim ersten Start das Sprachmodell (rund 670 MB) zu laden und um nach Updates zu suchen.</p></details>
+        <details><summary>Funktioniert das Diktieren ohne Internet?</summary><p>Ja. Die Spracherkennung läuft vollständig auf deinem Mac. Internet braucht inlaut nur, um beim ersten Start das Sprachmodell (rund 630 MB) zu laden und um nach Updates zu suchen.</p></details>
         <details><summary>Werden meine Aufnahmen in eine Cloud geschickt?</summary><p>Nein. Deine Stimme wird auf dem Mac in Text umgewandelt. Aufnahmen und Diktate werden weder übertragen noch als Verlauf gespeichert. Das Mikrofon ist nur aktiv, solange du diktierst.</p></details>
         <details><summary>In welchen Apps kann ich diktieren?</summary><p>In jeder App mit Textfeld: Mail, Notizen, Pages, Word, Outlook, Teams, Slack, im Browser oder im Chatfenster eines KI-Assistenten. inlaut fügt den Text dort ein, wo dein Cursor steht. Dafür braucht es einmalig die Berechtigung unter Bedienungshilfen. Ohne sie bleibt der Text in der Zwischenablage.</p></details>
         <details><summary>Wie starte ich ein Diktat?</summary><p>Halte deine Tastenkombination oder die <kbd>🌐 fn</kbd>-Taste gedrückt, sprich und lass los. Für längere Texte tippst du zweimal auf die fn-Taste und diktierst freihändig. Ein weiterer Tastendruck beendet die Aufnahme.</p></details>
-        <details><summary>Wie gut versteht inlaut Deutsch und Fachbegriffe?</summary><p>Das Standardmodell Parakeet ist auf Deutsch abgestimmt und kommt auch mit Fachbegriffen meist gut zurecht. Wenn ein Wort trotzdem falsch erkannt wird, legst du eine eigene Ersetzung an. Danach stimmt die Schreibweise jedes Mal.</p></details>
+        <details><summary>Wie gut versteht inlaut Deutsch und Fachbegriffe?</summary><p>Das Standardmodell Parakeet Ultra versteht Deutsch und Englisch und kommt auch mit Fachbegriffen meist gut zurecht. Wenn ein Wort trotzdem falsch erkannt wird, legst du eine eigene Ersetzung an. Danach stimmt die Schreibweise jedes Mal.</p></details>
         <details><summary>Kann ich Zeilenumbrüche und Absätze diktieren?</summary><p>Ja. Sag „neue Zeile“ oder „neuer Absatz“, und inlaut setzt den Umbruch an der Stelle.</p></details>
-        <details><summary>Was ist der Unterschied zur Diktierfunktion von macOS?</summary><p>macOS bringt eine eigene Diktierfunktion mit. inlaut ist eine Alternative mit einem auf Deutsch abgestimmten Sprachmodell, eigenen Ersetzungen, Befehlen für Zeilen und Absätze und einer frei wählbaren Taste. Du kannst beides ausprobieren und nutzen, was besser zu dir passt.</p></details>
-        <details><summary>Welchen Mac brauche ich?</summary><p>Einen Mac mit Apple Silicon (M1 oder neuer) und macOS 26 oder neuer. Das Sprachmodell belegt rund 670 MB auf dem Speicher. Wer weniger Platz hat, wählt in den Einstellungen die lokale Apple-Spracherkennung.</p></details>
+        <details><summary>Was ist der Unterschied zur Diktierfunktion von macOS?</summary><p>macOS bringt eine eigene Diktierfunktion mit. inlaut ist eine Alternative mit einem eigenen Sprachmodell für Deutsch und Englisch, eigenen Ersetzungen, Befehlen für Zeilen und Absätze und einer frei wählbaren Taste. Du kannst beides ausprobieren und nutzen, was besser zu dir passt.</p></details>
+        <details><summary>Welchen Mac brauche ich?</summary><p>Einen Mac mit Apple Silicon (M1 oder neuer) und macOS 26 oder neuer. Das Sprachmodell belegt rund 630 MB auf dem Speicher. Wer weniger Platz hat, wählt in den Einstellungen die lokale Apple-Spracherkennung.</p></details>
         <details><summary>Welche Sprachen unterstützt inlaut?</summary><p>Deutsch und Englisch. In den Einstellungen wählst du Deutsch, English oder Deutsch + English. Mit Deutsch + English diktierst du beide Sprachen, auch gemischt im selben Satz. Die Sprachbefehle heißen dann auch „new line“ und „new paragraph“.</p></details>
         <details><summary>Gibt es inlaut für Windows, iPhone oder iPad?</summary><p>Nein. inlaut ist eine App für die Menüleiste des Mac.</p></details>
         <details><summary>Wie installiere ich inlaut?</summary><p>Lade die DMG-Datei, öffne sie und zieh das inlaut-Symbol in den Ordner „Programme“. Beim ersten Start führt dich inlaut durch das Laden des Sprachmodells und die Berechtigungen für Mikrofon und Einfügen. Einmal am Tag sieht inlaut nach Updates und fragt, bevor es eins installiert.</p></details>
@@ -346,7 +346,7 @@
     </section>
 
     <section class="wrap project" aria-labelledby="project-title">
-      <div class="project-inner"><img src="/brand/app-icon.png" width="80" height="80" alt="" loading="lazy"><div><h2 id="project-title">Bereit zum Ausprobieren?</h2><p>inlaut ist kostenlos und Open Source. Lade die App oder schau dir den Code auf GitHub an.</p><div class="actions"><a class="button" href="https://github.com/tobymarks/inlaut/releases/download/v0.2.0/Inlaut-0.2.0.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Für macOS laden <span aria-hidden="true">↓</span></a><a class="text-link" href="https://github.com/tobymarks/inlaut" target="_blank" rel="noopener">inlaut auf GitHub <span aria-hidden="true">↗</span></a></div></div></div>
+      <div class="project-inner"><img src="/brand/app-icon.png" width="80" height="80" alt="" loading="lazy"><div><h2 id="project-title">Bereit zum Ausprobieren?</h2><p>inlaut ist kostenlos und Open Source. Lade die App oder schau dir den Code auf GitHub an.</p><div class="actions"><a class="button" href="https://github.com/tobymarks/inlaut/releases/download/v0.3.0/Inlaut-0.3.0.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Für macOS laden <span aria-hidden="true">↓</span></a><a class="text-link" href="https://github.com/tobymarks/inlaut" target="_blank" rel="noopener">inlaut auf GitHub <span aria-hidden="true">↗</span></a></div></div></div>
     </section>
   </main>
 
