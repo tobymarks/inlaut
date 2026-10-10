@@ -18,8 +18,8 @@ packages:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "0.2.0"
-    CURRENT_PROJECT_VERSION: "3"
+    MARKETING_VERSION: "0.3.0"
+    CURRENT_PROJECT_VERSION: "4"
     DEVELOPMENT_TEAM: 7V4K87652E
     CODE_SIGN_STYLE: Manual
     # A stable signature keeps the Accessibility grant across rebuilds.
