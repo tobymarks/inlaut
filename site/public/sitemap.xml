@@ -55,4 +55,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/wispr-flow-alternative"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/wispr-flow-alternative"/>
   </url>
+  <url>
+    <loc>https://inlaut.de/diktierfunktion-mac</loc>
+    <lastmod>2026-10-10</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/diktierfunktion-mac"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/mac-dictation"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/diktierfunktion-mac"/>
+  </url>
+  <url>
+    <loc>https://inlaut.de/en/mac-dictation</loc>
+    <lastmod>2026-10-10</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/diktierfunktion-mac"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/mac-dictation"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/diktierfunktion-mac"/>
+  </url>
 </urlset>
