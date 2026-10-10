@@ -9,6 +9,18 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <description>Neue Versionen von inlaut für macOS.</description>
         <language>de</language>
         <item>
+            <title>0.3.0</title>
+            <pubDate>Sat, 10 Oct 2026 07:38:26 +0200</pubDate>
+            <link>https://inlaut.de</link>
+            <sparkle:version>4</sparkle:version>
+            <sparkle:shortVersionString>0.3.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <sparkle:releaseNotesLink xml:lang="de" sparkle:edSignature="/BCgITtt0rPB08fpgL9oknVlHhAgRLplo2RyXCttZCxr/JydN4ZnA+53ADZcadxsRrEbPxVHH2IbTnJgEiufAQ==" sparkle:length="1413">https://inlaut.de/updates/notes/Inlaut-0.3.0.de.html</sparkle:releaseNotesLink>
+            <sparkle:releaseNotesLink xml:lang="en" sparkle:edSignature="LoNklHA7tD5MGHsOv5IVQ4MEqL1/DR3tQcIEBp063LnOjPEPLjSsUGrsRA6qoSxBxbbG2WBIfDqr8i49oEVFBw==" sparkle:length="1277">https://inlaut.de/updates/notes/Inlaut-0.3.0.en.html</sparkle:releaseNotesLink>
+            <enclosure url="https://github.com/tobymarks/inlaut/releases/download/v0.3.0/Inlaut-0.3.0.zip" length="6531018" type="application/octet-stream" sparkle:edSignature="wSSCPn6V4FBWK7GTo8afPKcEYfhze2yjK4DKa2QC5nYcV7pIlXQ+X8k9IaciOm8dJ0P05qqSZ5QrzVRWCd74Ag=="/>
+        </item>
+        <item>
             <title>0.2.0</title>
             <pubDate>Fri, 09 Oct 2026 23:43:14 +0200</pubDate>
             <link>https://inlaut.de</link>
@@ -35,30 +47,9 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
 ]]></description>
             <enclosure url="https://github.com/tobymarks/inlaut/releases/download/v0.1.1/Inlaut-0.1.1.zip" length="11985229" type="application/octet-stream" sparkle:edSignature="KflpNMtstvd2AyeXXfp5ElZMNwqRvqIm/e9uTVkiaZg2yp0F7vuYOyuaZobl+5qFVoJaquQ090rYvI3exBRPBA=="/>
         </item>
-        <item>
-            <title>0.1.0</title>
-            <pubDate>Thu, 08 Oct 2026 21:50:03 +0200</pubDate>
-            <link>https://inlaut.de</link>
-            <sparkle:version>1</sparkle:version>
-            <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
-            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description><![CDATA[<h2>inlaut 0.1.0</h2>
-<ul>
-  <li>Lokales Diktieren auf Apple-Silicon-Macs ab macOS 26.</li>
-  <li>Deutsche Spracherkennung mit Parakeet und Apple als Alternative.</li>
-  <li>Globale Tastenkombination oder 🌐-Taste zum Diktieren.</li>
-  <li>Sprachbefehle für Zeilen und Absätze sowie eigene Ersetzungen.</li>
-  <li>Aufnahmeanzeige direkt am unteren Bildschirmrand.</li>
-  <li>Signierte Updates mit täglicher Prüfung und manueller Installation.</li>
-  <li>Neues Sprachimpuls-Design in Petrol und Mint, mit nativen Glas-Icons und Hell-/Dunkelmodus.</li>
-</ul>
-]]></description>
-            <enclosure url="https://github.com/tobymarks/inlaut/releases/download/v0.1.0/Inlaut-0.1.0.zip" length="11976512" type="application/octet-stream" sparkle:edSignature="p1RG/bVW+9lDmMplBW+XzC2VVkVnGa0jlcBA/MN8HS1YvDterruVOIRPz/XxZAPzi5d9lgclKsN1bUlPvoE0DA=="/>
-        </item>
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: eW2Kv8s97u9GnwdBFxv4CoDhhST/i1+pLfUxP34LG0RHwVqRzKcVQWApzmB1VtKY+sRT1N2Ml5Gx8eIo+190Bg==
-length: 4241
+edSignature: xRHOkFWiteZoVL4XCksqqHOCblVMHZljbncmpXQSH8jbiis4EeDjMoP12My0g8Kqp5CKaO6ICLR2I/YUz5P+AQ==
+length: 4155
 -->
