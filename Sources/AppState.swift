@@ -299,6 +299,9 @@ final class AppState {
         applyTrigger()
 
         Task { start() }
+        #if DEBUG
+        SettingsSnapshot.renderIfRequested(state: self)
+        #endif
     }
 
     private func start() {

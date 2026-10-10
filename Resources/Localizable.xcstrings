@@ -464,12 +464,12 @@
         }
       }
     },
-    "Fixes what recognition regularly gets wrong – whole words, case-insensitive.": {
+    "Fixes what recognition regularly gets wrong – whole words, case-insensitive. A rule can include the word before it: “das Damm → das DAM” leaves a real “Damm” alone.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Korrigiert, was die Erkennung regelmäßig falsch schreibt – ganze Wörter, Groß-/Kleinschreibung egal."
+            "value": "Korrigiert, was die Erkennung regelmäßig falsch schreibt – ganze Wörter, Groß-/Kleinschreibung egal. Eine Regel darf das Wort davor enthalten: „das Damm → das DAM“ lässt einen echten „Damm“ in Ruhe."
           }
         }
       }

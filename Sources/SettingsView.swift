@@ -84,7 +84,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Replacements")
                 } footer: {
-                    Text("Fixes what recognition regularly gets wrong – whole words, case-insensitive.")
+                    Text("Fixes what recognition regularly gets wrong – whole words, case-insensitive. A rule can include the word before it: “das Damm → das DAM” leaves a real “Damm” alone.")
                         .foregroundStyle(.secondary)
                 }
 
