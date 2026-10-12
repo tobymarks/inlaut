@@ -1,5 +1,7 @@
 # inlaut
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/15409/badge)](https://www.bestpractices.dev/projects/15409)
+
 A tiny macOS menu bar app for dictation that never leaves your Mac. Hold a key combination, speak, let go — the text appears in whatever text field has the cursor.
 
 <p align="center"><img src="site/public/screens/diktat-en.webp" width="720" alt="Illustration: a note in the Notes app is being dictated, with inlaut's “Listening” indicator below the text"></p>
