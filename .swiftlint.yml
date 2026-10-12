@@ -1,0 +1,45 @@
+# Static analysis for mistakes, not for style: only rules that point at
+# likely bugs or unsafe constructs. Formatting stays a matter of review.
+# The force_* rules are left out: the casts to Core Foundation types and the
+# constant regular expressions and URLs they flag here are intended.
+included:
+  - Sources
+  - Tests
+  - Packages/InlautSpeech/Sources
+  - scripts
+only_rules:
+  - unowned_variable_capture
+  - weak_delegate
+  - class_delegate_protocol
+  - discarded_notification_center_observer
+  - notification_center_detachment
+  - unused_closure_parameter
+  - unused_optional_binding
+  - unused_enumerated
+  - unused_setter_value
+  - unused_control_flow_label
+  - duplicate_conditions
+  - duplicate_enum_cases
+  - duplicated_key_in_dictionary_literal
+  - identical_operands
+  - dynamic_inline
+  - empty_xctest_method
+  - overridden_super_call
+  - prohibited_super_call
+  - legacy_random
+  - nsobject_prefer_isequal
+  - unhandled_throwing_task
+  - invalid_swiftlint_command
+  - fatal_error_message
+  - compiler_protocol_init
+  - discouraged_direct_init
+  - reduce_boolean
+  - orphaned_doc_comment
+  - self_in_property_initialization
+  - xct_specific_matcher
+  - array_init
+  - contains_over_filter_count
+  - lower_acl_than_parent
+  - private_unit_test
+  - unavailable_condition
+  - ns_number_init_as_function_reference

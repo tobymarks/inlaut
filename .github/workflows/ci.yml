@@ -15,6 +15,10 @@ jobs:
         run: |
           command -v xcodegen || brew install xcodegen
           xcodegen generate
+      - name: Static analysis
+        run: |
+          command -v swiftlint || brew install swiftlint
+          swiftlint lint --strict
       - name: Build and run isolated tests
         run: |
           xcodebuild -project Inlaut.xcodeproj -scheme Inlaut \
