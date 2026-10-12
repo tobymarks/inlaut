@@ -45,6 +45,7 @@ targets:
       - Sources/SharpS.swift
       - Sources/CancellationFlag.swift
       - Sources/Recorder.swift
+      - Sources/Microphone.swift
       - Sources/TranscriptionEngine.swift
       - Sources/ManagedSession.swift
       - Sources/ModelStore.swift

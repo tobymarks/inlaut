@@ -1576,6 +1576,56 @@
           }
         }
       }
+    },
+    "Automatic": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatisch"
+          }
+        }
+      }
+    },
+    "As set in macOS": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wie in macOS eingestellt"
+          }
+        }
+      }
+    },
+    "Not connected": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht verbunden"
+          }
+        }
+      }
+    },
+    "Record with": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufnehmen mit"
+          }
+        }
+      }
+    },
+    "Automatic uses the Mac’s own microphone while a Bluetooth headset is connected. Headsets take over a second to start recording.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatisch nimmt das Mikrofon des Mac, solange ein Bluetooth-Headset verbunden ist. Headsets brauchen über eine Sekunde, bis sie aufnehmen."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

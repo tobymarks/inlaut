@@ -1,5 +1,6 @@
 import AppKit
 import AVFoundation
+import CoreAudio
 import XCTest
 
 @MainActor
@@ -200,5 +201,54 @@ final class TextProcessingTests: XCTestCase {
         meter.update(buffer)
         XCTAssertEqual(meter.current, 0.2)
         XCTAssertEqual(meter.peak, 0.8)
+    }
+
+    func testMeterReportsWhenTheFirstSignalArrives() throws {
+        let format = try XCTUnwrap(AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: 16000, channels: 1, interleaved: false))
+        let buffer = try XCTUnwrap(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 2))
+        buffer.frameLength = 2
+        let samples = try XCTUnwrap(buffer.floatChannelData?[0])
+        let meter = Meter()
+        samples[0] = 0; samples[1] = 0
+        meter.update(buffer)
+        XCTAssertGreaterThanOrEqual(meter.firstBufferMs, 0)
+        XCTAssertEqual(meter.firstSignalMs, -1)
+        samples[1] = 0.1
+        meter.update(buffer)
+        XCTAssertGreaterThanOrEqual(meter.firstSignalMs, 0)
+    }
+}
+
+final class MicrophoneTests: XCTestCase {
+    private let builtIn = InputDevice(id: 1, uid: "builtin", name: "MacBook", transport: kAudioDeviceTransportTypeBuiltIn)
+    private let headset = InputDevice(id: 2, uid: "headset", name: "Headset", transport: kAudioDeviceTransportTypeBluetooth)
+    private let usb = InputDevice(id: 3, uid: "usb", name: "USB", transport: kAudioDeviceTransportTypeUSB)
+
+    func testAutomaticAvoidsBluetoothWhenTheMacHasItsOwnMicrophone() {
+        XCTAssertEqual(Microphones.resolve(.automatic, current: headset, among: [headset, builtIn]), builtIn)
+    }
+
+    func testAutomaticKeepsBluetoothWithoutABuiltInMicrophone() {
+        XCTAssertEqual(Microphones.resolve(.automatic, current: headset, among: [headset, usb]), headset)
+    }
+
+    func testAutomaticKeepsAWiredSystemInput() {
+        XCTAssertEqual(Microphones.resolve(.automatic, current: usb, among: [headset, builtIn, usb]), usb)
+    }
+
+    func testSystemDefaultKeepsBluetooth() {
+        XCTAssertEqual(Microphones.resolve(.systemDefault, current: headset, among: [headset, builtIn]), headset)
+    }
+
+    func testChosenDeviceWinsAndFallsBackWhenMissing() {
+        XCTAssertEqual(Microphones.resolve(.device(uid: "headset"), current: usb, among: [headset, builtIn, usb]), headset)
+        XCTAssertEqual(Microphones.resolve(.device(uid: "gone"), current: headset, among: [headset, builtIn]), builtIn)
+    }
+
+    func testChoiceSurvivesStorage() {
+        for choice in [MicrophoneChoice.automatic, .systemDefault, .device(uid: "usb")] {
+            XCTAssertEqual(MicrophoneChoice(stored: choice.stored), choice)
+        }
+        XCTAssertEqual(MicrophoneChoice(stored: nil), .automatic)
     }
 }

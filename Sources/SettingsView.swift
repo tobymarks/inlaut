@@ -62,6 +62,18 @@ struct SettingsView: View {
                     Picker("Indicator while dictating", selection: $state.indicatorPosition) {
                         ForEach(IndicatorPosition.allCases) { Text($0.label).tag($0) }
                     }
+                    Picker(selection: $state.microphone) {
+                        Text("Automatic").tag(MicrophoneChoice.automatic)
+                        Text("As set in macOS").tag(MicrophoneChoice.systemDefault)
+                        Divider()
+                        ForEach(Microphones.all()) { Text($0.name).tag(MicrophoneChoice.device(uid: $0.uid)) }
+                        if case .device(let uid) = state.microphone, !Microphones.all().contains(where: { $0.uid == uid }) {
+                            Text("Not connected").tag(state.microphone)
+                        }
+                    } label: {
+                        Text("Record with")
+                        Text("Automatic uses the Mac’s own microphone while a Bluetooth headset is connected. Headsets take over a second to start recording.")
+                    }
                     Toggle("Sounds at start and end", isOn: $state.playSounds)
                     Toggle("Launch at login", isOn: $state.launchAtLogin)
                 }

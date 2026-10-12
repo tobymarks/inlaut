@@ -194,6 +194,9 @@ final class AppState {
     var playSounds: Bool {
         didSet { UserDefaults.standard.set(playSounds, forKey: "playSounds") }
     }
+    var microphone: MicrophoneChoice {
+        didSet { UserDefaults.standard.set(microphone.stored, forKey: "microphone") }
+    }
     /// "neue Zeile" / "neuer Absatz" become line breaks.
     var voiceCommands: Bool {
         didSet { UserDefaults.standard.set(voiceCommands, forKey: "voiceCommands") }
@@ -284,6 +287,7 @@ final class AppState {
         quietSetup = legacy
         modelState = model.isInstalled ? .installed : .missing
         playSounds = defaults.object(forKey: "playSounds") as? Bool ?? true
+        microphone = MicrophoneChoice(stored: defaults.string(forKey: "microphone"))
         voiceCommands = defaults.object(forKey: "voiceCommands") as? Bool ?? true
         sharpS = defaults.object(forKey: "sharpS") as? Bool ?? !["CH", "LI"].contains(Locale.current.region?.identifier)
         replacements = defaults.data(forKey: "replacements")
@@ -675,10 +679,13 @@ final class AppState {
         }
         do {
             pasteTarget = TextInserter.captureTarget()
-            self.session = try ManagedSession.start(engine: engine) { try recorder.start(into: $0) }
+            let device = Microphones.resolve(microphone)
+            self.session = try ManagedSession.start(engine: engine) { try recorder.start(into: $0, device: device) }
             dictationID = UUID()
             status = .recording
             indicator.showRecording { [recorder] in recorder.level }
+            // Not delayed until audio arrives: AirPods only start delivering once a
+            // sound plays, so waiting for the first signal waited forever.
             if playSounds { NSSound(named: "Tink")?.play() }
         } catch {
             let failedSession = session
@@ -715,6 +722,7 @@ final class AppState {
                 try await Task.sleep(for: trailingAudio)
                 guard dictationID == id else { return }
                 let take = recorder.stop()
+                log.notice("mic start: engine \(take.startup.engineMs) ms, first buffer \(take.startup.firstBufferMs) ms, first signal \(take.startup.firstSignalMs) ms, bluetooth \(take.startup.bluetooth)")
                 // Play after closing the microphone, not into the trailing audio.
                 if playSounds { NSSound(named: "Pop")?.play() }
                 if take.seconds < minimumSeconds {
