@@ -26,6 +26,8 @@
 - [inlaut as a Wispr Flow alternative](https://inlaut.de/en/wispr-flow-alternative): the same page in English
 - [Diktierfunktion am Mac einrichten und Fehler beheben](https://inlaut.de/diktierfunktion-mac): Anleitung zum Diktat von macOS mit Checkliste und Apple-Quellen
 - [Mac dictation: how to set it up and fix it](https://inlaut.de/en/mac-dictation): the same guide in English
+- [inlaut im Unternehmen](https://inlaut.de/unternehmen): Datenflüsse, Netzwerkverbindungen, DSGVO, IT-Sicherheit, Verteilung und was inlaut nicht bietet
+- [inlaut at work](https://inlaut.de/en/business): the same page in English
 - [Quellcode auf GitHub](https://github.com/tobymarks/inlaut): README, Releases, Roadmap (Issues)
 - [Aktuelle Version herunterladen (DMG)](https://github.com/tobymarks/inlaut/releases/latest)
 

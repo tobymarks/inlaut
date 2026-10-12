@@ -69,4 +69,22 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/mac-dictation"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/diktierfunktion-mac"/>
   </url>
+  <url>
+    <loc>https://inlaut.de/unternehmen</loc>
+    <lastmod>2026-10-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/unternehmen"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/business"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/unternehmen"/>
+    <image:image><image:loc>https://inlaut.de/unternehmen/it-sicherheit.webp</image:loc></image:image>
+    <image:image><image:loc>https://inlaut.de/unternehmen/kanzlei.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://inlaut.de/en/business</loc>
+    <lastmod>2026-10-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/unternehmen"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/business"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/unternehmen"/>
+    <image:image><image:loc>https://inlaut.de/unternehmen/it-sicherheit.webp</image:loc></image:image>
+    <image:image><image:loc>https://inlaut.de/unternehmen/kanzlei.webp</image:loc></image:image>
+  </url>
 </urlset>
