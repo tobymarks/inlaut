@@ -95,19 +95,26 @@ final class Recorder {
         let ratio = format.sampleRate / buffer.format.sampleRate
         let capacity = AVAudioFrameCount((Double(buffer.frameLength) * ratio).rounded(.up)) + 16
         guard let out = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: capacity) else { return nil }
-        var consumed = false
+        let once = Once()
         var error: NSError?
         converter.convert(to: out, error: &error) { _, status in
-            if consumed {
+            guard once.claim() else {
                 status.pointee = .noDataNow
                 return nil
             }
-            consumed = true
             status.pointee = .haveData
             return buffer
         }
         return error == nil && out.frameLength > 0 ? out : nil
     }
+}
+
+/// Hands the converter its one input buffer. The input block counts as
+/// concurrently executing, so a captured `var` flag does not compile cleanly.
+private final class Once: Sendable {
+    private let claimed = Atomic<Bool>(false)
+    /// True on the first call only.
+    func claim() -> Bool { !claimed.exchange(true, ordering: .relaxed) }
 }
 
 /// One writer (the audio tap), concurrent readers (the UI). Atomic bit

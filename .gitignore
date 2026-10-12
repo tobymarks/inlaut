@@ -11,5 +11,6 @@ Inlaut.xcodeproj/
 design/inlaut-design-v1.zip
 design/inlaut-brand-kit.zip
 site/.wrangler/
+site/www-redirect/.wrangler/
 NEXT-SESSION.txt
 metrics/

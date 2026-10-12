@@ -114,6 +114,10 @@ The global shortcut uses Carbon hot keys and needs no permission.
 
 Measurements that led to the engine choice. `eval_takes.py` records the maintainer's own German, English and mixed takes; the Core ML comparison (Parakeet Ultra, v2, v3 and a Core ML export of primeline through FluidAudio against the sherpa-onnx models) is summarised in issue #5. The first comparison (on technical German, Whisper-turbo-german made the fewest errors but needs ~2 GB and invents text from noise; Parakeet came close at half the memory and speed; Apple's recogniser failed most technical terms and ignores custom vocabulary): Apple `SpeechAnalyzer` against [parakeet-primeline](https://huggingface.co/primeline/parakeet-primeline) (sherpa-onnx) and [whisper-large-v3-turbo-german](https://huggingface.co/primeline/whisper-large-v3-turbo-german) (MLX), on the same recordings. `try_parakeet.py` reuses `local_stt.py` from [winidi/dictate](https://github.com/winidi/dictate) (MIT).
 
+## Contributing and security
+
+Bugs, ideas and pull requests are welcome; [CONTRIBUTING.md](CONTRIBUTING.md) says how. Please report security problems privately as described in [SECURITY.md](SECURITY.md).
+
 ## License
 
 GPL-3.0-or-later. See [LICENSE](LICENSE). Model and library licenses: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
