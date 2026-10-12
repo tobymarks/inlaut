@@ -828,6 +828,16 @@ final class AppState {
                 // Hide before pasting so the panel never sits over the target.
                 indicator.hide()
                 lastText = text
+                #if DEBUG
+                // End-to-end tests: `-dictationOutput /out.txt` gets the text
+                // instead of the frontmost app, so a test needs no focus.
+                if let path = UserDefaults.standard.string(forKey: "dictationOutput") {
+                    try text.write(toFile: path, atomically: true, encoding: .utf8)
+                    status = .ready
+                    updateStatus()
+                    return
+                }
+                #endif
                 let result = try await TextInserter.insert(text, target: target)
                 guard dictationID == id else { return }
                 refreshPermissions()
