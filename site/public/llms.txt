@@ -13,6 +13,8 @@
 - Bedienung: Tastenkombination oder fn-/Globus-Taste halten und sprechen; zweimal fn tippen = freihändiges Diktat.
 - Text landet am Cursor in jeder App (Mail, Notizen, Word, Pages, Slack, Teams, Browser, KI-Chats). Braucht dafür die Bedienungshilfen-Berechtigung.
 - Eigene Ersetzungen für Fachbegriffe und Namen; Sprachbefehle „neue Zeile“ und „neuer Absatz“ bzw. „new line“ und „new paragraph“.
+- Transkribiert auch Aufnahmen: „Datei transkribieren …“ wandelt Audio- und Videodateien (MP3, M4A, WAV, MP4, MOV, WebM mit Opus) lokal in Text um, auf Wunsch mit Zeitmarken. Sprecher werden nicht unterschieden.
+- Mikrofon wählbar („Aufnehmen mit“); „Automatisch“ nutzt das Mikrofon des Mac, solange ein Bluetooth-Headset verbunden ist.
 - Typische Nutzung: Mails, Angebote, Tickets, Commit-Messages, Notizen, Manuskripte, Prompts für KI-Assistenten. inlaut ist ein Diktat-Werkzeug, kein Meeting-Transkriptionsdienst.
 
 ## Links
