@@ -14,6 +14,8 @@
 - Text landet am Cursor in jeder App (Mail, Notizen, Word, Pages, Slack, Teams, Browser, KI-Chats). Braucht dafür die Bedienungshilfen-Berechtigung.
 - Eigene Ersetzungen für Fachbegriffe und Namen; Sprachbefehle „neue Zeile“ und „neuer Absatz“ bzw. „new line“ und „new paragraph“.
 - Transkribiert auch Aufnahmen: „Datei transkribieren …“ wandelt Audio- und Videodateien (MP3, M4A, WAV, MP4, MOV, WebM mit Opus) lokal in Text um, auf Wunsch mit Zeitmarken. Sprecher werden nicht unterschieden.
+- Textbausteine: Eine gesprochene Phrase fügt einen hinterlegten längeren Text ein (Signatur, Bankverbindung). Ersetzungen und Textbausteine lassen sich exportieren und importieren.
+- Diktate aufräumen (optional): lässt Fülllaute („ähm“) und versehentlich doppelt Gesagtes weg. Selbstkorrekturen auflösen (Beta, optional): aus „am Montag, nein, am Dienstag“ wird „am Dienstag“; dafür prüft das lokale Sprachmodell von Apple Intelligence jeden Fall auf dem Mac, es wird nichts gesendet. inlaut streicht nur Wörter und formuliert nicht um.
 - Mikrofon wählbar („Aufnehmen mit“); „Automatisch“ nutzt das Mikrofon des Mac, solange ein Bluetooth-Headset verbunden ist.
 - Typische Nutzung: Mails, Angebote, Tickets, Commit-Messages, Notizen, Manuskripte, Prompts für KI-Assistenten. inlaut ist ein Diktat-Werkzeug, kein Meeting-Transkriptionsdienst.
 
