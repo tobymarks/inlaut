@@ -84,13 +84,15 @@ final class FileTranscriptionTests: XCTestCase {
         XCTAssertEqual(collected.fractions.last ?? 0, 1, accuracy: 0.01)
     }
 
-    func testFileWithoutAudioIsRejected() async throws {
-        let url = directory.appendingPathComponent("notes.wav")
+    func testUnknownFormatIsRejectedWithItsOwnMessage() async throws {
+        let url = directory.appendingPathComponent("meeting.webm")
         try Data("no audio".utf8).write(to: url)
         do {
             _ = try await AudioFileReader(url: url, sampleRate: 16000)
             XCTFail("expected an error")
-        } catch { }
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("MP3"), error.localizedDescription)
+        }
     }
 
     func testClock() {

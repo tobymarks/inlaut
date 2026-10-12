@@ -564,6 +564,16 @@
         }
       }
     },
+    "inlaut cannot open this file format. MP3, M4A, WAV, MP4 and MOV work.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "inlaut kann dieses Dateiformat nicht öffnen. MP3, M4A, WAV, MP4 und MOV funktionieren."
+          }
+        }
+      }
+    },
     "Keep both models": {
       "localizations": {
         "de": {

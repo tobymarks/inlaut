@@ -1,4 +1,5 @@
 @preconcurrency import AVFoundation
+import os
 
 /// One piece of a transcribed recording and where it starts in the file.
 struct TranscriptPart: Equatable, Sendable {
@@ -91,6 +92,7 @@ enum FileTranscription {
 /// AVAssetReader also opens video containers, which AVAudioFile does not.
 final class AudioFileReader {
     let duration: TimeInterval
+    private static let log = Logger(subsystem: "de.tobymarks.inlaut", category: "file")
     private let reader: AVAssetReader
     private let output: AVAssetReaderAudioMixOutput
 
@@ -101,6 +103,13 @@ final class AudioFileReader {
             tracks = try await asset.loadTracks(withMediaType: .audio)
             duration = try await asset.load(.duration).seconds
         } catch {
+            // Domain and code only; the description can carry the file name.
+            let failure = error as NSError
+            Self.log.error("open failed: \(failure.domain, privacy: .public) \(failure.code)")
+            // WebM, Matroska and Windows Media, for example.
+            if (error as? AVError)?.code == .fileFormatNotRecognized {
+                throw EngineError("inlaut cannot open this file format. MP3, M4A, WAV, MP4 and MOV work.")
+            }
             throw EngineError("This file could not be read.")
         }
         guard !tracks.isEmpty else { throw EngineError("This file contains no audio.") }
