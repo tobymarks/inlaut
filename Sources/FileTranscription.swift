@@ -32,7 +32,9 @@ enum FileTranscription {
         var session = try await begin()
         do {
             let rate = session.audioFormat.sampleRate
-            let reader = try await AudioFileReader(url: url, sampleRate: rate)
+            let reader: AudioSource = WebMReader.canRead(url)
+                ? try WebMReader(url: url, sampleRate: rate)
+                : try await AudioFileReader(url: url, sampleRate: rate)
             var segmenter = SpeechSegmenter(sampleRate: rate)
             var position = 0
             var pieces: [[Float]] = []
@@ -55,10 +57,10 @@ enum FileTranscription {
                         session = try await begin()
                         if !text.isEmpty { part = TranscriptPart(start: start, text: text) }
                     }
-                    let done = reader.duration > 0 ? min(1, Double(position) / rate / reader.duration) : 0
-                    await report(part, done)
+                    await report(part, reader.progress)
                 }
             }
+            await report(nil, 1)
             // The spare session of the last round.
             await session.cancel()
         } catch {
@@ -88,15 +90,27 @@ enum FileTranscription {
     }
 }
 
+/// Where the samples of a recording come from.
+protocol AudioSource: AnyObject {
+    /// The next stretch of mono samples at the engine's rate, or nil at the end.
+    func next() throws -> [Float]?
+    /// How much of the file has been read, from 0 to 1.
+    var progress: Double { get }
+}
+
 /// Decodes the audio tracks of a file to mono samples at the engine's rate.
 /// AVAssetReader also opens video containers, which AVAudioFile does not.
-final class AudioFileReader {
+final class AudioFileReader: AudioSource {
     let duration: TimeInterval
+    private let sampleRate: Double
+    private var delivered = 0
+    var progress: Double { duration > 0 ? min(1, Double(delivered) / sampleRate / duration) : 0 }
     private static let log = Logger(subsystem: "de.tobymarks.inlaut", category: "file")
     private let reader: AVAssetReader
     private let output: AVAssetReaderAudioMixOutput
 
     init(url: URL, sampleRate: Double) async throws {
+        self.sampleRate = sampleRate
         let asset = AVURLAsset(url: url)
         let tracks: [AVAssetTrack]
         do {
@@ -106,7 +120,7 @@ final class AudioFileReader {
             // Domain and code only; the description can carry the file name.
             let failure = error as NSError
             Self.log.error("open failed: \(failure.domain, privacy: .public) \(failure.code)")
-            // WebM, Matroska and Windows Media, for example.
+            // Matroska and Windows Media, for example.
             if (error as? AVError)?.code == .fileFormatNotRecognized {
                 throw EngineError("inlaut cannot open this file format. MP3, M4A, WAV, MP4 and MOV work.")
             }
@@ -140,6 +154,7 @@ final class AudioFileReader {
             CMBlockBufferCopyDataBytes(block, atOffset: 0, dataLength: $0.count, destination: $0.baseAddress!)
         }
         guard status == kCMBlockBufferNoErr else { throw EngineError("This file could not be read.") }
+        delivered += samples.count
         return samples
     }
 }

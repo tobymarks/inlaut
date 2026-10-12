@@ -95,6 +95,59 @@ final class FileTranscriptionTests: XCTestCase {
         }
     }
 
+    /// Three seconds of a tone in the right channel only, written by ffmpeg
+    /// the way a browser records: no length, no index.
+    private var webm: URL {
+        URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/right-channel-live.webm")
+    }
+
+    func testWebMIsDecodedAndItsChannelsAreMixed() throws {
+        XCTAssertTrue(WebMReader.canRead(webm))
+        let reader = try WebMReader(url: webm, sampleRate: 16000)
+        var samples: [Float] = []
+        while let next = try reader.next() { samples += next }
+        XCTAssertEqual(Double(samples.count) / 16000, 3, accuracy: 0.1)
+        // The tone peaks at 0.06 in the right channel: 0.03 once mixed,
+        // 0.006 if only the left channel were kept.
+        XCTAssertGreaterThan(samples.reduce(0) { max($0, abs($1)) }, 0.02)
+        XCTAssertEqual(reader.progress, 1, accuracy: 0.01)
+    }
+
+    @MainActor
+    func testWebMRunsThroughTheSamePipeline() async throws {
+        final class Collected { var parts: [TranscriptPart] = [] }
+        let collected = Collected()
+        try await FileTranscription.run(webm) { CountingSession() } report: { part, _ in
+            if let part { collected.parts.append(part) }
+        }
+        XCTAssertEqual(collected.parts.count, 1)
+    }
+
+    func testOtherFilesAreNotTakenForWebM() throws {
+        XCTAssertFalse(WebMReader.canRead(try write(tone(seconds: 1))))
+    }
+
+    func testOpusPacketLengths() {
+        XCTAssertEqual(WebMReader.frames(in: Data([0x08])), 960)          // SILK, 20 ms
+        XCTAssertEqual(WebMReader.frames(in: Data([0x18])), 2880)         // SILK, 60 ms
+        XCTAssertEqual(WebMReader.frames(in: Data([0x80])), 120)          // CELT, 2.5 ms
+        XCTAssertEqual(WebMReader.frames(in: Data([0xF9])), 1920)         // two frames of 20 ms
+        XCTAssertEqual(WebMReader.frames(in: Data([0xFB, 0x03])), 2880)   // three frames of 20 ms
+        XCTAssertEqual(WebMReader.frames(in: Data()), 0)
+    }
+
+    func testEBMLSizes() {
+        func size(_ bytes: [UInt8]) -> EBMLCursor.Size? {
+            var cursor = EBMLCursor(data: Data(bytes), offset: 0, end: bytes.count)
+            return cursor.size()
+        }
+        XCTAssertEqual(size([0x81]), .known(1))
+        XCTAssertEqual(size([0x40, 0x02]), .known(2))
+        XCTAssertEqual(size([0xFF]), .unknown)
+        XCTAssertEqual(size([0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]), .unknown)
+        XCTAssertNil(size([0x40]))
+    }
+
     func testClock() {
         XCTAssertEqual(TranscriptPart(start: 0, text: "").clock, "0:00")
         XCTAssertEqual(TranscriptPart(start: 65.9, text: "").clock, "1:05")

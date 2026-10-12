@@ -49,6 +49,7 @@ targets:
       - Sources/TranscriptionEngine.swift
       - Sources/ManagedSession.swift
       - Sources/FileTranscription.swift
+      - Sources/WebMReader.swift
       - Sources/ModelStore.swift
       - Sources/RecordingIndicator.swift
       - Sources/InlautColors.swift

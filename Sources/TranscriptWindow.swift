@@ -108,7 +108,7 @@ struct TranscriptView: View {
     @AppStorage("transcriptTimestamps") private var timestamps = false
     @State private var dropTargeted = false
 
-    static let fileTypes: [UTType] = [.audio, .movie]
+    static let fileTypes: [UTType] = [.audio, .movie] + [UTType(filenameExtension: "webm")].compactMap { $0 }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
