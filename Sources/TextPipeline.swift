@@ -6,14 +6,31 @@ struct TextPipeline: Sendable {
     var languages: Set<SpokenLanguage>
     var voiceCommands = true
     var sharpS = true
+    /// Filler sounds and words said twice go.
+    var tidy = false
+    /// Self-corrections are offered to whoever confirms them; needs `tidy`.
+    var corrections = false
     var replacements: [Replacement] = []
     var snippets: [Snippet] = []
 
     /// A dictation. A snippet's phrase on its own inserts the snippet as it
-    /// was written; anything else gets voice commands, ß and replacements.
+    /// was written; anything else gets voice commands, tidying, ß and replacements.
     func dictation(_ raw: String) -> String {
         if let snippet = snippets.match(raw) { return snippet }
-        return corrected(voiceCommands ? VoiceCommands.apply(to: raw, languages: languages) : raw)
+        return corrected(tidied(raw))
+    }
+
+    /// The same, and a slip the speaker took back goes too if `confirm` agrees.
+    nonisolated(nonsending) func dictation(_ raw: String, confirm: (TextPolish.Correction) async -> Bool) async -> String {
+        if let snippet = snippets.match(raw) { return snippet }
+        var text = tidied(raw)
+        if tidy, corrections { text = await TextPolish.resolve(text, languages: languages, confirm: confirm) }
+        return corrected(text)
+    }
+
+    private func tidied(_ raw: String) -> String {
+        let text = voiceCommands ? VoiceCommands.apply(to: raw, languages: languages) : raw
+        return tidy ? TextPolish.tidy(text, languages: languages) : text
     }
 
     /// A piece of a transcribed recording, where "new line" is something

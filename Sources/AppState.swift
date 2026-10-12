@@ -209,6 +209,14 @@ final class AppState {
     var sharpS: Bool {
         didSet { UserDefaults.standard.set(sharpS, forKey: "sharpS") }
     }
+    /// Filler sounds and words said twice are left out.
+    var tidyDictations: Bool {
+        didSet { UserDefaults.standard.set(tidyDictations, forKey: "tidyDictations") }
+    }
+    /// "Montag, nein, Dienstag" → "Dienstag", if the Mac's own language model agrees.
+    var resolveCorrections: Bool {
+        didSet { UserDefaults.standard.set(resolveCorrections, forKey: "resolveCorrections") }
+    }
     var replacements: [Replacement] {
         didSet { save(replacements, "replacements") }
     }
@@ -303,6 +311,8 @@ final class AppState {
         microphone = MicrophoneChoice(stored: defaults.string(forKey: "microphone"))
         voiceCommands = defaults.object(forKey: "voiceCommands") as? Bool ?? true
         sharpS = defaults.object(forKey: "sharpS") as? Bool ?? !["CH", "LI"].contains(Locale.current.region?.identifier)
+        tidyDictations = defaults.bool(forKey: "tidyDictations")
+        resolveCorrections = defaults.bool(forKey: "resolveCorrections")
         replacements = defaults.data(forKey: "replacements")
             .flatMap { try? JSONDecoder().decode([Replacement].self, from: $0) } ?? []
         snippets = defaults.data(forKey: "snippets")
@@ -651,6 +661,7 @@ final class AppState {
     /// The text settings as they are now.
     var textPipeline: TextPipeline {
         TextPipeline(languages: language.spoken, voiceCommands: voiceCommands, sharpS: sharpS,
+                     tidy: tidyDictations, corrections: resolveCorrections,
                      replacements: replacements, snippets: snippets)
     }
 
@@ -748,6 +759,8 @@ final class AppState {
             self.session = try ManagedSession.start(engine: engine) { try recorder.start(into: $0, device: device) }
             dictationID = UUID()
             status = .recording
+            // The language model loads while the user is still speaking.
+            if tidyDictations, resolveCorrections { CorrectionJudge.prewarm() }
             indicator.showRecording { [recorder] in recorder.level }
             // Not delayed until audio arrives: AirPods only start delivering once a
             // sound plays, so waiting for the first signal waited forever.
@@ -805,7 +818,8 @@ final class AppState {
                 guard dictationID == id else { return }
                 // Length and timing only — the dictated text is never logged.
                 log.notice("\(take.seconds, format: .fixed(precision: 1))s audio → \(raw.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
-                let text = textPipeline.dictation(raw)
+                let text = await textPipeline.dictation(raw) { await CorrectionJudge.confirm($0) }
+                guard dictationID == id else { return }
                 guard !text.isEmpty else {
                     status = .ready
                     indicator.showMessage(String(localized: "Nothing recognized"))

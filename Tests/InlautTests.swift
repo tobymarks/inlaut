@@ -167,6 +167,72 @@ final class TextProcessingTests: XCTestCase {
         XCTAssertEqual(Snippet(phrase: "a", text: "DE00 1234").preview, "DE00 1234")
     }
 
+    func testTidyRemovesFillersAndRepeatsButNothingElse() {
+        let german: Set<SpokenLanguage> = [.german], english: Set<SpokenLanguage> = [.english]
+        XCTAssertEqual(TextPolish.tidy("Ähm, also ich wollte sagen, dass ähm das Meeting, äh, bis Freitag, äh, bis Donnerstag geht.", languages: german),
+                       "Also ich wollte sagen, dass das Meeting, bis Freitag, bis Donnerstag geht.")
+        XCTAssertEqual(TextPolish.tidy("Ich würde, ich würde vorschlagen, dass wir, dass wir warten, weil diese Woche ist, ist voll.", languages: german),
+                       "Ich würde vorschlagen, dass wir warten, weil diese Woche ist voll.")
+        XCTAssertEqual(TextPolish.tidy("Hallo Tobias,\n\nÄhm, ich wollte fragen, ob du, ob du Zeit hast.\n\nGruß", languages: german),
+                       "Hallo Tobias,\n\nIch wollte fragen, ob du Zeit hast.\n\nGruß")
+        XCTAssertEqual(TextPolish.tidy("Führ das aus und, ähm, danach den Build. Ähm. Das war's, das war's.", languages: german),
+                       "Führ das aus und danach den Build. Das war's.")
+        XCTAssertEqual(TextPolish.tidy("I think we should, we should wait until, um, until the numbers are in, uh.", languages: english),
+                       "I think we should wait until the numbers are in.")
+        // "um" is German, repeated articles are grammar, and clean text is not touched.
+        let mixed = "Das sind die, die das wollen, und wir treffen uns um zehn Uhr auf inlaut.de, Version 3.2."
+        XCTAssertEqual(TextPolish.tidy(mixed, languages: [.german, .english]), mixed)
+    }
+
+    func testCorrectionNeedsACorrectionWordAfterACommaAndSomethingOfTheSameKind() {
+        let both: Set<SpokenLanguage> = [.german, .english]
+        XCTAssertEqual(TextPolish.correction(in: "Ich brauch die bis Freitag, nein, bis Donnerstag.", languages: both)?.shorter,
+                       "Ich brauch die bis Donnerstag.")
+        XCTAssertEqual(TextPolish.correction(in: "Der Preis liegt bei zweitausend Euro, nee, dreitausend Euro netto.", languages: both)?.shorter,
+                       "Der Preis liegt bei dreitausend Euro netto.")
+        XCTAssertEqual(TextPolish.correction(in: "Let's meet at two, I mean at three in the lobby.", languages: both)?.shorter,
+                       "Let's meet at three in the lobby.")
+        XCTAssertEqual(TextPolish.correction(in: "Die Rechnung für September, nein Oktober, bitte.", languages: both)?.shorter,
+                       "Die Rechnung für Oktober, bitte.")
+        for sentence in ["Ich sage nein, ich bleibe heute zu Hause.", "Nein, ich habe schon gegessen.",
+                         "Ist das fertig, nein, oder?", "Das ist kein Problem, nein, wirklich nicht.",
+                         "Der Server ist ausgefallen, also müssen wir den Kunden informieren.",
+                         "She said sorry, she was late.", "Das geht nicht, nein."] {
+            XCTAssertNil(TextPolish.correction(in: sentence, languages: both), sentence)
+        }
+        XCTAssertNil(TextPolish.correction(in: "Let's meet at two, I mean at three.", languages: [.german]))
+    }
+
+    func testResolveTakesOnlyConfirmedCorrectionsAndKeepsTheRest() async {
+        let both: Set<SpokenLanguage> = [.german, .english]
+        let text = "Hallo Frau Becker,\n\nwir liefern am Mittwoch, nein, am Donnerstag. Das kostet vierzig Euro, nee, fünfzig Euro.\n\nViele Grüße"
+        var asked: [String] = []
+        let all = await TextPolish.resolve(text, languages: both) { asked.append($0.shorter); return true }
+        XCTAssertEqual(all, "Hallo Frau Becker,\n\nwir liefern am Donnerstag. Das kostet fünfzig Euro.\n\nViele Grüße")
+        XCTAssertEqual(asked, ["wir liefern am Donnerstag. ", "Das kostet fünfzig Euro.\n\n"])
+        let none = await TextPolish.resolve(text, languages: both) { _ in false }
+        XCTAssertEqual(none, text)
+        let first = await TextPolish.resolve(text, languages: both) { $0.spoken.contains("Mittwoch") }
+        XCTAssertEqual(first, "Hallo Frau Becker,\n\nwir liefern am Donnerstag. Das kostet vierzig Euro, nee, fünfzig Euro.\n\nViele Grüße")
+        XCTAssertEqual(TextPolish.sentences(of: text).joined(), text)
+        XCTAssertTrue(TextPolish.mayContainCorrection(text, languages: both))
+        XCTAssertFalse(TextPolish.mayContainCorrection("Nein, das geht nicht.", languages: both))
+    }
+
+    func testPipelineTidiesOnlyWhenAskedAndNeverInTranscripts() async {
+        var pipeline = TextPipeline(languages: [.german])
+        let raw = "Ähm, wir liefern am Mittwoch, nein, am Donnerstag."
+        XCTAssertEqual(pipeline.dictation(raw), raw)
+        pipeline.tidy = true
+        XCTAssertEqual(pipeline.dictation(raw), "Wir liefern am Mittwoch, nein, am Donnerstag.")
+        XCTAssertEqual(pipeline.transcript(raw), raw)
+        let unasked = await pipeline.dictation(raw) { _ in XCTFail("corrections are off"); return true }
+        XCTAssertEqual(unasked, "Wir liefern am Mittwoch, nein, am Donnerstag.")
+        pipeline.corrections = true
+        let resolved = await pipeline.dictation(raw) { _ in true }
+        XCTAssertEqual(resolved, "Wir liefern am Donnerstag.")
+    }
+
     func testVoiceCommandsAndUnchangedText() {
         let german: Set<SpokenLanguage> = [.german]
         XCTAssertEqual(VoiceCommands.apply(to: "Hallo Frau Becker, neuer Absatz, vielen Dank für Ihre Nachricht.", languages: german),

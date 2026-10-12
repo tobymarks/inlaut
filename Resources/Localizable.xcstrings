@@ -1896,6 +1896,76 @@
           }
         }
       }
+    },
+    "Tidy up dictations": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diktate aufräumen"
+          }
+        }
+      }
+    },
+    "Leaves out filler sounds such as “ähm” or “uh” and words you said twice by accident.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lässt Fülllaute wie „ähm“ oder „äh“ weg, ebenso Wörter, die du versehentlich doppelt gesagt hast."
+          }
+        }
+      }
+    },
+    "Resolve self-corrections (beta)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selbstkorrekturen auflösen (Beta)"
+          }
+        }
+      }
+    },
+    "“On Monday, no, on Tuesday” becomes “on Tuesday”. Apple Intelligence checks each case on this Mac, nothing is sent. Takes about a second when you correct yourself.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus „am Montag, nein, am Dienstag“ wird „am Dienstag“. Apple Intelligence prüft jeden Fall auf diesem Mac, nichts wird gesendet. Dauert etwa eine Sekunde, wenn du dich korrigierst."
+          }
+        }
+      }
+    },
+    "Needs Apple Intelligence, which is turned off in System Settings.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Braucht Apple Intelligence, das in den Systemeinstellungen ausgeschaltet ist."
+          }
+        }
+      }
+    },
+    "Apple Intelligence is still preparing its model.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence bereitet sein Modell noch vor."
+          }
+        }
+      }
+    },
+    "Needs Apple Intelligence, which this Mac does not offer.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Braucht Apple Intelligence, das dieser Mac nicht bietet."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

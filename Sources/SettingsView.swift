@@ -89,6 +89,20 @@ struct SettingsView: View {
                             Text("Writes unambiguous words such as Straße, groß or Grüße with ß.")
                         }
                     }
+                    Toggle(isOn: $state.tidyDictations) {
+                        Text("Tidy up dictations")
+                        Text("Leaves out filler sounds such as “ähm” or “uh” and words you said twice by accident.")
+                    }
+                    if state.tidyDictations {
+                        Toggle(isOn: $state.resolveCorrections) {
+                            Text("Resolve self-corrections (beta)")
+                            Text("“On Monday, no, on Tuesday” becomes “on Tuesday”. Apple Intelligence checks each case on this Mac, nothing is sent. Takes about a second when you correct yourself.")
+                            if let reason = CorrectionJudge.unavailableReason {
+                                Text(reason).foregroundStyle(.orange)
+                            }
+                        }
+                        .disabled(!CorrectionJudge.isAvailable)
+                    }
                 }
 
                 Section {
