@@ -48,6 +48,7 @@ targets:
       - Sources/Microphone.swift
       - Sources/TranscriptionEngine.swift
       - Sources/ManagedSession.swift
+      - Sources/FileTranscription.swift
       - Sources/ModelStore.swift
       - Sources/RecordingIndicator.swift
       - Sources/InlautColors.swift

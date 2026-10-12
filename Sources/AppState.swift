@@ -146,7 +146,7 @@ enum Status: Equatable {
 @Observable
 final class AppState {
     private(set) var status: Status = .preparing(String(localized: "Starting …")) {
-        didSet { updater.isBusy = isDictating }
+        didSet { updater.isBusy = isDictating || isTranscribingFile }
     }
     /// The Parakeet model in use (or being set up for first use).
     private(set) var model: SpeechModel
@@ -155,6 +155,10 @@ final class AppState {
     /// macOS only picks up a new interface language at launch.
     private(set) var interfaceRestartNeeded = false
     private(set) var lastText = ""
+    /// A recording is being transcribed in the transcript window.
+    var isTranscribingFile = false {
+        didSet { updater.isBusy = isDictating || isTranscribingFile }
+    }
     private(set) var accessibilityGranted = TextInserter.isTrusted
     private(set) var microphoneGranted = AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
 
@@ -232,6 +236,11 @@ final class AppState {
         }
         return appleReady ? apple : nil
     }
+    /// A recording can wait for a loading Parakeet; it never starts with
+    /// Apple the way a dictation does in the first minute.
+    var recordingEngine: TranscriptionEngine? {
+        engineChoice == .parakeet && (parakeet.isLoaded || parakeet.isLoading) ? parakeet : activeEngine
+    }
     /// Set after the first load in this run; later loads are quick.
     private var parakeetWasLoaded = false
     /// Updating from the ONNX models: fetch Ultra without the setup window.
@@ -251,6 +260,7 @@ final class AppState {
     private let globeKey = GlobeKeyTrigger()
     private let indicator = RecordingIndicator()
     private let setupWindow = SetupWindow()
+    private let transcriptWindow = TranscriptWindow()
     private var session: TranscriptionSession?
     private var transcription: Task<Void, Never>?
     private var dictationID: UUID?
@@ -305,6 +315,7 @@ final class AppState {
         Task { start() }
         #if DEBUG
         SettingsSnapshot.renderIfRequested(state: self)
+        TranscriptProbe.runIfRequested(state: self)
         #endif
     }
 
@@ -602,7 +613,7 @@ final class AppState {
     }
 
     func relaunch() {
-        guard !isDictating else { return }
+        guard !isDictating, !isTranscribingFile else { return }
         // A fresh instance once this one has quit; `open` would otherwise
         // just reactivate the running app.
         let script = "while kill -0 \(ProcessInfo.processInfo.processIdentifier) 2>/dev/null; do sleep 0.1; done; open \"$0\""
@@ -615,6 +626,28 @@ final class AppState {
         } catch {
             log.error("relaunch failed: \(error.localizedDescription)")
         }
+    }
+
+    // MARK: - Recordings
+
+    func showTranscriptWindow() {
+        transcriptWindow.show(state: self)
+    }
+
+    func chooseFileToTranscribe() {
+        showTranscriptWindow()
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = TranscriptView.fileTypes
+        panel.allowsMultipleSelection = false
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        transcriptWindow.transcript.start(url, state: self)
+    }
+
+    /// ß and the user's replacements, which come last so they can override ß.
+    func corrected(_ text: String) -> String {
+        var text = text
+        if sharpS, language.spoken.contains(.german) { text = SharpS.apply(to: text) }
+        return replacements.apply(to: text)
     }
 
     func copyLastText() {
@@ -740,10 +773,7 @@ final class AppState {
                 guard dictationID == id else { return }
                 // Length and timing only — the dictated text is never logged.
                 log.notice("\(take.seconds, format: .fixed(precision: 1))s audio → \(raw.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
-                // The user's replacements come last, so they can override ß.
-                var text = voiceCommands ? VoiceCommands.apply(to: raw, languages: language.spoken) : raw
-                if sharpS, language.spoken.contains(.german) { text = SharpS.apply(to: text) }
-                text = replacements.apply(to: text)
+                let text = corrected(voiceCommands ? VoiceCommands.apply(to: raw, languages: language.spoken) : raw)
                 guard !text.isEmpty else {
                     status = .ready
                     indicator.showMessage(String(localized: "Nothing recognized"))

@@ -34,6 +34,16 @@
     "%lld": {
       "shouldTranslate": false
     },
+    "%lld %%": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld %%"
+          }
+        }
+      }
+    },
     "%lld %% of %@": {
       "localizations": {
         "de": {
@@ -164,6 +174,16 @@
         }
       }
     },
+    "Audio or video. The file is turned into text on this Mac and never leaves it.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio oder Video. Die Datei wird auf diesem Mac in Text umgewandelt und verlässt ihn nicht."
+          }
+        }
+      }
+    },
     "Automatically check for updates": {
       "localizations": {
         "de": {
@@ -234,12 +254,32 @@
         }
       }
     },
+    "Choose File …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datei auswählen …"
+          }
+        }
+      }
+    },
     "Completed": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Erledigt"
+          }
+        }
+      }
+    },
+    "Copy": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopieren"
           }
         }
       }
@@ -430,6 +470,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sprachmodell herunterladen"
+          }
+        }
+      }
+    },
+    "Drop a file here": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datei hierher ziehen"
           }
         }
       }
@@ -964,6 +1014,16 @@
         }
       }
     },
+    "Save …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sichern …"
+          }
+        }
+      }
+    },
     "Screenshot options": {
       "localizations": {
         "de": {
@@ -1214,6 +1274,56 @@
         }
       }
     },
+    "This file contains no audio.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Datei enthält keinen Ton."
+          }
+        }
+      }
+    },
+    "This file could not be read.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Datei konnte nicht gelesen werden."
+          }
+        }
+      }
+    },
+    "Time stamps": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitmarken"
+          }
+        }
+      }
+    },
+    "Transcribe a Recording": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufnahme transkribieren"
+          }
+        }
+      }
+    },
+    "Transcribe File …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datei transkribieren …"
+          }
+        }
+      }
+    },
     "Transcribing …": {
       "localizations": {
         "de": {
@@ -1240,6 +1350,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Erneut versuchen"
+          }
+        }
+      }
+    },
+    "Turn a recording into text": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufnahme in Text umwandeln"
           }
         }
       }

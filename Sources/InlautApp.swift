@@ -71,6 +71,7 @@ private struct MenuContent: View {
             Button("Set Up Permissions …") { state.showSetup() }
         }
 
+        Button("Transcribe File …") { state.chooseFileToTranscribe() }
         Picker("Mode", selection: $state.mode) {
             ForEach(Mode.allCases) { Text($0.label).tag($0) }
         }
