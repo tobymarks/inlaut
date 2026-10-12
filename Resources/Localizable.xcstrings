@@ -1756,6 +1756,146 @@
           }
         }
       }
+    },
+    "Add Snippet …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Textbaustein hinzufügen …"
+          }
+        }
+      }
+    },
+    "Choose a file that inlaut exported.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle eine Datei, die inlaut exportiert hat."
+          }
+        }
+      }
+    },
+    "Edit …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bearbeiten …"
+          }
+        }
+      }
+    },
+    "Export …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exportieren …"
+          }
+        }
+      }
+    },
+    "Import …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importieren …"
+          }
+        }
+      }
+    },
+    "Longer texts you need again and again, such as a signature or bank details. Say the phrase on its own and inlaut writes the text.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Längere Texte, die du immer wieder brauchst, etwa eine Signatur oder die Bankverbindung. Sag die Phrase für sich allein, und inlaut schreibt den Text."
+          }
+        }
+      }
+    },
+    "Replacements and snippets": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ersetzungen und Textbausteine"
+          }
+        }
+      }
+    },
+    "Save": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sichern"
+          }
+        }
+      }
+    },
+    "Say the phrase on its own, without anything else in the same dictation.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sag die Phrase für sich allein, ohne weiteren Text im selben Diktat."
+          }
+        }
+      }
+    },
+    "Snippets": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Textbausteine"
+          }
+        }
+      }
+    },
+    "This file contains no replacements or snippets.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Datei enthält keine Ersetzungen oder Textbausteine."
+          }
+        }
+      }
+    },
+    "What inlaut writes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was inlaut schreibt"
+          }
+        }
+      }
+    },
+    "What you say": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was du sagst"
+          }
+        }
+      }
+    },
+    "e.g. my signature": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "z. B. meine Signatur"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

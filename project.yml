@@ -43,6 +43,8 @@ targets:
       - Sources/VoiceCommands.swift
       - Sources/Replacements.swift
       - Sources/SharpS.swift
+      - Sources/Snippets.swift
+      - Sources/TextPipeline.swift
       - Sources/CancellationFlag.swift
       - Sources/Recorder.swift
       - Sources/Microphone.swift

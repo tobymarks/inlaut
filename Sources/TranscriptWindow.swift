@@ -52,7 +52,7 @@ final class FileTranscript {
                     try engine.begin()
                 } report: { part, fraction in
                     guard let self, self.run == id else { return }
-                    if let part, let text = state?.corrected(part.text), !text.isEmpty {
+                    if let part, let text = state?.textPipeline.transcript(part.text), !text.isEmpty {
                         self.parts.append(TranscriptPart(start: part.start, text: text))
                     }
                     self.phase = .running(fraction)

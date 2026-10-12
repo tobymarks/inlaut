@@ -100,6 +100,20 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
 
+                Section {
+                    SnippetsField(snippets: $state.snippets)
+                    LabeledContent("Replacements and snippets") {
+                        Button("Import …") { state.importTextRules() }
+                        Button("Export …") { state.exportTextRules() }
+                            .disabled(state.replacements.isEmpty && state.snippets.isEmpty)
+                    }
+                } header: {
+                    Text("Snippets")
+                } footer: {
+                    Text("Longer texts you need again and again, such as a signature or bank details. Say the phrase on its own and inlaut writes the text.")
+                        .foregroundStyle(.secondary)
+                }
+
                 UpdateSettingsView(updater: state.updater)
 
                 Section {

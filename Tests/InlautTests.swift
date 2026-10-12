@@ -124,6 +124,49 @@ final class TextProcessingTests: XCTestCase {
         XCTAssertEqual(rules.apply(to: "Meyle und Müller und Müller"), "Firma und Miller")
     }
 
+    func testSnippetNeedsThePhraseOnItsOwn() {
+        let snippets = [Snippet(phrase: "meine Grüße", text: "Viele Grüße\nTobias Marks")]
+        XCTAssertEqual(snippets.match(" Meine Grüsse. "), "Viele Grüße\nTobias Marks")
+        XCTAssertEqual(snippets.match("Meine, Grüße!"), "Viele Grüße\nTobias Marks")
+        XCTAssertNil(snippets.match("Schick ihr meine Grüße."))
+        XCTAssertNil(snippets.match("..."))
+        XCTAssertNil([Snippet(phrase: "…", text: "leer")].match("…"))
+    }
+
+    func testPipelineInsertsSnippetsUnchangedAndOnlyWhenDictating() {
+        let pipeline = TextPipeline(languages: [.german],
+                                    replacements: [Replacement(from: "Tobias", to: "Toby")],
+                                    snippets: [Snippet(phrase: "Signatur", text: "Gruss, neue Zeile\nTobias")])
+        XCTAssertEqual(pipeline.dictation("Signatur."), "Gruss, neue Zeile\nTobias")
+        XCTAssertEqual(pipeline.transcript("Signatur."), "Signatur.")
+        XCTAssertEqual(pipeline.dictation("Gruss, neue Zeile, Tobias"), "Gruß,\nToby")
+        XCTAssertEqual(pipeline.transcript("Gruss, neue Zeile, Tobias"), "Gruß, neue Zeile, Toby")
+        var plain = pipeline
+        plain.voiceCommands = false
+        plain.sharpS = false
+        XCTAssertEqual(plain.dictation("Gruss, neue Zeile, Tobias"), "Gruss, neue Zeile, Toby")
+    }
+
+    func testTextRulesFileRoundTripAndMerge() throws {
+        var replacements = [Replacement(from: "Dum", to: "DAM"), Replacement(from: "Preis", to: "alt")]
+        var snippets = [Snippet(phrase: "Signatur", text: "alt")]
+        let file = TextRulesFile(replacements: [Replacement(from: "preis", to: "neu")],
+                                 snippets: [Snippet(phrase: "signatur!", text: "neu\nzweite Zeile"), Snippet(phrase: "IBAN", text: "DE00")])
+        try JSONDecoder().decode(TextRulesFile.self, from: file.data).merge(into: &replacements, &snippets)
+        XCTAssertEqual(replacements.map(\.to), ["DAM", "neu"])
+        XCTAssertEqual(snippets.map(\.text), ["neu\nzweite Zeile", "DE00"])
+
+        let onlyReplacements = try JSONDecoder().decode(TextRulesFile.self, from: Data(#"{"replacements":[{"from":"a","to":"b"}]}"#.utf8))
+        XCTAssertEqual(onlyReplacements.replacements.count, 1)
+        XCTAssertTrue(onlyReplacements.snippets.isEmpty)
+        XCTAssertThrowsError(try JSONDecoder().decode(TextRulesFile.self, from: Data(#"{"other":1}"#.utf8)))
+    }
+
+    func testSnippetPreviewShowsTheFirstLine() {
+        XCTAssertEqual(Snippet(phrase: "a", text: "\n Viele Grüße \nTobias").preview, "Viele Grüße …")
+        XCTAssertEqual(Snippet(phrase: "a", text: "DE00 1234").preview, "DE00 1234")
+    }
+
     func testVoiceCommandsAndUnchangedText() {
         let german: Set<SpokenLanguage> = [.german]
         XCTAssertEqual(VoiceCommands.apply(to: "Hallo Frau Becker, neuer Absatz, vielen Dank für Ihre Nachricht.", languages: german),

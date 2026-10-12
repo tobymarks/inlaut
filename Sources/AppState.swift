@@ -212,6 +212,9 @@ final class AppState {
     var replacements: [Replacement] {
         didSet { save(replacements, "replacements") }
     }
+    var snippets: [Snippet] {
+        didSet { save(snippets, "snippets") }
+    }
     var indicatorPosition: IndicatorPosition {
         didSet {
             UserDefaults.standard.set(indicatorPosition.rawValue, forKey: "indicatorPosition")
@@ -302,6 +305,8 @@ final class AppState {
         sharpS = defaults.object(forKey: "sharpS") as? Bool ?? !["CH", "LI"].contains(Locale.current.region?.identifier)
         replacements = defaults.data(forKey: "replacements")
             .flatMap { try? JSONDecoder().decode([Replacement].self, from: $0) } ?? []
+        snippets = defaults.data(forKey: "snippets")
+            .flatMap { try? JSONDecoder().decode([Snippet].self, from: $0) } ?? []
         indicatorPosition = IndicatorPosition(rawValue: defaults.string(forKey: "indicatorPosition") ?? "") ?? .bottomCenter
         indicator.position = indicatorPosition
 
@@ -643,11 +648,38 @@ final class AppState {
         transcriptWindow.transcript.start(url, state: self)
     }
 
-    /// ß and the user's replacements, which come last so they can override ß.
-    func corrected(_ text: String) -> String {
-        var text = text
-        if sharpS, language.spoken.contains(.german) { text = SharpS.apply(to: text) }
-        return replacements.apply(to: text)
+    /// The text settings as they are now.
+    var textPipeline: TextPipeline {
+        TextPipeline(languages: language.spoken, voiceCommands: voiceCommands, sharpS: sharpS,
+                     replacements: replacements, snippets: snippets)
+    }
+
+    func exportTextRules() {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.json]
+        panel.nameFieldStringValue = "inlaut-replacements-snippets.json"
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try TextRulesFile(replacements: replacements, snippets: snippets).data.write(to: url, options: .atomic)
+        } catch {
+            NSAlert(error: error).runModal()
+        }
+    }
+
+    func importTextRules() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.json]
+        panel.allowsMultipleSelection = false
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        guard let data = try? Data(contentsOf: url),
+              let file = try? JSONDecoder().decode(TextRulesFile.self, from: data) else {
+            let alert = NSAlert()
+            alert.messageText = String(localized: "This file contains no replacements or snippets.")
+            alert.informativeText = String(localized: "Choose a file that inlaut exported.")
+            alert.runModal()
+            return
+        }
+        file.merge(into: &replacements, &snippets)
     }
 
     func copyLastText() {
@@ -773,7 +805,7 @@ final class AppState {
                 guard dictationID == id else { return }
                 // Length and timing only — the dictated text is never logged.
                 log.notice("\(take.seconds, format: .fixed(precision: 1))s audio → \(raw.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
-                let text = corrected(voiceCommands ? VoiceCommands.apply(to: raw, languages: language.spoken) : raw)
+                let text = textPipeline.dictation(raw)
                 guard !text.isEmpty else {
                     status = .ready
                     indicator.showMessage(String(localized: "Nothing recognized"))
