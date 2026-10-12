@@ -18,7 +18,7 @@ The current master is **Sprachimpuls / Petrol & Mint** in [`inlaut-brand-kit/`](
 
 `scripts/render-dmg-background.swift` generates the porcelain/petrol installer background from the supplied wordmark at 1x and 2x. AppKit derives the Retina scale from `NSBitmapImageRep.size`; do not apply a second graphics-context scale. `scripts/dmg-settings.py` positions the native app icon and a “Programme” link to `/Applications` on either side of the arrow. The generated artwork and DMG stay in `build/release/`; `scripts/release.sh dmg` builds and notarizes the image. The app inside is unchanged.
 
-[`social-card.html`](social-card.html) is the source for the social sharing image. Serve `design/` locally, open this page at 1200 × 630 CSS pixels and export a browser screenshot. The current preview export is 1280 × 672 pixels; the Open Graph dimensions match that file. The checked-in social image includes the kit's supplied static glass icon; the native app uses Icon Composer's rendering.
+[`social-card.html`](social-card.html) is the source for the social sharing image. Serve `design/` locally, open this page at 1200 × 630 CSS pixels and export a browser screenshot. [`social-card-en.html`](social-card-en.html) is the English counterpart (`og-image-en.png`, used by the pages under `/en`). The current preview exports are 1280 × 672 pixels; the Open Graph dimensions match those files. The checked-in social image includes the kit's supplied static glass icon; the native app uses Icon Composer's rendering.
 
 ## Archived material
 
