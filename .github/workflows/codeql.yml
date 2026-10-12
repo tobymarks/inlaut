@@ -25,9 +25,10 @@ jobs:
         with:
           languages: swift
           build-mode: manual
+      # The tracer starts the build as x86_64; the app only builds for arm64.
       - name: Build
         run: |
-          xcodebuild -project Inlaut.xcodeproj -scheme Inlaut \
+          arch -arm64 xcodebuild -project Inlaut.xcodeproj -scheme Inlaut \
             -configuration Debug -destination 'platform=macOS,arch=arm64' \
             -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
       - uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d # v4
