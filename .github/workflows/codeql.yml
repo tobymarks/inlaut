@@ -16,14 +16,17 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # Before CodeQL starts tracing: Homebrew refuses to install under the tracer.
+      - name: Prepare dependencies
+        run: |
+          command -v xcodegen || brew install xcodegen
+          xcodegen generate
       - uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d # v4
         with:
           languages: swift
           build-mode: manual
       - name: Build
         run: |
-          command -v xcodegen || brew install xcodegen
-          xcodegen generate
           xcodebuild -project Inlaut.xcodeproj -scheme Inlaut \
             -configuration Debug -destination 'platform=macOS,arch=arm64' \
             -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
