@@ -9,6 +9,9 @@ public class KeyTrigger : IDisposable
     public Action? OnStart { get; set; }
     public Action? OnStop { get; set; }
 
+    private uint _triggerVkCode;
+    private Action<uint>? _captureCallback;
+
     private enum Phase { Idle, Pressed, Holding, HandsFree }
     private Phase _phase = Phase.Idle;
     private DateTime _lastTapAt = DateTime.MinValue;
@@ -22,10 +25,28 @@ public class KeyTrigger : IDisposable
     private NativeMethods.LowLevelKeyboardProc? _proc;
     private readonly SynchronizationContext? _syncContext;
 
-    public KeyTrigger()
+    public KeyTrigger(uint initialTriggerVkCode = 0xA2) // Default: VK_LCONTROL
     {
+        _triggerVkCode = initialTriggerVkCode;
         _syncContext = SynchronizationContext.Current;
         _holdTimer = new System.Threading.Timer(OnHoldTimerFired, null, Timeout.Infinite, Timeout.Infinite);
+    }
+
+    public void UpdateTriggerKey(uint newVkCode)
+    {
+        _triggerVkCode = newVkCode;
+        _phase = Phase.Idle;
+        _holdTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+    }
+
+    public void SetCaptureMode(Action<uint> callback)
+    {
+        _captureCallback = callback;
+    }
+
+    public void EndCaptureMode()
+    {
+        _captureCallback = null;
     }
 
     public void Start()
@@ -51,14 +72,28 @@ public class KeyTrigger : IDisposable
         _phase = Phase.Idle;
     }
 
-    private bool IsTriggerKey(uint vkCode, uint flags)
+    private bool MatchesTrigger(uint vkCode, uint flags)
     {
-        // F8 Key
-        if (vkCode == (uint)NativeMethods.VK_F8) return true;
+        // 1. Direct match with configured vkCode
+        if (vkCode == _triggerVkCode) return true;
 
-        // Right Control: VK_RCONTROL (0xA3) or VK_CONTROL with LLKHF_EXTENDED (0x01)
-        if (vkCode == (uint)NativeMethods.VK_RCONTROL) return true;
-        if (vkCode == (uint)NativeMethods.VK_CONTROL && (flags & 0x01) != 0) return true;
+        // 2. Specific modifier subtleties
+        if (_triggerVkCode == (uint)NativeMethods.VK_RCONTROL)
+        {
+            if (vkCode == (uint)NativeMethods.VK_CONTROL && (flags & 0x01) != 0) return true;
+        }
+        else if (_triggerVkCode == (uint)NativeMethods.VK_LCONTROL)
+        {
+            if (vkCode == (uint)NativeMethods.VK_CONTROL && (flags & 0x01) == 0) return true;
+        }
+        else if (_triggerVkCode == (uint)NativeMethods.VK_RMENU)
+        {
+            if (vkCode == (uint)NativeMethods.VK_MENU && (flags & 0x01) != 0) return true;
+        }
+        else if (_triggerVkCode == (uint)NativeMethods.VK_LMENU)
+        {
+            if (vkCode == (uint)NativeMethods.VK_MENU && (flags & 0x01) == 0) return true;
+        }
 
         return false;
     }
@@ -68,11 +103,28 @@ public class KeyTrigger : IDisposable
         if (nCode >= 0)
         {
             var hookStruct = Marshal.PtrToStructure<NativeMethods.KBDLLHOOKSTRUCT>(lParam);
+            int msg = wParam.ToInt32();
 
-            if (IsTriggerKey(hookStruct.vkCode, hookStruct.flags))
+            // Key capture mode (for settings window)
+            if (_captureCallback != null && (msg == NativeMethods.WM_KEYDOWN || msg == NativeMethods.WM_SYSKEYDOWN))
             {
-                int msg = wParam.ToInt32();
+                uint capturedVk = hookStruct.vkCode;
+                // Refine generic modifier vkCodes to Left/Right
+                if (capturedVk == (uint)NativeMethods.VK_CONTROL)
+                {
+                    capturedVk = (hookStruct.flags & 0x01) != 0 ? (uint)NativeMethods.VK_RCONTROL : (uint)NativeMethods.VK_LCONTROL;
+                }
+                else if (capturedVk == (uint)NativeMethods.VK_MENU)
+                {
+                    capturedVk = (hookStruct.flags & 0x01) != 0 ? (uint)NativeMethods.VK_RMENU : (uint)NativeMethods.VK_LMENU;
+                }
 
+                _captureCallback(capturedVk);
+                return (IntPtr)1; // Consume key during capture
+            }
+
+            if (MatchesTrigger(hookStruct.vkCode, hookStruct.flags))
+            {
                 if (msg == NativeMethods.WM_KEYDOWN || msg == NativeMethods.WM_SYSKEYDOWN)
                 {
                     HandleKeyDown();
@@ -82,6 +134,23 @@ public class KeyTrigger : IDisposable
                     HandleKeyUp();
                 }
             }
+            else
+            {
+                // Another key was pressed while holding our trigger key!
+                // For example, user pressed Ctrl+C or Ctrl+V -> abort dictation trigger so shortcut functions normally!
+                if ((msg == NativeMethods.WM_KEYDOWN || msg == NativeMethods.WM_SYSKEYDOWN) &&
+                    (_phase == Phase.Pressed || _phase == Phase.Holding))
+                {
+                    _holdTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+                    if (_phase == Phase.Holding)
+                    {
+                        // Cancel dictation
+                        TriggerStop();
+                    }
+                    _phase = Phase.Idle;
+                    _lastTapAt = DateTime.MinValue;
+                }
+            }
         }
 
         return NativeMethods.CallNextHookEx(_hookId, nCode, wParam, lParam);
@@ -89,7 +158,7 @@ public class KeyTrigger : IDisposable
 
     private void HandleKeyDown()
     {
-        // Ignore key repeat while already holding or waiting
+        // Ignore key repeat while holding
         if (_phase == Phase.Holding || _phase == Phase.Pressed)
         {
             return;

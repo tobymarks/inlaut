@@ -15,6 +15,9 @@ public class InlautTrayApplicationContext : ApplicationContext
     private readonly KeyTrigger _keyTrigger;
     private readonly RecordingIndicatorForm _indicator;
     private readonly TextPipeline _pipeline;
+    private readonly AppSettings _settings;
+    private ToolStripMenuItem? _dictateMenuItem;
+    private SettingsForm? _settingsForm;
     private SherpaEngine? _engine;
     private bool _isModelReady;
     private Icon _defaultIcon = null!;
@@ -22,22 +25,25 @@ public class InlautTrayApplicationContext : ApplicationContext
 
     public InlautTrayApplicationContext()
     {
+        _settings = AppSettings.Load();
         _recorder = new AudioRecorder();
         _pipeline = new TextPipeline();
         _hotkeyReceiver = new HotkeyReceiver();
-        _keyTrigger = new KeyTrigger();
+        _keyTrigger = new KeyTrigger(_settings.TriggerVkCode);
         _indicator = new RecordingIndicatorForm();
 
         InitIcons();
 
         var contextMenu = new ContextMenuStrip();
-        var dictateItem = new ToolStripMenuItem("🎙️ Diktat starten / stoppen (F8 / Strg+Alt+Leertaste)", null, (s, e) => ToggleDictation());
+        _dictateMenuItem = new ToolStripMenuItem($"🎙️ Diktat starten / stoppen ({_settings.TriggerKeyName})", null, (s, e) => ToggleDictation());
+        var settingsItem = new ToolStripMenuItem("⚙️ Einstellungen (Taste festlegen)...", null, (s, e) => OpenSettings());
         var openFolderItem = new ToolStripMenuItem("📁 Modell-Ordner öffnen", null, (s, e) => OpenModelFolder());
         var aboutItem = new ToolStripMenuItem("ℹ️ Über inlaut", null, (s, e) => ShowAbout());
         var exitItem = new ToolStripMenuItem("❌ Beenden", null, (s, e) => Exit());
 
-        contextMenu.Items.Add(dictateItem);
+        contextMenu.Items.Add(_dictateMenuItem);
         contextMenu.Items.Add(new ToolStripSeparator());
+        contextMenu.Items.Add(settingsItem);
         contextMenu.Items.Add(openFolderItem);
         contextMenu.Items.Add(aboutItem);
         contextMenu.Items.Add(new ToolStripSeparator());
@@ -53,7 +59,7 @@ public class InlautTrayApplicationContext : ApplicationContext
 
         _notifyIcon.DoubleClick += (s, e) => ToggleDictation();
 
-        // 1. Single Key Hold-to-Talk & Double-Tap Hands-Free (F8 / Right Ctrl)
+        // 1. Single Key Hold-to-Talk & Double-Tap Hands-Free
         _keyTrigger.OnStart = () => StartDictation();
         _keyTrigger.OnStop = () => StopDictation();
         _keyTrigger.Start();
@@ -120,11 +126,11 @@ public class InlautTrayApplicationContext : ApplicationContext
             _engine = new SherpaEngine(modelDir);
             _isModelReady = true;
 
-            _notifyIcon.Text = "inlaut - Bereit (F8 / Rechte Strg halten oder doppeltippen)";
+            UpdateReadyStatus();
             _notifyIcon.ShowBalloonTip(
-                3000,
+                3500,
                 "inlaut ist bereit",
-                "• F8 oder Rechte Strg halten: Diktieren bis zum Loslassen\n• Doppeltippen: Daueraufnahme\n• Strg+Alt+Leertaste: Umschalten",
+                $"• {_settings.TriggerKeyName} halten: Diktieren bis zum Loslassen\n• Doppeltippen: Daueraufnahme\n• Taste ändern: Rechtsklick auf Tray -> Einstellungen",
                 ToolTipIcon.Info
             );
         }
@@ -132,6 +138,15 @@ public class InlautTrayApplicationContext : ApplicationContext
         {
             _notifyIcon.Text = "inlaut - Fehler beim Laden des Modells";
             MessageBox.Show($"Fehler beim Initialisieren des Sprachmodells:\n\n{ex.Message}", "inlaut Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void UpdateReadyStatus()
+    {
+        _notifyIcon.Text = $"inlaut - Bereit ({_settings.TriggerKeyName})";
+        if (_dictateMenuItem != null)
+        {
+            _dictateMenuItem.Text = $"🎙️ Diktat starten / stoppen ({_settings.TriggerKeyName})";
         }
     }
 
@@ -184,7 +199,7 @@ public class InlautTrayApplicationContext : ApplicationContext
 
         if (samples.Length < 1600) // Less than 0.1s
         {
-            _notifyIcon.Text = "inlaut - Bereit";
+            UpdateReadyStatus();
             _indicator.HideIndicator();
             return;
         }
@@ -208,9 +223,20 @@ public class InlautTrayApplicationContext : ApplicationContext
             finally
             {
                 _indicator.Invoke(() => _indicator.HideIndicator());
-                _notifyIcon.Text = "inlaut - Bereit";
+                UpdateReadyStatus();
             }
         });
+    }
+
+    private void OpenSettings()
+    {
+        if (_settingsForm == null || _settingsForm.IsDisposed)
+        {
+            _settingsForm = new SettingsForm(_settings, _keyTrigger, UpdateReadyStatus);
+        }
+
+        _settingsForm.Show();
+        _settingsForm.BringToFront();
     }
 
     private void OpenModelFolder()
@@ -235,9 +261,10 @@ public class InlautTrayApplicationContext : ApplicationContext
             "• 100% On-Device & Offline Speech-to-Text\n" +
             "• Keine Daten verlassen deinen Rechner\n\n" +
             "Bedienung:\n" +
-            "• Halten: F8 oder Rechte Strg gedrückt halten zum Diktieren\n" +
-            "• Freihand: F8 oder Rechte Strg doppeltippen\n" +
-            "• Tastenkürzel: Strg + Alt + Leertaste\n\n" +
+            $"• Halten: {_settings.TriggerKeyName} gedrückt halten zum Diktieren\n" +
+            $"• Freihand: {_settings.TriggerKeyName} doppeltippen\n" +
+            "• Tastenkürzel: Strg + Alt + Leertaste\n" +
+            "• Taste ändern: Rechtsklick auf Tray -> Einstellungen\n\n" +
             "https://inlaut.de",
             "Über inlaut",
             MessageBoxButtons.OK,
@@ -247,6 +274,7 @@ public class InlautTrayApplicationContext : ApplicationContext
 
     private void Exit()
     {
+        _settingsForm?.Dispose();
         _keyTrigger.Dispose();
         _indicator.Dispose();
         _recorder.Dispose();
