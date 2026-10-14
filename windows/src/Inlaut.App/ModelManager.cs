@@ -5,11 +5,16 @@ namespace Inlaut.App;
 public class ModelManager
 {
     private static readonly string ModelDirName = "models";
-    private static readonly string TokensFileName = "tokens.txt";
-    private static readonly string ModelFileName = "model.int8.onnx";
 
-    private const string TokensUrl = "https://huggingface.co/csukuangfj/sherpa-onnx-nemo-stt_de_fastconformer_hybrid_large_pc-int8/resolve/main/tokens.txt";
-    private const string ModelUrl = "https://huggingface.co/csukuangfj/sherpa-onnx-nemo-stt_de_fastconformer_hybrid_large_pc-int8/resolve/main/model.int8.onnx";
+    private const string TransducerBaseUrl = "https://huggingface.co/csukuangfj/sherpa-onnx-nemo-transducer-stt_de_fastconformer_hybrid_large_pc-int8/resolve/main/";
+
+    private static readonly (string File, string Desc, long EstSize)[] ModelFiles = new[]
+    {
+        ("tokens.txt", "Sprach-Tokens", 11_000L),
+        ("encoder.int8.onnx", "Akustik-Encoder (131 MB)", 131_114_014L),
+        ("decoder.int8.onnx", "Prädiktor-Decoder (4 MB)", 3_955_863L),
+        ("joiner.int8.onnx", "Joiner-Netzwerk (1.4 MB)", 1_408_183L)
+    };
 
     public static string GetModelDirectory()
     {
@@ -58,10 +63,14 @@ public class ModelManager
         if (!Directory.Exists(directory)) return false;
 
         bool hasTokens = File.Exists(Path.Combine(directory, "tokens.txt"));
-        bool hasCtc = File.Exists(Path.Combine(directory, "model.int8.onnx")) || File.Exists(Path.Combine(directory, "model.onnx"));
-        bool hasTransducer = File.Exists(Path.Combine(directory, "encoder.int8.onnx")) || File.Exists(Path.Combine(directory, "encoder.onnx"));
+        
+        bool hasTransducer = (File.Exists(Path.Combine(directory, "encoder.int8.onnx")) || File.Exists(Path.Combine(directory, "encoder.onnx")))
+                          && (File.Exists(Path.Combine(directory, "decoder.int8.onnx")) || File.Exists(Path.Combine(directory, "decoder.onnx")))
+                          && (File.Exists(Path.Combine(directory, "joiner.int8.onnx")) || File.Exists(Path.Combine(directory, "joiner.onnx")));
 
-        return hasTokens && (hasCtc || hasTransducer);
+        bool hasCtc = File.Exists(Path.Combine(directory, "model.int8.onnx")) || File.Exists(Path.Combine(directory, "model.onnx"));
+
+        return hasTokens && (hasTransducer || hasCtc);
     }
 
     public static async Task<string> EnsureModelAvailableAsync(Action<string, int>? progressCallback = null)
@@ -72,54 +81,57 @@ public class ModelManager
             return existing;
         }
 
-        // Fallback target: %LocalAppData%/inlaut/models/default
+        // Fallback target: %LocalAppData%/inlaut/models/fastconformer-de-transducer
         string targetDir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "inlaut",
             ModelDirName,
-            "fastconformer-ctc-de-int8"
+            "fastconformer-de-transducer"
         );
 
         Directory.CreateDirectory(targetDir);
 
-        string tokensDest = Path.Combine(targetDir, TokensFileName);
-        string modelDest = Path.Combine(targetDir, ModelFileName);
-
         using var client = new HttpClient();
         client.Timeout = TimeSpan.FromMinutes(10);
 
-        if (!File.Exists(tokensDest))
-        {
-            progressCallback?.Invoke("Lade Sprach-Tokens herunter...", 10);
-            var tokensBytes = await client.GetByteArrayAsync(TokensUrl);
-            await File.WriteAllBytesAsync(tokensDest, tokensBytes);
-        }
+        long grandTotal = 0;
+        foreach (var item in ModelFiles) grandTotal += item.EstSize;
 
-        if (!File.Exists(modelDest))
+        long downloadedBytes = 0;
+
+        foreach (var (file, desc, estSize) in ModelFiles)
         {
-            progressCallback?.Invoke("Lade deutsches Sprachmodell herunter (ca. 125 MB)...", 20);
-            using var response = await client.GetAsync(ModelUrl, HttpCompletionOption.ResponseHeadersRead);
+            string dest = Path.Combine(targetDir, file);
+            if (File.Exists(dest) && new FileInfo(dest).Length > 0)
+            {
+                downloadedBytes += estSize;
+                continue;
+            }
+
+            int percent = (int)(downloadedBytes * 100 / grandTotal);
+            progressCallback?.Invoke($"Lade {desc} herunter...", percent);
+
+            string url = TransducerBaseUrl + file;
+            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
 
-            var totalBytes = response.Content.Headers.ContentLength ?? 131_652_945L;
             using var contentStream = await response.Content.ReadAsStreamAsync();
-            using var fileStream = new FileStream(modelDest + ".tmp", FileMode.Create, FileAccess.Write, FileShare.None);
+            using var fileStream = new FileStream(dest + ".tmp", FileMode.Create, FileAccess.Write, FileShare.None);
 
             var buffer = new byte[81920];
-            long totalRead = 0;
             int read;
-
+            long itemRead = 0;
             while ((read = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {
                 await fileStream.WriteAsync(buffer, 0, read);
-                totalRead += read;
-                int percent = 20 + (int)((totalRead * 75) / totalBytes);
-                progressCallback?.Invoke($"Lade Sprachmodell herunter: {totalRead / 1024 / 1024} MB / {totalBytes / 1024 / 1024} MB", Math.Min(95, percent));
+                itemRead += read;
+                int currentPercent = (int)((downloadedBytes + itemRead) * 100 / grandTotal);
+                progressCallback?.Invoke($"Lade {desc} herunter...", Math.Min(99, currentPercent));
             }
 
             fileStream.Close();
-            if (File.Exists(modelDest)) File.Delete(modelDest);
-            File.Move(modelDest + ".tmp", modelDest);
+            File.Move(dest + ".tmp", dest, true);
+            downloadedBytes += estSize;
         }
 
         progressCallback?.Invoke("Sprachmodell bereit!", 100);

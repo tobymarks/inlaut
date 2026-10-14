@@ -7,7 +7,9 @@ public class AudioRecorder : IDisposable
     private WaveInEvent? _waveIn;
     private MemoryStream? _audioBuffer;
     private readonly object _lock = new();
+
     public bool IsRecording { get; private set; }
+    public float CurrentLevel { get; private set; }
 
     public void Start()
     {
@@ -15,6 +17,7 @@ public class AudioRecorder : IDisposable
         {
             if (IsRecording) return;
 
+            CurrentLevel = 0.0f;
             _audioBuffer = new MemoryStream();
             _waveIn = new WaveInEvent
             {
@@ -26,6 +29,16 @@ public class AudioRecorder : IDisposable
                 lock (_lock)
                 {
                     _audioBuffer?.Write(e.Buffer, 0, e.BytesRecorded);
+
+                    // Compute peak audio level for live visualizer
+                    float max = 0;
+                    for (int i = 0; i < e.BytesRecorded - 1; i += 2)
+                    {
+                        short sample = (short)(e.Buffer[i] | (e.Buffer[i + 1] << 8));
+                        float abs = Math.Abs(sample / 32768.0f);
+                        if (abs > max) max = abs;
+                    }
+                    CurrentLevel = max;
                 }
             };
 
@@ -47,6 +60,7 @@ public class AudioRecorder : IDisposable
             _waveIn.Dispose();
             _waveIn = null;
             IsRecording = false;
+            CurrentLevel = 0.0f;
 
             byte[] bytes = _audioBuffer.ToArray();
             _audioBuffer.Dispose();
@@ -76,6 +90,7 @@ public class AudioRecorder : IDisposable
             _waveIn?.Dispose();
             _audioBuffer?.Dispose();
             IsRecording = false;
+            CurrentLevel = 0.0f;
         }
     }
 }

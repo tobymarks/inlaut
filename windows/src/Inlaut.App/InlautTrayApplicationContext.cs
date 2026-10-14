@@ -12,6 +12,8 @@ public class InlautTrayApplicationContext : ApplicationContext
     private readonly NotifyIcon _notifyIcon;
     private readonly AudioRecorder _recorder;
     private readonly HotkeyReceiver _hotkeyReceiver;
+    private readonly KeyTrigger _keyTrigger;
+    private readonly RecordingIndicatorForm _indicator;
     private readonly TextPipeline _pipeline;
     private SherpaEngine? _engine;
     private bool _isModelReady;
@@ -23,11 +25,13 @@ public class InlautTrayApplicationContext : ApplicationContext
         _recorder = new AudioRecorder();
         _pipeline = new TextPipeline();
         _hotkeyReceiver = new HotkeyReceiver();
+        _keyTrigger = new KeyTrigger();
+        _indicator = new RecordingIndicatorForm();
 
         InitIcons();
 
         var contextMenu = new ContextMenuStrip();
-        var dictateItem = new ToolStripMenuItem("🎙️ Diktat starten / stoppen (Strg+Alt+Leertaste)", null, (s, e) => ToggleDictation());
+        var dictateItem = new ToolStripMenuItem("🎙️ Diktat starten / stoppen (F8 / Strg+Alt+Leertaste)", null, (s, e) => ToggleDictation());
         var openFolderItem = new ToolStripMenuItem("📁 Modell-Ordner öffnen", null, (s, e) => OpenModelFolder());
         var aboutItem = new ToolStripMenuItem("ℹ️ Über inlaut", null, (s, e) => ShowAbout());
         var exitItem = new ToolStripMenuItem("❌ Beenden", null, (s, e) => Exit());
@@ -48,6 +52,13 @@ public class InlautTrayApplicationContext : ApplicationContext
         };
 
         _notifyIcon.DoubleClick += (s, e) => ToggleDictation();
+
+        // 1. Single Key Hold-to-Talk & Double-Tap Hands-Free (F8 / Right Ctrl)
+        _keyTrigger.OnStart = () => StartDictation();
+        _keyTrigger.OnStop = () => StopDictation();
+        _keyTrigger.Start();
+
+        // 2. Global Shortcut fallback (Ctrl+Alt+Space)
         _hotkeyReceiver.HotkeyPressed += ToggleDictation;
         _hotkeyReceiver.RegisterDefaultHotkey();
 
@@ -109,8 +120,13 @@ public class InlautTrayApplicationContext : ApplicationContext
             _engine = new SherpaEngine(modelDir);
             _isModelReady = true;
 
-            _notifyIcon.Text = "inlaut - Bereit (Strg+Alt+Leertaste)";
-            _notifyIcon.ShowBalloonTip(3000, "inlaut ist bereit", "Drücke Strg+Alt+Leertaste, um die Aufnahme zu starten und zu stoppen.", ToolTipIcon.Info);
+            _notifyIcon.Text = "inlaut - Bereit (F8 / Rechte Strg halten oder doppeltippen)";
+            _notifyIcon.ShowBalloonTip(
+                3000,
+                "inlaut ist bereit",
+                "• F8 oder Rechte Strg halten: Diktieren bis zum Loslassen\n• Doppeltippen: Daueraufnahme\n• Strg+Alt+Leertaste: Umschalten",
+                ToolTipIcon.Info
+            );
         }
         catch (Exception ex)
         {
@@ -121,62 +137,80 @@ public class InlautTrayApplicationContext : ApplicationContext
 
     private void ToggleDictation()
     {
+        if (_recorder.IsRecording)
+        {
+            StopDictation();
+        }
+        else
+        {
+            StartDictation();
+        }
+    }
+
+    private void StartDictation()
+    {
         if (!_isModelReady || _engine == null)
         {
             _notifyIcon.ShowBalloonTip(2000, "inlaut", "Das Sprachmodell wird noch vorbereitet...", ToolTipIcon.Warning);
             return;
         }
 
-        if (!_recorder.IsRecording)
+        if (_recorder.IsRecording) return;
+
+        try
         {
-            // Start recording
+            _recorder.Start();
+            _notifyIcon.Icon = _recordingIcon;
+            _notifyIcon.Text = "inlaut - Aufnahme läuft...";
+
+            // Show floating indicator at bottom center
+            _indicator.ShowRecording(() => _recorder.CurrentLevel);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Mikrofon konnte nicht gestartet werden:\n{ex.Message}", "inlaut Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void StopDictation()
+    {
+        if (!_recorder.IsRecording) return;
+
+        _notifyIcon.Icon = _defaultIcon;
+        _notifyIcon.Text = "inlaut - Transkribiere...";
+        _indicator.ShowTranscribing();
+
+        float[] samples = _recorder.Stop();
+
+        if (samples.Length < 1600) // Less than 0.1s
+        {
+            _notifyIcon.Text = "inlaut - Bereit";
+            _indicator.HideIndicator();
+            return;
+        }
+
+        Task.Run(() =>
+        {
             try
             {
-                _recorder.Start();
-                _notifyIcon.Icon = _recordingIcon;
-                _notifyIcon.Text = "inlaut - Aufnahme läuft... (Strg+Alt+Leertaste zum Beenden)";
+                var (rawText, audioSec, decodeSec, rtf) = _engine.TranscribeSamples(samples, 16000);
+
+                if (!string.IsNullOrWhiteSpace(rawText))
+                {
+                    string processed = _pipeline.ProcessDictation(rawText);
+                    TextInserter.InsertText(processed);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Mikrofon konnte nicht gestartet werden:\n{ex.Message}", "inlaut Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _notifyIcon.ShowBalloonTip(3000, "inlaut Transkriptionsfehler", ex.Message, ToolTipIcon.Error);
             }
-        }
-        else
-        {
-            // Stop recording & transcribe
-            _notifyIcon.Icon = _defaultIcon;
-            _notifyIcon.Text = "inlaut - Transkribiere...";
-
-            float[] samples = _recorder.Stop();
-
-            if (samples.Length < 1600) // Less than 0.1s
+            finally
             {
-                _notifyIcon.Text = "inlaut - Bereit (Strg+Alt+Leertaste)";
-                return;
+                _indicator.Invoke(() => _indicator.HideIndicator());
+                _notifyIcon.Text = "inlaut - Bereit";
             }
-
-            Task.Run(() =>
-            {
-                try
-                {
-                    var (rawText, audioSec, decodeSec, rtf) = _engine.TranscribeSamples(samples, 16000);
-
-                    if (!string.IsNullOrWhiteSpace(rawText))
-                    {
-                        string processed = _pipeline.ProcessDictation(rawText);
-                        TextInserter.InsertText(processed);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _notifyIcon.ShowBalloonTip(3000, "inlaut Transkriptionsfehler", ex.Message, ToolTipIcon.Error);
-                }
-                finally
-                {
-                    _notifyIcon.Text = "inlaut - Bereit (Strg+Alt+Leertaste)";
-                }
-            });
-        }
+        });
     }
 
     private void OpenModelFolder()
@@ -199,7 +233,10 @@ public class InlautTrayApplicationContext : ApplicationContext
         MessageBox.Show(
             "inlaut — Lokales Diktieren für Windows\nVersion 0.5.0-prototype\n\n" +
             "• 100% On-Device & Offline Speech-to-Text\n" +
-            "• Keine Daten verlassen deinen Rechner\n" +
+            "• Keine Daten verlassen deinen Rechner\n\n" +
+            "Bedienung:\n" +
+            "• Halten: F8 oder Rechte Strg gedrückt halten zum Diktieren\n" +
+            "• Freihand: F8 oder Rechte Strg doppeltippen\n" +
             "• Tastenkürzel: Strg + Alt + Leertaste\n\n" +
             "https://inlaut.de",
             "Über inlaut",
@@ -210,6 +247,8 @@ public class InlautTrayApplicationContext : ApplicationContext
 
     private void Exit()
     {
+        _keyTrigger.Dispose();
+        _indicator.Dispose();
         _recorder.Dispose();
         _hotkeyReceiver.Dispose();
         _engine?.Dispose();

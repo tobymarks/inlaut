@@ -1,16 +1,40 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Inlaut.Platform.Windows;
 
-/// <summary>
-/// Direct Unicode keystroke injection on Windows.
-/// Unlike macOS, this does NOT touch or overwrite the user's clipboard!
-/// </summary>
 public static class TextInserter
 {
+    /// <summary>
+    /// Waits until modifier keys (Ctrl, Alt, Shift, Win) are physically released.
+    /// This prevents keystrokes from being interpreted as shortcuts like Ctrl+A, Ctrl+R, etc.
+    /// </summary>
+    public static void WaitForModifiersReleased(int timeoutMs = 1000)
+    {
+        var sw = Stopwatch.StartNew();
+        while (sw.ElapsedMilliseconds < timeoutMs)
+        {
+            bool ctrl = (NativeMethods.GetAsyncKeyState(NativeMethods.VK_CONTROL) & 0x8000) != 0;
+            bool alt = (NativeMethods.GetAsyncKeyState(NativeMethods.VK_MENU) & 0x8000) != 0;
+            bool shift = (NativeMethods.GetAsyncKeyState(NativeMethods.VK_SHIFT) & 0x8000) != 0;
+            bool win = (NativeMethods.GetAsyncKeyState(NativeMethods.VK_LWIN) & 0x8000) != 0 ||
+                       (NativeMethods.GetAsyncKeyState(NativeMethods.VK_RWIN) & 0x8000) != 0;
+
+            if (!ctrl && !alt && !shift && !win)
+            {
+                break;
+            }
+            Thread.Sleep(20);
+        }
+        // Small delay to let Windows message queues settle
+        Thread.Sleep(30);
+    }
+
     public static void InsertText(string text)
     {
         if (string.IsNullOrEmpty(text)) return;
+
+        WaitForModifiersReleased();
 
         var inputs = new List<NativeMethods.INPUT>();
 

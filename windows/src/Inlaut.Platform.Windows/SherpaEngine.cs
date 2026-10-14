@@ -13,6 +13,7 @@ public class SherpaEngine : IDisposable
         config.ModelConfig.Provider = provider;
         config.ModelConfig.NumThreads = threads;
         config.ModelConfig.Debug = 0;
+        config.DecodingMethod = "greedy_search";
 
         string tokensPath = Path.Combine(modelDir, "tokens.txt");
         if (File.Exists(tokensPath))
@@ -20,38 +21,42 @@ public class SherpaEngine : IDisposable
             config.ModelConfig.Tokens = tokensPath;
         }
 
-        // Check for NeMo CTC model (single onnx or int8)
-        string ctcModel = Path.Combine(modelDir, "model.int8.onnx");
-        if (!File.Exists(ctcModel)) ctcModel = Path.Combine(modelDir, "model.onnx");
+        // 1. Check for NeMo Transducer model (Encoder, Decoder, Joiner) - Preferred for German STT
+        string encoder = Path.Combine(modelDir, "encoder.int8.onnx");
+        if (!File.Exists(encoder)) encoder = Path.Combine(modelDir, "encoder.onnx");
 
-        if (File.Exists(ctcModel))
+        string decoder = Path.Combine(modelDir, "decoder.int8.onnx");
+        if (!File.Exists(decoder)) decoder = Path.Combine(modelDir, "decoder.onnx");
+
+        string joiner = Path.Combine(modelDir, "joiner.int8.onnx");
+        if (!File.Exists(joiner)) joiner = Path.Combine(modelDir, "joiner.onnx");
+
+        if (File.Exists(encoder) && File.Exists(decoder) && File.Exists(joiner))
         {
-            config.ModelConfig.NeMoCtc.Model = ctcModel;
-            config.ModelConfig.ModelType = "nemo_ctc";
+            config.ModelConfig.Transducer.Encoder = encoder;
+            config.ModelConfig.Transducer.Decoder = decoder;
+            config.ModelConfig.Transducer.Joiner = joiner;
+            config.ModelConfig.ModelType = "nemo_transducer";
         }
         else
         {
-            // Check for Transducer / TDT model (Encoder, Decoder, Joiner)
-            string encoder = Path.Combine(modelDir, "encoder.int8.onnx");
-            if (!File.Exists(encoder)) encoder = Path.Combine(modelDir, "encoder.onnx");
+            // 2. Fallback: Check for NeMo CTC model (single onnx or int8)
+            string ctcModel = Path.Combine(modelDir, "model.int8.onnx");
+            if (!File.Exists(ctcModel)) ctcModel = Path.Combine(modelDir, "model.onnx");
 
-            string decoder = Path.Combine(modelDir, "decoder.int8.onnx");
-            if (!File.Exists(decoder)) decoder = Path.Combine(modelDir, "decoder.onnx");
-
-            string joiner = Path.Combine(modelDir, "joiner.int8.onnx");
-            if (!File.Exists(joiner)) joiner = Path.Combine(modelDir, "joiner.onnx");
-
-            if (File.Exists(encoder) && File.Exists(decoder) && File.Exists(joiner))
+            if (File.Exists(ctcModel))
             {
-                config.ModelConfig.Transducer.Encoder = encoder;
-                config.ModelConfig.Transducer.Decoder = decoder;
-                config.ModelConfig.Transducer.Joiner = joiner;
+                config.ModelConfig.NeMoCtc.Model = ctcModel;
+                config.ModelConfig.ModelType = "nemo_ctc";
             }
             else
             {
-                throw new FileNotFoundException($"No valid NeMo CTC or Transducer ONNX model files found in {modelDir}");
+                throw new FileNotFoundException($"No valid NeMo Transducer or CTC ONNX model files found in {modelDir}");
             }
         }
+
+        config.FeatConfig.SampleRate = 16000;
+        config.FeatConfig.FeatureDim = 80;
 
         _recognizer = new OfflineRecognizer(config);
     }
