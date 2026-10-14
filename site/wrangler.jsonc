@@ -3,7 +3,11 @@
 {
   "name": "inlaut-site",
   "compatibility_date": "2026-10-01",
+  // Only /video/* runs the Worker, which adds byte-range support; all other paths are plain static assets.
+  "main": "video-ranges.js",
   "assets": {
+    "binding": "ASSETS",
+    "run_worker_first": ["/video/*"],
     "directory": "./public",
     "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page"
