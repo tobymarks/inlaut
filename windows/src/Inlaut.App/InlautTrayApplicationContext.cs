@@ -163,7 +163,7 @@ public class InlautTrayApplicationContext : ApplicationContext
 
                     if (!string.IsNullOrWhiteSpace(rawText))
                     {
-                        string processed = _pipeline.Process(rawText);
+                        string processed = _pipeline.ProcessDictation(rawText);
                         TextInserter.InsertText(processed);
                     }
                 }
