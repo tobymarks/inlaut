@@ -8,6 +8,11 @@ foreach (var text in new[] { "100000 Euro", "Warte...", "Jaaa!", "Grüße, Stra�
 }
 Console.WriteLine("PASS: numbers, ellipses, repeated letters, Unicode and line breaks preserved");
 
+var commands = new TextPipeline();
+if (commands.ProcessDictation("Erste Zeile neue Zeile zweite Zeile neuer Absatz letzter Absatz") != "Erste Zeile\nZweite Zeile\n\nLetzter Absatz")
+    throw new Exception("German line/paragraph commands differ.");
+Console.WriteLine("PASS: German new-line and new-paragraph commands produce expected breaks");
+
 foreach (int dpi in new[] { 96, 120, 144, 168, 192, 240, 288 })
 {
     foreach (int textWidth in new[] { 90, 180, 360 })

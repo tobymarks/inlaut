@@ -65,8 +65,17 @@ internal static class Program
                                 ? string.Join(" ", Enumerable.Repeat("inlaut-Test: Grüße, Straße, ÄÖÜ äöü ß, 100000! Vollständig und ohne Wiederholungen.", 15))
                                 : "Direkte Eingabe ohne Zwischenablage: Grüße, Straße, ÄÖÜ äöü ß, 100000!\nZweite Zeile: vollständig und ohne Wiederholungen. 😀\n");
                             var elapsed = Stopwatch.StartNew();
-                            string method = await DirectTextInserter.InsertAsync(expected);
-                            results.Add(new { mode = "external-sent", targetProcess, expected, method, sentMs = elapsed.ElapsedMilliseconds, clipboardUnchanged = clipboard == NativeMethods.GetClipboardSequenceNumber() });
+                            var inputTarget = DirectTextInserter.CaptureTarget();
+                            var targetClass = new System.Text.StringBuilder(256);
+                            GetClassName(inputTarget.Control, targetClass, targetClass.Capacity);
+                            string method;
+                            if (officeRequest?.UseClipboard == true)
+                            {
+                                await Inlaut.App.ClipboardTextInserter.InsertAsync(expected, inputTarget);
+                                method = "clipboard";
+                            }
+                            else method = await DirectTextInserter.InsertAsync(expected);
+                            results.Add(new { mode = "external-sent", targetProcess, targetClass = targetClass.ToString(), expected, method, sentMs = elapsed.ElapsedMilliseconds, clipboardUnchanged = clipboard == NativeMethods.GetClipboardSequenceNumber() });
                             status.Text = "Testtext gesendet. Ergebnis bitte im Editor prüfen.";
                             File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "external-results.json"), JsonSerializer.Serialize(results));
                             return;
@@ -168,6 +177,8 @@ internal static class Program
     }
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern uint GetWindowThreadProcessId(IntPtr window, out uint process);
+    [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+    private static extern int GetClassName(IntPtr window, System.Text.StringBuilder name, int count);
     private record AudioRequest(string Model, string Audio, string[] Expected);
-    private record OfficeRequest(string Process, string Text);
+    private record OfficeRequest(string Process, string Text, bool UseClipboard = false);
 }

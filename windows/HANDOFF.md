@@ -232,3 +232,34 @@ active text field. Its sent result is NOT proof of delivery: separately read
 back the app/document. No microphone or recognition test is implied by these
 input-only checks. Office multiline, other placeholders/field types, Excel
 outside cell-edit mode and other Office versions remain unverified.
+
+## Multiline Office validation and compact feedback — 0.7.0-beta.3
+
+Empty recognition now shows "Keine Sprache erkannt" in the nonactivating HUD
+for 2.5 seconds, rather than a Windows notification. Recordings below 100 ms
+show "Zu kurz aufgenommen". Model preparation also uses the HUD. A dedicated
+message timer is cancelled by recording/transcribing/hide/dispose; the stop
+handler preserves the final message instead of hiding it immediately in finally.
+UiSmoke covers timeout and immediate subsequent recording/transcription. CoreSmoke
+also checks German new-line/new-paragraph command conversion. Other actionable
+errors retain their previous notifications; no error diagnostics are suppressed.
+
+Actual Office multiline tests used the EXISTING OPT-IN CLIPBOARD MODE. No automatic
+clipboard fallback or preference change was introduced. A sample with two lines,
+a blank line and a final line was checked:
+- Word readback exactly matched (867 ms send duration).
+- PowerPoint title readback matched after converting U+000B soft line breaks to
+  LF (925 ms). This establishes line breaks, not native paragraph objects.
+- Excel in F2 cell-edit mode persisted all lines in one cell A3, verified in
+  its saved XLSX sharedStrings.xml and sheet1.xml (881 ms).
+
+Direct multiline Office input remains rejected. In Excel, enter cell-edit mode
+before using clipboard dictation; otherwise paste can distribute lines into
+multiple cells. Clipboard sequence numbers necessarily changed during these
+runs. The existing restoration logic ran, but these observations do not prove
+arbitrary rich clipboard formats restored perfectly. These are input tests with
+fixed text, not microphone-to-Office recognition tests.
+
+InputSmoke office-request.json now optionally accepts UseClipboard=true, and
+records the target control class. Default remains false. Run only in a verified
+isolated text field and independently compare the resulting document contents.

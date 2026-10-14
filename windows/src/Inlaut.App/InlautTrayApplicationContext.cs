@@ -238,7 +238,7 @@ public class InlautTrayApplicationContext : ApplicationContext
 
         if (!_isModelReady || _engine == null)
         {
-            _notifyIcon.ShowBalloonTip(2000, "inlaut", "Das Sprachmodell wird noch vorbereitet...", ToolTipIcon.Warning);
+            _indicator.ShowMessage("Modell wird vorbereitet…");
             return;
         }
 
@@ -269,6 +269,7 @@ public class InlautTrayApplicationContext : ApplicationContext
         _notifyIcon.Icon = _defaultIcon;
         _notifyIcon.Text = "inlaut - Transkribiere...";
         _indicator.ShowTranscribing();
+        string? statusMessage = null;
 
         try
         {
@@ -277,7 +278,11 @@ public class InlautTrayApplicationContext : ApplicationContext
             bool captureRequested = _captureRemaining > 0;
             string? captureRoot = _captureRoot;
             if (captureRequested) _captureRemaining--;
-            if (samples.Length < 1600 && !captureRequested) return;
+            if (samples.Length < 1600 && !captureRequested)
+            {
+                statusMessage = "Zu kurz aufgenommen";
+                return;
+            }
             bool captureFailed = false;
 
             string processed = await Task.Run(() =>
@@ -324,7 +329,7 @@ public class InlautTrayApplicationContext : ApplicationContext
                 _notifyIcon.ShowBalloonTip(4000, "Testaufnahme nicht vollständig gespeichert", "Bitte freien Speicherplatz und den Diagnoseordner prüfen. Das Diktieren bleibt verfügbar.", ToolTipIcon.Warning);
             if (string.IsNullOrWhiteSpace(processed))
             {
-                _notifyIcon.ShowBalloonTip(3000, "Keine Sprache erkannt", "Für dieses Diktat wurde kein Text erkannt.", ToolTipIcon.Info);
+                statusMessage = "Keine Sprache erkannt";
                 return;
             }
             string inputMethod = "clipboard";
@@ -346,7 +351,8 @@ public class InlautTrayApplicationContext : ApplicationContext
         finally
         {
             _isTranscribing = false;
-            _indicator.HideIndicator();
+            if (statusMessage != null) _indicator.ShowMessage(statusMessage);
+            else _indicator.HideIndicator();
             UpdateReadyStatus();
         }
     }

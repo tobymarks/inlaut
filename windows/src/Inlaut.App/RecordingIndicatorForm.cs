@@ -17,6 +17,8 @@ public class RecordingIndicatorForm : FluentForm
     private string _message = "";
     private readonly float[] _bars = new float[7] { 0.2f, 0.4f, 0.6f, 0.8f, 0.6f, 0.4f, 0.2f };
     private readonly System.Windows.Forms.Timer _animTimer;
+    private readonly System.Windows.Forms.Timer _messageTimer;
+    internal IndicatorPhase Phase => _phase;
     private Func<float>? _levelProvider;
     private int _transcribeAngle = 0;
     private IndicatorLayout _layout;
@@ -39,6 +41,8 @@ public class RecordingIndicatorForm : FluentForm
             Interval = 40 // ~25 FPS
         };
         _animTimer.Tick += OnAnimTimerTick;
+        _messageTimer = new System.Windows.Forms.Timer();
+        _messageTimer.Tick += (_, _) => HideIndicator();
     }
 
     protected override bool ShowWithoutActivation => true;
@@ -57,6 +61,7 @@ public class RecordingIndicatorForm : FluentForm
 
     public void ShowRecording(Func<float> levelProvider)
     {
+        _messageTimer.Stop();
         _levelProvider = levelProvider;
         _phase = IndicatorPhase.Recording;
         AccessibleDescription = "Aufnahme läuft";
@@ -68,6 +73,7 @@ public class RecordingIndicatorForm : FluentForm
 
     public void ShowTranscribing()
     {
+        _messageTimer.Stop();
         _phase = IndicatorPhase.Transcribing;
         AccessibleDescription = "Sprache wird in Text umgewandelt";
         if (WindowsTheme.Animations) _animTimer.Start();
@@ -77,19 +83,25 @@ public class RecordingIndicatorForm : FluentForm
         Invalidate();
     }
 
-    public void ShowMessage(string message)
+    public void ShowMessage(string message, int durationMs = 2500)
     {
+        _messageTimer.Stop();
+        _animTimer.Stop();
         _message = message;
+        AccessibleDescription = message;
         _phase = IndicatorPhase.Message;
         _levelProvider = null;
         UpdatePosition();
         Show();
         Invalidate();
+        _messageTimer.Interval = Math.Max(1, durationMs);
+        _messageTimer.Start();
     }
 
     public void HideIndicator()
     {
         _animTimer.Stop();
+        _messageTimer.Stop();
         _phase = IndicatorPhase.Hidden;
         _levelProvider = null;
         Hide();
@@ -203,6 +215,7 @@ public class RecordingIndicatorForm : FluentForm
         if (disposing)
         {
             _animTimer.Dispose();
+            _messageTimer.Dispose();
         }
         base.Dispose(disposing);
     }

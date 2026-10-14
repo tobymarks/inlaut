@@ -8,5 +8,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Inlaut.Platform.Windows/Inlaut.Platform.Windows.csproj" />
+    <ProjectReference Include="../../src/Inlaut.App/Inlaut.App.csproj" />
   </ItemGroup>
 </Project>

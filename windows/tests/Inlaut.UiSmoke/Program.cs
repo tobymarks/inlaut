@@ -18,6 +18,26 @@ internal static class Program
         {
             try
             {
+                using (var indicator = new RecordingIndicatorForm())
+                {
+                    indicator.ShowMessage("Keine Sprache erkannt", 100);
+                    if (indicator.Phase != IndicatorPhase.Message || !indicator.Visible || indicator.AccessibleDescription != "Keine Sprache erkannt")
+                        throw new Exception("Empty-speech status not visible.");
+                    await Task.Delay(250);
+                    if (indicator.Visible) throw new Exception("Status did not dismiss.");
+                    indicator.ShowMessage("Zu kurz aufgenommen", 100);
+                    indicator.ShowRecording(() => 0);
+                    await Task.Delay(250);
+                    if (!indicator.Visible || indicator.Phase != IndicatorPhase.Recording)
+                        throw new Exception("Old message timer hid a new recording.");
+                    indicator.ShowMessage("Keine Sprache erkannt", 100);
+                    indicator.ShowTranscribing();
+                    await Task.Delay(250);
+                    if (!indicator.Visible || indicator.Phase != IndicatorPhase.Transcribing)
+                        throw new Exception("Old message timer hid recognition.");
+                    indicator.HideIndicator();
+                }
+                Console.WriteLine("PASS: compact status dismisses and never hides a subsequent recording/recognition");
                 using (var settings = new SettingsForm(new AppSettings(), trigger, () => { }))
                 {
                     settings.Show();
