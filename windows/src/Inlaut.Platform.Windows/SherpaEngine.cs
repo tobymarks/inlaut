@@ -7,7 +7,7 @@ public class SherpaEngine : IDisposable
 {
     private readonly OfflineRecognizer _recognizer;
 
-    public SherpaEngine(string modelDir)
+    public SherpaEngine(string modelDir, string provider = "cpu", int? threads = null)
     {
         if (!Directory.Exists(modelDir))
         {
@@ -22,9 +22,9 @@ public class SherpaEngine : IDisposable
 
         var config = new OfflineRecognizerConfig();
         config.ModelConfig.Tokens = tokensPath;
-        config.ModelConfig.NumThreads = Math.Max(2, Environment.ProcessorCount / 2);
+        config.ModelConfig.NumThreads = threads ?? Math.Max(2, Environment.ProcessorCount / 2);
         config.ModelConfig.Debug = 0;
-        config.ModelConfig.Provider = "cpu";
+        config.ModelConfig.Provider = provider;
 
         // 1. Check for NeMo Transducer model (Encoder, Decoder, Joiner) - Preferred for German STT
         string encoder = Path.Combine(modelDir, "encoder.int8.onnx");
