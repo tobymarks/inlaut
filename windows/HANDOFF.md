@@ -209,3 +209,26 @@ physical microphone unplug/reconnect, standby/resume, extended everyday use,
 actual target-app checks, and a supported update/rollback policy. NuGet security
 advisory retrieval was unavailable (NU1900); compilation and tests succeeded,
 but no successful dependency advisory scan is claimed.
+
+## Office acceptance tests and Excel fix — 0.7.0-beta.2 (2026-10-14)
+
+Actual desktop applications were tested with DirectTextInserter, not by writing
+Office document contents through an API. Word received 1,259 characters; the UI
+readback matched except for its 15 sentence-initial inlaut→Inlaut corrections.
+PowerPoint received 83 characters in 466 ms and another 1,260 in 6,282 ms. Its
+1,343-character title readback matched exactly. The user activated the title
+placeholder because computer-control clicks failed; insertion itself was tested
+programmatically. The clipboard was unchanged in all cases.
+
+Excel exposed a standard Edit control in cell-edit mode. EM_REPLACESEL returned
+success (86 ms), but after Enter/save the XLSX worksheet was empty. The inserter
+now excludes EXCEL from the native-edit path. Repeating with unicode-paced
+(83 characters, 493 ms) persisted the exact string in A2, verified directly in
+Excel's saved sharedStrings.xml and sheet1.xml; clipboard unchanged.
+
+InputSmoke now accepts office-request.json with Process (WINWORD, POWERPNT,
+EXCEL or notepad) and Text. This opt-in helper requires a verified disposable
+active text field. Its sent result is NOT proof of delivery: separately read
+back the app/document. No microphone or recognition test is implied by these
+input-only checks. Office multiline, other placeholders/field types, Excel
+outside cell-edit mode and other Office versions remain unverified.

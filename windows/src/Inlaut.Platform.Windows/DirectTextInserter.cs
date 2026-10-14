@@ -137,6 +137,12 @@ public static class DirectTextInserter
 
     private static bool IsNativeEditor(IntPtr control)
     {
+        // Excel exposes an Edit control in cell-edit mode, but EM_REPLACESEL
+        // does not update its worksheet value: confirming the cell loses text.
+        // Use keyboard events so Excel receives its normal edit notifications.
+        GetWindowThreadProcessId(control, out uint processId);
+        using var process = Process.GetProcessById(checked((int)processId));
+        if (process.ProcessName.Equals("EXCEL", StringComparison.OrdinalIgnoreCase)) return false;
         var name = new StringBuilder(256);
         if (GetClassName(control, name, name.Capacity) == 0) return false;
         string value = name.ToString();

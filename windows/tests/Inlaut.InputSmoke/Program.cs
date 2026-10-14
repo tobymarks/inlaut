@@ -45,10 +45,14 @@ internal static class Program
                     status.Text = "Drei Sprachdateien erkannt und vollständig eingefügt.";
                     return;
                 }
+                string officeRequestPath = Path.Combine(AppContext.BaseDirectory, "office-request.json");
+                var officeRequest = File.Exists(officeRequestPath) ? JsonSerializer.Deserialize<OfficeRequest>(File.ReadAllText(officeRequestPath)) : null;
+                if (officeRequest != null && officeRequest.Process is not ("WINWORD" or "POWERPNT" or "EXCEL" or "notepad"))
+                    throw new ArgumentException("Unsupported external test process.");
                 bool wordTest = args.Contains("--external-word") || File.Exists(Path.Combine(AppContext.BaseDirectory, "word-request.txt"));
-                if (wordTest || args.Contains("--external") || File.Exists(Path.Combine(AppContext.BaseDirectory, "external-request.txt")))
+                if (officeRequest != null || wordTest || args.Contains("--external") || File.Exists(Path.Combine(AppContext.BaseDirectory, "external-request.txt")))
                 {
-                    string targetProcess = wordTest ? "WINWORD" : "notepad";
+                    string targetProcess = officeRequest?.Process ?? (wordTest ? "WINWORD" : "notepad");
                     status.Text = $"Warte auf ein leeres Testdokument in {targetProcess} (maximal 90 Sekunden).";
                     var deadline = Stopwatch.StartNew();
                     while (deadline.Elapsed.TotalSeconds < 90)
@@ -57,11 +61,12 @@ internal static class Program
                         GetWindowThreadProcessId(active, out uint pid);
                         if (pid != 0 && Process.GetProcessById((int)pid).ProcessName.Equals(targetProcess, StringComparison.OrdinalIgnoreCase))
                         {
-                            string expected = wordTest
+                            string expected = officeRequest?.Text ?? (wordTest
                                 ? string.Join(" ", Enumerable.Repeat("inlaut-Test: Grüße, Straße, ÄÖÜ äöü ß, 100000! Vollständig und ohne Wiederholungen.", 15))
-                                : "Direkte Eingabe ohne Zwischenablage: Grüße, Straße, ÄÖÜ äöü ß, 100000!\nZweite Zeile: vollständig und ohne Wiederholungen. 😀\n";
-                            await DirectTextInserter.InsertAsync(expected);
-                            results.Add(new { mode = "external-sent", targetProcess, expected, clipboardUnchanged = clipboard == NativeMethods.GetClipboardSequenceNumber() });
+                                : "Direkte Eingabe ohne Zwischenablage: Grüße, Straße, ÄÖÜ äöü ß, 100000!\nZweite Zeile: vollständig und ohne Wiederholungen. 😀\n");
+                            var elapsed = Stopwatch.StartNew();
+                            string method = await DirectTextInserter.InsertAsync(expected);
+                            results.Add(new { mode = "external-sent", targetProcess, expected, method, sentMs = elapsed.ElapsedMilliseconds, clipboardUnchanged = clipboard == NativeMethods.GetClipboardSequenceNumber() });
                             status.Text = "Testtext gesendet. Ergebnis bitte im Editor prüfen.";
                             File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "external-results.json"), JsonSerializer.Serialize(results));
                             return;
@@ -164,4 +169,5 @@ internal static class Program
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern uint GetWindowThreadProcessId(IntPtr window, out uint process);
     private record AudioRequest(string Model, string Audio, string[] Expected);
+    private record OfficeRequest(string Process, string Text);
 }
