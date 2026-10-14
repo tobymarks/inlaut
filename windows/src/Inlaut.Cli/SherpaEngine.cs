@@ -26,7 +26,8 @@ public class SherpaEngine : IDisposable
 
         if (File.Exists(ctcModel))
         {
-            config.ModelConfig.NemoCtc.Model = ctcModel;
+            config.ModelConfig.NeMoCtc.Model = ctcModel;
+            config.ModelConfig.ModelType = "nemo_ctc";
         }
         else
         {
@@ -74,7 +75,8 @@ public class SherpaEngine : IDisposable
 
         double decodeSec = sw.Elapsed.TotalSeconds;
         double rtf = audioSec > 0 ? decodeSec / audioSec : 0;
-        string text = stream.Result.Text?.Trim() ?? "";
+        var result = _recognizer.GetResult(stream);
+        string text = result.Text?.Trim() ?? "";
 
         return (text, audioSec, decodeSec, rtf);
     }
