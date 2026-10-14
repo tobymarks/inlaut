@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <RootNamespace>Inlaut.App</RootNamespace>
     <AssemblyName>Inlaut</AssemblyName>
   </PropertyGroup>

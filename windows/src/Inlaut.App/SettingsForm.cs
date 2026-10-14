@@ -26,81 +26,155 @@ public class SettingsForm : Form
     private void InitializeComponents()
     {
         Text = "inlaut — Einstellungen";
-        Size = new Size(520, 480);
+        AutoScaleMode = AutoScaleMode.Dpi;
+        ClientSize = new Size(560, 560);
+        MinimumSize = new Size(460, 460);
         StartPosition = FormStartPosition.CenterScreen;
-        FormBorderStyle = FormBorderStyle.FixedDialog;
+        FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = false;
         MinimizeBox = false;
         Font = new Font("Segoe UI", 9.5f, FontStyle.Regular);
         BackColor = Color.FromArgb(248, 249, 251);
 
-        var mainPanel = new TableLayoutPanel
+        // Bottom action bar (docked to bottom of form)
+        var bottomPanel = new Panel
         {
-            Dock = DockStyle.Fill,
-            Padding = new Padding(24),
-            ColumnCount = 1,
-            RowCount = 6
+            Dock = DockStyle.Bottom,
+            Height = 56,
+            BackColor = Color.FromArgb(240, 242, 246),
+            Padding = new Padding(16, 10, 16, 10)
         };
 
-        // 1. Header
+        var closeBtn = new Button
+        {
+            Text = "Fertig",
+            Dock = DockStyle.Right,
+            Width = 100,
+            BackColor = Color.FromArgb(220, 226, 235),
+            FlatStyle = FlatStyle.Flat,
+            Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+            Cursor = Cursors.Hand
+        };
+        closeBtn.FlatAppearance.BorderSize = 0;
+        closeBtn.Click += (s, e) => Close();
+        bottomPanel.Controls.Add(closeBtn);
+
+        var openFolderBtn = new Button
+        {
+            Text = "📁 Modellordner",
+            Dock = DockStyle.Left,
+            Width = 130,
+            BackColor = Color.White,
+            FlatStyle = FlatStyle.Flat,
+            Font = new Font("Segoe UI", 9f, FontStyle.Regular),
+            Cursor = Cursors.Hand
+        };
+        openFolderBtn.FlatAppearance.BorderColor = Color.FromArgb(210, 215, 225);
+        openFolderBtn.Click += (s, e) =>
+        {
+            string dir = ModelManager.GetModelDirectory();
+            Process.Start(new ProcessStartInfo("explorer.exe", dir) { UseShellExecute = true });
+        };
+        bottomPanel.Controls.Add(openFolderBtn);
+
+        Controls.Add(bottomPanel);
+
+        // Scrollable content container
+        var scrollContainer = new Panel
+        {
+            Dock = DockStyle.Fill,
+            AutoScroll = true,
+            Padding = new Padding(20)
+        };
+
+        var contentFlow = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Top,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            FlowDirection = FlowDirection.TopDown,
+            WrapContents = false,
+            Width = scrollContainer.ClientSize.Width - 40
+        };
+
+        scrollContainer.Resize += (s, e) =>
+        {
+            contentFlow.Width = scrollContainer.ClientSize.Width - 40;
+        };
+
+        // 1. Header Title & Description
         var titleLabel = new Label
         {
             Text = "Aufnahme-Taste konfigurieren",
             Font = new Font("Segoe UI", 13f, FontStyle.Bold),
             AutoSize = true,
-            Margin = new Padding(0, 0, 0, 8)
+            Margin = new Padding(0, 0, 0, 4)
         };
-        mainPanel.Controls.Add(titleLabel);
+        contentFlow.Controls.Add(titleLabel);
 
         var descLabel = new Label
         {
-            Text = "Halte die Taste gedrückt zum Diktieren, oder tippe sie zweimal für Freihand-Diktat.",
+            Text = "Halte die Taste gedrückt zum Diktieren, oder tippe sie zweimal kurz für Daueraufnahme.",
             ForeColor = Color.FromArgb(90, 100, 115),
             AutoSize = true,
             Margin = new Padding(0, 0, 0, 16)
         };
-        mainPanel.Controls.Add(descLabel);
+        contentFlow.Controls.Add(descLabel);
 
         // 2. Current Key Card
         var cardPanel = new Panel
         {
-            Size = new Size(456, 120),
+            Width = contentFlow.Width,
+            AutoSize = true,
             BackColor = Color.White,
             Padding = new Padding(16),
             Margin = new Padding(0, 0, 0, 16)
         };
         cardPanel.Paint += (s, e) =>
         {
-            using var pen = new Pen(Color.FromArgb(220, 225, 235), 1.2f);
+            using var pen = new Pen(Color.FromArgb(215, 220, 230), 1.2f);
             e.Graphics.DrawRectangle(pen, 0, 0, cardPanel.Width - 1, cardPanel.Height - 1);
         };
+        contentFlow.SizeChanged += (s, e) => cardPanel.Width = contentFlow.Width;
+
+        var cardInner = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Top,
+            AutoSize = true,
+            FlowDirection = FlowDirection.TopDown,
+            WrapContents = false,
+            Width = cardPanel.ClientSize.Width
+        };
+        cardPanel.SizeChanged += (s, e) => cardInner.Width = cardPanel.ClientSize.Width - 32;
 
         _currentKeyLabel = new Label
         {
             Text = $"Aktuelle Taste:  {_settings.TriggerKeyName}",
             Font = new Font("Segoe UI", 11f, FontStyle.Bold),
             ForeColor = Color.FromArgb(30, 40, 55),
-            Location = new Point(16, 16),
-            AutoSize = true
+            AutoSize = true,
+            Margin = new Padding(0, 0, 0, 12)
         };
-        cardPanel.Controls.Add(_currentKeyLabel);
+        cardInner.Controls.Add(_currentKeyLabel);
 
         _captureButton = new Button
         {
             Text = "⌨️ Neue Taste durch Drücken festlegen...",
-            Location = new Point(16, 56),
-            Size = new Size(424, 38),
-            BackColor = Color.FromArgb(40, 110, 230),
+            Height = 40,
+            Width = 360,
+            BackColor = Color.FromArgb(30, 105, 225),
             ForeColor = Color.White,
             FlatStyle = FlatStyle.Flat,
             Font = new Font("Segoe UI", 10f, FontStyle.Bold),
-            Cursor = Cursors.Hand
+            Cursor = Cursors.Hand,
+            Margin = new Padding(0, 0, 0, 4)
         };
         _captureButton.FlatAppearance.BorderSize = 0;
         _captureButton.Click += (s, e) => StartKeyCapture();
-        cardPanel.Controls.Add(_captureButton);
+        cardInner.Controls.Add(_captureButton);
 
-        mainPanel.Controls.Add(cardPanel);
+        cardPanel.Controls.Add(cardInner);
+        contentFlow.Controls.Add(cardPanel);
 
         // 3. Quick Presets
         var presetLabel = new Label
@@ -111,31 +185,35 @@ public class SettingsForm : Form
             AutoSize = true,
             Margin = new Padding(0, 0, 0, 6)
         };
-        mainPanel.Controls.Add(presetLabel);
+        contentFlow.Controls.Add(presetLabel);
 
         var presetsFlow = new FlowLayoutPanel
         {
+            Width = contentFlow.Width,
             AutoSize = true,
             FlowDirection = FlowDirection.LeftToRight,
             Margin = new Padding(0, 0, 0, 16)
         };
+        contentFlow.SizeChanged += (s, e) => presetsFlow.Width = contentFlow.Width;
 
-        AddPresetButton(presetsFlow, "Linke Strg", 0xA2);
+        AddPresetButton(presetsFlow, "Linke Strg (neben Fn)", 0xA2);
         AddPresetButton(presetsFlow, "Caps Lock", 0x14);
         AddPresetButton(presetsFlow, "Rechte Alt / Option", 0xA5);
         AddPresetButton(presetsFlow, "F8", 0x77);
         AddPresetButton(presetsFlow, "^ (Dach)", 0xDC);
 
-        mainPanel.Controls.Add(presetsFlow);
+        contentFlow.Controls.Add(presetsFlow);
 
         // 4. Test Area
         var testPanel = new Panel
         {
-            Size = new Size(456, 60),
+            Width = contentFlow.Width,
+            Height = 65,
             BackColor = Color.FromArgb(238, 242, 248),
             Padding = new Padding(12),
             Margin = new Padding(0, 0, 0, 16)
         };
+        contentFlow.SizeChanged += (s, e) => testPanel.Width = contentFlow.Width;
 
         _testStatusLabel = new Label
         {
@@ -146,48 +224,10 @@ public class SettingsForm : Form
             Font = new Font("Segoe UI", 9.5f, FontStyle.Regular)
         };
         testPanel.Controls.Add(_testStatusLabel);
-        mainPanel.Controls.Add(testPanel);
+        contentFlow.Controls.Add(testPanel);
 
-        // 5. Close Button
-        var bottomFlow = new FlowLayoutPanel
-        {
-            FlowDirection = FlowDirection.RightToLeft,
-            Dock = DockStyle.Bottom,
-            AutoSize = true
-        };
-
-        var closeBtn = new Button
-        {
-            Text = "Fertig",
-            Size = new Size(110, 36),
-            BackColor = Color.FromArgb(230, 235, 242),
-            FlatStyle = FlatStyle.Flat,
-            Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
-            Cursor = Cursors.Hand
-        };
-        closeBtn.FlatAppearance.BorderSize = 0;
-        closeBtn.Click += (s, e) => Close();
-        bottomFlow.Controls.Add(closeBtn);
-
-        var openFolderBtn = new Button
-        {
-            Text = "📁 Modellordner",
-            Size = new Size(130, 36),
-            BackColor = Color.Transparent,
-            FlatStyle = FlatStyle.Flat,
-            Font = new Font("Segoe UI", 9.5f, FontStyle.Regular),
-            Cursor = Cursors.Hand
-        };
-        openFolderBtn.Click += (s, e) =>
-        {
-            string dir = ModelManager.GetModelDirectory();
-            Process.Start(new ProcessStartInfo("explorer.exe", dir) { UseShellExecute = true });
-        };
-        bottomFlow.Controls.Add(openFolderBtn);
-
-        mainPanel.Controls.Add(bottomFlow);
-
-        Controls.Add(mainPanel);
+        scrollContainer.Controls.Add(contentFlow);
+        Controls.Add(scrollContainer);
 
         KeyPreview = true;
         KeyDown += OnFormKeyDown;
@@ -199,7 +239,7 @@ public class SettingsForm : Form
         {
             Text = name,
             AutoSize = true,
-            Height = 32,
+            Height = 34,
             BackColor = Color.White,
             FlatStyle = FlatStyle.Flat,
             Font = new Font("Segoe UI", 9f, FontStyle.Regular),
@@ -214,7 +254,7 @@ public class SettingsForm : Form
     private void StartKeyCapture()
     {
         _isCapturing = true;
-        _captureButton.Text = "⏳ Drücke jetzt eine Taste (oder Escape zum Abbrechen)...";
+        _captureButton.Text = "⏳ Drücke jetzt eine Taste (oder Escape)...";
         _captureButton.BackColor = Color.FromArgb(220, 60, 60);
         _keyTrigger.SetCaptureMode(OnKeyCaptured);
     }
@@ -233,7 +273,7 @@ public class SettingsForm : Form
         {
             _isCapturing = false;
             _captureButton.Text = "⌨️ Neue Taste durch Drücken festlegen...";
-            _captureButton.BackColor = Color.FromArgb(40, 110, 230);
+            _captureButton.BackColor = Color.FromArgb(30, 105, 225);
             _keyTrigger.EndCaptureMode();
             return;
         }
@@ -252,12 +292,12 @@ public class SettingsForm : Form
 
         _currentKeyLabel.Text = $"Aktuelle Taste:  {_settings.TriggerKeyName}";
         _captureButton.Text = "⌨️ Neue Taste durch Drücken festlegen...";
-        _captureButton.BackColor = Color.FromArgb(40, 110, 230);
+        _captureButton.BackColor = Color.FromArgb(30, 105, 225);
 
         _keyTrigger.UpdateTriggerKey(vkCode);
         _onSettingsChanged();
 
-        _testStatusLabel.Text = $"✅ Taste geändert zu: {_settings.TriggerKeyName}! Probiere sie jetzt aus.";
+        _testStatusLabel.Text = $"✅ Taste geändert zu: {_settings.TriggerKeyName}!";
         _testStatusLabel.ForeColor = Color.FromArgb(30, 140, 50);
     }
 
