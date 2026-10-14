@@ -69,7 +69,10 @@ nav a.lang-switch:hover { background: color-mix(in srgb, var(--ink) 14%, transpa
 .lang-switch.is-switching .lang-knob .lang-now { opacity: 0; transform: rotate(-60deg); }
 .lang-switch.is-switching .lang-knob .lang-next { opacity: 1; transform: rotate(0); }
 @media (prefers-color-scheme: dark) { nav a.lang-switch { --knob: var(--mint); } }
-.hero { display: grid; grid-template-columns: 1.12fr 1fr; gap: 64px; align-items: center; padding-block: 86px 80px; }
+.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 28px 64px; align-items: end; padding-block: 56px 72px; }
+.hero-copy h1 { margin-bottom: 0; }
+.hero-side .lead { margin-bottom: 24px; }
+.hero-film { grid-column: 1 / -1; margin: 20px 0 0; }
 .eyebrow { margin: 0 0 22px; color: var(--accent); font-size: 13px; font-weight: 600; letter-spacing: .025em; }
 h1 { font-size: clamp(44px, 4.8vw, 66px); letter-spacing: -.055em; font-weight: 600; line-height: 1.08; margin: 0 0 26px; }
 h1 span { color: var(--accent); }
@@ -142,6 +145,28 @@ kbd { display: inline-block; font: 500 11px/1.5 var(--font-ui); padding: 3px 7px
 .persona .persona-fix { color: var(--ink); margin: 0; }
 .persona-fix strong { font-weight: 600; color: var(--accent); }
 .persona h3 span { display: block; font-size: 14px; font-weight: 500; letter-spacing: 0; color: var(--accent); }
+.film-frame { position: relative; border-radius: 20px; overflow: hidden; background: #0C201F; aspect-ratio: 16 / 9; box-shadow: 0 18px 40px #103d3b1f; }
+.film-frame video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.film-frame video::cue { font: 600 clamp(13px, 1.6vw, 22px)/1.35 var(--font-ui); color: #fff; background: #0c201fc7; }
+.film-frame .ki-badge { top: 16px; right: 16px; transition: opacity 200ms; }
+.film-frame:hover .ki-more { max-width: 80px; opacity: 1; }
+.interview-film.is-playing .ki-badge { opacity: 0; }
+.film-play { position: absolute; left: 16px; top: 16px; display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px 10px 10px; border: 0; border-radius: 999px; background: #ffffffeb; color: #103D3B; font: 600 13px/1 var(--font-ui); box-shadow: 0 4px 14px #0003; cursor: pointer; transition: transform 180ms, opacity 200ms; }
+.film-play:hover { transform: scale(1.04); }
+.film-play:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
+.film-play-icon { width: 24px; height: 24px; border-radius: 50%; background: #103D3B; position: relative; }
+.film-play-icon::after { content: ""; position: absolute; left: 9px; top: 6px; border-style: solid; border-width: 6px 0 6px 10px; border-color: transparent transparent transparent #fff; }
+.interview-film.with-sound .film-play { opacity: 0; pointer-events: none; }
+.film-caption { display: flex; align-items: center; gap: 16px; margin-top: 18px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.film-caption strong { display: block; font-size: 15px; font-weight: 600; color: var(--ink); }
+.faces { display: flex; flex-shrink: 0; padding-left: 10px; }
+.faces img { width: 44px; height: 44px; margin-left: -10px; border-radius: 50%; border: 2px solid var(--paper); background: var(--stage); object-fit: cover; }
+.maker { align-items: flex-start; gap: 36px; padding: 44px 48px; }
+.maker .eyebrow { margin-bottom: 10px; }
+.maker p { margin-bottom: 12px; }
+.maker a:not(.button):not(.text-link) { color: var(--brand); font-weight: 600; }
+.maker .maker-sig { margin: 18px 0 24px; font-size: 15px; font-style: italic; color: var(--ink); }
+.maker-mark img { display: block; width: 80px; height: 80px; transform: rotate(-6deg); }
 .persona-note { margin: 22px 0 0; font-size: 13px; color: var(--muted); }
 /* EU AI Act label for generated images: a small "KI" bubble that unfolds to "KI-generiert". */
 .ki-badge { position: absolute; top: 12px; right: 12px; display: inline-flex; align-items: center; height: 24px; padding: 0 7px; border-radius: 999px; background: #ffffffeb; color: #103D3B; font-size: 11px; font-weight: 700; letter-spacing: .02em; box-shadow: 0 1px 3px #103d3b40; white-space: nowrap; }
@@ -158,7 +183,7 @@ kbd { display: inline-block; font: 500 11px/1.5 var(--font-ui); padding: 3px 7px
 .faq-list summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
 .faq-list p { margin: 0 0 22px; font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 40em; }
 .how { display: grid; grid-template-columns: .85fr 1fr; gap: 100px; padding-block: 64px 80px; border-top: 1px solid var(--line); }
-.how-symbol { display: block; margin-top: 36px; }
+.how .dictation-demo { margin-top: 40px; max-width: 470px; }
 .steps { list-style: none; margin: 0; padding: 0; }
 .steps li { display: flex; gap: 22px; padding-bottom: 30px; }
 .steps li + li { padding-top: 26px; border-top: 1px solid var(--line); }
@@ -204,10 +229,10 @@ footer nav a { font-size: 12px; }
 .compare-two tbody th { width: 24%; }
 .compare-two td { width: 38%; }
 .prose-wide > .compare-scroll:has(.compare-two) { max-width: 860px; }
-@media (min-width: 1440px) { .hero { padding-block: 110px 100px; } }
+@media (min-width: 1440px) { .hero { padding-block: 72px 88px; } }
 @media (max-width: 1050px) {
   .wrap { width: calc(100% - 64px); }
-  .hero { gap: 36px; }
+  .hero { gap: 24px 36px; }
   h1 { font-size: 48px; }
   .dictation-demo { padding: 18px; }
   .demo-bottomline { flex-wrap: wrap; }
@@ -215,7 +240,8 @@ footer nav a { font-size: 12px; }
   .persona-rail { grid-auto-columns: calc((100% - 2 * 28px) / 2.3); }
 }
 @media (max-width: 800px) {
-  .hero { grid-template-columns: 1fr; gap: 44px; padding-block: 56px; }
+  .hero { grid-template-columns: 1fr; gap: 24px; padding-block: 40px 56px; }
+  .hero-film { margin-top: 12px; }
   .hero-copy { max-width: 580px; }
   h1 { font-size: clamp(44px, 7.5vw, 62px); }
   .dictation-demo { width: 100%; max-width: 520px; padding: 24px; justify-self: center; }
@@ -223,8 +249,10 @@ footer nav a { font-size: 12px; }
   .features-section { padding-block: 64px 48px; }
   .how, .faq { grid-template-columns: 1fr; gap: 36px; padding-block: 48px 64px; }
   .personas { padding-block: 48px 64px; }
-  .how-symbol { display: none; }
+  .film-frame { border-radius: 14px; }
   .project-inner { padding: 28px; }
+  .maker { flex-direction: column; gap: 20px; }
+  .faces img { width: 36px; height: 36px; }
 }
 @media (max-width: 520px) {
   .wrap { width: calc(100% - 40px); }
@@ -233,7 +261,7 @@ footer nav a { font-size: 12px; }
   .top nav { gap: 14px; }
   .top nav a { font-size: 12px; white-space: nowrap; }
   .top nav a[href="#so-gehts"], .top nav a[href="#fragen"], .top nav a[href="#how-it-works"], .top nav a[href="#faq"] { display: none; }
-  .hero { padding-top: 44px; gap: 36px; }
+  .hero { padding-top: 28px; gap: 20px; }
   .eyebrow { font-size: 12px; margin-bottom: 18px; }
   h1 { font-size: clamp(36px, 10.5vw, 54px); }
   .lead { font-size: 17px; }
