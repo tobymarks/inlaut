@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   build:
-    name: Build inlaut Windows CLI & Core
+    name: Build inlaut Windows App & Models
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -33,23 +33,31 @@ jobs:
       - name: Build Solution
         run: dotnet build windows/Inlaut.sln -c Release --no-restore
 
-      - name: Publish Inlaut.Cli (Self-Contained win-x64)
+      - name: Publish Inlaut.App (Self-Contained win-x64)
         run: >
-          dotnet publish windows/src/Inlaut.Cli/Inlaut.Cli.csproj
+          dotnet publish windows/src/Inlaut.App/Inlaut.App.csproj
           -c Release
           -r win-x64
           --self-contained true
           -p:PublishReadyToRun=false
-          -o publish/inlaut-windows-x64
+          -o publish/inlaut-windows
 
-      - name: Copy helper scripts
+      - name: Bundle German On-Device Model
         shell: pwsh
         run: |
-          Copy-Item "windows/scripts/run-prototype.bat" -Destination "publish/inlaut-windows-x64/"
-          Copy-Item "windows/README.md" -Destination "publish/inlaut-windows-x64/"
+          New-Item -ItemType Directory -Force -Path "publish/inlaut-windows/models"
+          Write-Host "Downloading German FastConformer tokens..."
+          Invoke-WebRequest -Uri "https://huggingface.co/csukuangfj/sherpa-onnx-nemo-stt_de_fastconformer_hybrid_large_pc-int8/resolve/main/tokens.txt" -OutFile "publish/inlaut-windows/models/tokens.txt"
+          Write-Host "Downloading German FastConformer INT8 model (125 MB)..."
+          Invoke-WebRequest -Uri "https://huggingface.co/csukuangfj/sherpa-onnx-nemo-stt_de_fastconformer_hybrid_large_pc-int8/resolve/main/model.int8.onnx" -OutFile "publish/inlaut-windows/models/model.int8.onnx"
+
+      - name: Copy Documentation
+        shell: pwsh
+        run: |
+          Copy-Item "windows/README.md" -Destination "publish/inlaut-windows/"
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: inlaut-windows-x64
-          path: publish/inlaut-windows-x64/
+          name: inlaut-windows-app
+          path: publish/inlaut-windows/

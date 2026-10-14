@@ -1,67 +1,50 @@
-# inlaut for Windows (Prototype & Architecture)
+# inlaut for Windows
 
-Dies ist der native Windows-Zweig von **inlaut**. Ziel ist eine hochperformante, datenschutzkonforme On-Device-Diktier-App für Windows 10/11 ohne Cloud-Zwang.
-
----
-
-## 1. Architektur im Überblick
-
-Die Windows-Lösung ist modular und nativ in **C# / .NET 8/9** aufgebaut:
-
-* **`Inlaut.Core`** (Plattformunabhängig .NET):
-  * Beinhaltet die gesamte Textaufbereitung identisch zur macOS-Version:
-    * `VoiceCommands`: „neue Zeile“, „neuer Absatz“, Komma- & Satzende-Logik.
-    * `SharpS`: Gezielte `ß`-Regeln für Modelle ohne natives Scharf-S.
-    * `Replacements`: Wortgenaue Ersetzungen (`From -> To`), längere Phrasen zuerst.
-    * `TextPipeline`: Zentrale Pipeline, die nach jeder Transkription greift.
-* **`Inlaut.Platform.Windows`** (Windows-spezifisch):
-  * `TextInserter`: Direkte Injektion von Zeichenfolgen über Win32 `SendInput` mit `KEYEVENTF_UNICODE`.
-    * **Vorteil gegenüber macOS:** Die Windows-Zwischenablage (Clipboard) wird **nicht** überschrieben oder angetastet!
-  * `GlobalHotkey`: Registrierung systemweiter Tastenkürzel (`RegisterHotKey` / Low-Level Hooks).
-* **`Inlaut.Cli`** (Test-Harness & Benchmark):
-  * Nutzt **`sherpa-onnx`** (`org.k2fsa.sherpa.onnx`) zur Ausführung von NeMo FastConformer / Parakeet Modellen auf der CPU (AVX2/AVX-512) oder per DirectML/CUDA.
-  * Misst Audio-Länge, Dekodierzeit, RTF (Real-Time Factor) und testet optional die direkte Text-Injektion.
+Native, hochperformante On-Device-Diktier-App für Windows 10 & 11 ohne Cloud-Zwang.
 
 ---
 
-## 2. Schnellstart auf dem Windows-Rechner
+## 🚀 Schnelleinstieg für Nutzer
 
-### Voraussetzungen
-1. **.NET 8 SDK** (oder neuer):
-   Kann im Windows-Terminal einfach per WinGet installiert werden:
-   ```powershell
-   winget install Microsoft.DotNet.SDK.8
-   ```
-2. **Ein exportiertes ONNX-Modell:**
-   Zum Testen kann jedes von `sherpa-onnx` unterstützte NeMo CTC- oder Transducer-Modell verwendet werden (z. B. das deutsche FastConformer-Modell `sherpa-onnx-nemo-fast-conformer-ctc-de-2024-03-18` oder ein Parakeet-ONNX-Export).
-   
-   Beispiel-Download eines vortrainierten Modells:
-   ```powershell
-   curl.exe -L -O https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-nemo-fast-conformer-ctc-de-2024-03-18.tar.bz2
-   tar -xvf sherpa-onnx-nemo-fast-conformer-ctc-de-2024-03-18.tar.bz2
-   ```
-
-### Benchmark & Testlauf ausführen
-
-1. Wechsel in das Verzeichnis:
-   ```powershell
-   cd windows
-   ```
-2. Führe die CLI mit einer 16 kHz Mono-WAV-Datei aus:
-   ```powershell
-   dotnet run --project src/Inlaut.Cli -- --model "C:\Pfad\Zum\Modell" --file "C:\Pfad\Zu\test.wav"
-   ```
-3. **Mit Text-Injektion testen:**
-   Wenn du `--inject` anhängst, wartet das Tool 3 Sekunden (damit du z. B. in den Windows Editor / Notepad klicken kannst) und tippt den erkannten und aufbereiteten Text direkt hinein:
-   ```powershell
-   dotnet run --project src/Inlaut.Cli -- --model "C:\Pfad\Zum\Modell" --file "C:\Pfad\Zu\test.wav" --inject
-   ```
+1. Lade das fertige **`inlaut-windows-app.zip`** herunter (z. B. aus den GitHub Actions Artefakten oder dem Release).
+2. Entpacke das ZIP in einen beliebigen Ordner.
+3. Starte **`Inlaut.exe`** per Doppelklick:
+   * Die App startet direkt im Infobereich (System Tray) unten rechts in der Taskleiste.
+   * Das deutsche On-Device Sprachmodell ist bereits im Ordner `models/` enthalten und wird sofort geladen.
+   * Keine Konfiguration oder Terminal-Befehle notwendig!
 
 ---
 
-## 3. Nächste Ausbaustufe: Die WinUI-3 / Tray-App
+## ⌨️ Bedienung
 
-Für die finale Benutzeroberfläche:
-1. **System-Tray-Icon:** Die App läuft diskret im Infobereich der Taskleiste.
-2. **Echtzeit-Audio:** Kontinuierliche Audioaufnahme über WASAPI mit Ringpuffer beim Halten der Dictate-Taste.
-3. **Mica / Fluent-UI:** Ein schlankes Einstellungsfenster (WinUI 3) für Vokabular, Tastenkürzel und Modellstatus.
+* **Diktat starten & stoppen:**
+  * Tastenkürzel: **`Strg + Alt + Leertaste`**
+  * Alternativ: **Doppelklick auf das inlaut-Icon** im Infobereich.
+* **Während der Aufnahme:**
+  * Das Taskleisten-Icon signalisiert den Aufnahmestatus mit einem roten Punkt.
+* **Nach dem Diktat:**
+  * Sobald du die Tastenkombination erneut drückst, wird das Gesprochene lokal auf deinem Rechner transkribiert, durch die inlaut-Textpipeline bereinigt (Scharf-S-Wiederherstellung, Sprachbefehle, Formatierungen) und **direkt an der Cursor-Position in das aktive Fenster eingetippt** (Word, Browser, Outlook, Teams, Editor...).
+  * Deine Windows-Zwischenablage bleibt dabei unberührt!
+
+---
+
+## ⚙️ Infobereich (Rechtsklick auf das Tray-Icon)
+
+* **🎙️ Diktat starten / stoppen:** Aufnahme per Klick toggeln
+* **📁 Modell-Ordner öffnen:** Öffnet den Speicherort des lokalen Sprachmodells im Windows-Explorer
+* **ℹ️ Über inlaut:** Versions- und Projektinformationen
+* **❌ Beenden:** Beendet die App
+
+---
+
+## 🛠️ Technische Architektur
+
+* **`Inlaut.App`** (Windows-GUI / System Tray Host):
+  * Leichtgewichtiger, ressourcenschonender Host für den Infobereich.
+  * `AudioRecorder`: Aufnahme über Windows-Audio-Subsystem (16 kHz Mono).
+  * `HotkeyReceiver`: Systemweiter Tastatur-Hook für `Strg + Alt + Leertaste`.
+* **`Inlaut.Platform.Windows`**:
+  * `SherpaEngine`: Lokale Inferenz mit FastConformer / Parakeet Modellen auf CPU oder DirectML via `sherpa-onnx`.
+  * `TextInserter`: Direkte Unicode-Tasteninjektion über die Win32-API (`SendInput`), kein Überschreiben der Zwischenablage.
+* **`Inlaut.Core`** (.NET 8):
+  * Plattformunabhängige Textlogik (`SharpS`, `VoiceCommands`, `Replacements`, `TextPipeline`), identisch zur macOS-Version.

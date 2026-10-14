@@ -1,4 +1,4 @@
-namespace Inlaut.Cli;
+namespace Inlaut.Platform.Windows;
 
 public class WaveReader
 {

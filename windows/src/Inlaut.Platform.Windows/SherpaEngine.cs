@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using SherpaOnnx;
 
-namespace Inlaut.Cli;
+namespace Inlaut.Platform.Windows;
 
 public class SherpaEngine : IDisposable
 {
