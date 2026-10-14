@@ -313,3 +313,64 @@ files. Global clipboard preference remains false. Independent readback confirmed
 This validates file-audio -> recognizer -> text pipeline -> Office, not microphone
 or hotkey capture. Multiline Office still requires opt-in clipboard mode; Excel
 requires cell-edit mode. Arbitrary rich clipboard format preservation unverified.
+
+## Handoff to macOS and release work — 2026-10-14
+
+Windows session is complete for this test round; no further automated run is
+needed merely to repeat passing checks. Installed Windows version remains
+0.7.0-beta.3, an unsigned limited-test beta, NOT a production release.
+Test code and results through the reliability round are committed at 7cc9da9.
+
+The user subsequently confirmed that longer real microphone dictations work
+well on this Windows machine. This is a subjective hardware-path confirmation,
+not a measured accuracy score or a full microphone/hotkey regression suite.
+No private microphone recordings or dictated content are added to the repository.
+
+The transition investigation executed ten cases against Windows TextPipeline.
+Five desired corrections are absent: spacing/capitalization after sentence end,
+capitalization after an existing space/newline, spacing for sentence continuation,
+and repairing a missing separator within a recognized string. Correctly formatted
+text, a decimal number, a domain, an abbreviation and spoken paragraph commands
+were preserved. Concatenation with existing text was simulated; these were not
+additional native UI tests. Production behavior has NOT been changed.
+
+Cross-platform follow-up is tracked in issue #20:
+https://github.com/tobymarks/inlaut/issues/20
+It contains synthetic examples, acceptance criteria, shared Swift/C# test corpus
+requirements, links to #16/#17, and transferable robustness/performance checks.
+macOS TextPipeline/TextInserter were inspected and do not receive preceding-cursor
+text context; macOS behavior has NOT been tested from this Windows machine.
+Keep verified Windows findings distinct from pending macOS validation.
+
+Next session on the Mac:
+1. Fetch feature/windows-prototype and read this handoff and #20. Inspect current
+   main/branch divergence before integrating; do not assume the prototype branch
+   is already the final macOS release base.
+2. Run physical microphone/hotkey and two-take boundary checks in native and
+   browser fields, including caret movement, selection replacement, existing
+   whitespace, punctuation, line/paragraph commands and technical strings.
+3. Implement applicable shared behavior with the same expected test cases on
+   both platforms; keep OS-specific input and signing mechanisms separate.
+4. Follow the existing README release procedure and scripts/release.sh on the
+   maintainer's Mac: build/test the exact intended release source, Developer ID
+   signing, accepted notarization, stapling/Gatekeeper checks, exported-app smoke
+   test and previous-version update test, then GitHub artifacts and signed feed.
+   These release steps are pending; no signing, notarization or publication was
+   performed during this Windows session.
+
+Windows follow-up before general availability: actual Codex field compatibility
+and paced output, physical microphone disconnect/reconnect, sleep/resume, Windows
+11 and additional real DPI configurations, extended use, long-audio memory,
+trusted Windows signing and update/rollback policy. Existing limits remain:
+multiline Office requires opt-in clipboard; Excel requires cell edit; DOM fields
+sharing one native control are not reliably distinguished; queued characters
+cannot be recalled; arbitrary rich clipboard restoration is not fully verified.
+
+Release assessment: suitable as a candidate for a clearly labelled, limited
+Windows public beta to collect early-user feedback, not a stable/general release.
+Before linking it from the website, verify the exact downloadable installer and
+checksum, provide installation/rollback and feedback instructions, and disclose
+unsigned status (possible Windows launch warnings), supported test environment,
+Office multiline requirements and known input/formatting limits. Windows signing
+remains open and is independent of macOS Developer ID/notarization. This assessment
+is not a claim that publication, final download verification or signing is done.

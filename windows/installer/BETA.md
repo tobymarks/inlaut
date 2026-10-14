@@ -29,8 +29,13 @@ editors sharing one native control is not reliably detectable. Multiline input
 is supported in native Edit/RichEdit controls; unknown controls reject it rather
 than sending Enter shortcuts. Previously queued characters cannot be recalled.
 
-Before broad production release: test Word and the actual Codex field, physical
-microphone removal/reconnection, standby/resume and extended everyday use;
+Word, PowerPoint and Excel input/recognition checks are recorded in HANDOFF.md;
+multiline Office tests used opt-in clipboard insertion, with Excel in cell-edit
+mode. The user also reported successful longer physical microphone dictations.
+This does not establish complete app compatibility or measured speech accuracy.
+
+Before broad production release: complete actual Codex-field compatibility,
+physical microphone removal/reconnection, standby/resume and extended everyday use;
 validate Windows 11 and additional DPI configurations; arrange trusted code
 signing and establish an update/recovery policy. A successful build alone does
 not establish these acceptance criteria.
