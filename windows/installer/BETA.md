@@ -48,3 +48,15 @@ Build on Windows with .NET 8 and Inno Setup 6:
 
 OutputDirectory must be fresh. An optional ModelDirectory uses a local copy,
 subject to the same hashes. DotnetPath can select a portable .NET SDK.
+
+Beta.5 settings include input method, voice commands, ß correction, microphone
+selection/test, own replacements/snippets with Mac-compatible JSON import/export,
+trigger mode, indicator position, sounds and optional per-user startup. Changes
+apply after Save; upgrade does not enable these optional preferences. The level
+test does not retain audio. Captured device audio is converted to 16 kHz mono.
+
+After unexpected termination, a local technical report can be reviewed/discarded
+or saved. Nothing is automatically sent. Preparing a GitHub issue asks for
+explicit transfer consent; the final public submission is in the browser.
+Reports contain no audio, dictated text, text rules or exception messages/paths.
+See CRASH_REPORTS.md for details. Normal diagnostics remain metadata-only.

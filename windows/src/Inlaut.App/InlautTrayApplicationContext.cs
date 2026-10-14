@@ -35,9 +35,19 @@ public class InlautTrayApplicationContext : ApplicationContext
         _settings = AppSettings.Load();
         _recorder = new AudioRecorder();
         _pipeline = new TextPipeline();
+        _settings.ApplyTo(_pipeline);
         _hotkeyReceiver = new HotkeyReceiver();
         _indicator = new RecordingIndicatorForm();
         _keyTrigger = new KeyTrigger(_indicator, _settings.TriggerVkCode);
+        _keyTrigger.Mode = _settings.TriggerMode;
+        _indicator.PositionPreference = _settings.IndicatorPosition;
+        _recorder.DeviceFailed += () =>
+        {
+            if (!_indicator.IsDisposed) _indicator.BeginInvoke(new Action(() =>
+            {
+                if (_recorder.IsRecording) StopDictation();
+            }));
+        };
 
         InitIcons();
 
@@ -58,8 +68,9 @@ public class InlautTrayApplicationContext : ApplicationContext
         };
         clipboardItem.Click += (_, _) =>
         {
-            _settings.UseClipboardInsertion = clipboardItem.Checked;
-            _settings.Save();
+            bool previous = _settings.UseClipboardInsertion;
+            try { _settings.UseClipboardInsertion = clipboardItem.Checked; _settings.Save(); }
+            catch (Exception ex) { _settings.UseClipboardInsertion = previous; clipboardItem.Checked = previous; AppDialog.Error("Einstellung nicht gespeichert", ex.Message); }
         };
         helpItem.DropDownItems.Add(clipboardItem);
         helpItem.DropDownItems.Add(new ToolStripSeparator());
@@ -85,6 +96,8 @@ public class InlautTrayApplicationContext : ApplicationContext
             captureItem.Checked = _captureRemaining > 0;
         };
         helpItem.DropDownItems.Add(captureItem);
+        var reportItem = FluentMenu.Item("Letzten Fehlerbericht ansehen…", "\uE9D9", (_, _) => new CrashReportForm(CrashJournal.Current).Show());
+        helpItem.DropDownItems.Add(reportItem);
         helpItem.DropDownItems.Add(new ToolStripSeparator());
         helpItem.DropDownItems.Add(FluentMenu.Item("Über inlaut", "\uE946", (_, _) => ShowAbout()));
         contextMenu.Items.AddRange(new ToolStripItem[]
@@ -94,6 +107,8 @@ public class InlautTrayApplicationContext : ApplicationContext
         });
         contextMenu.Opening += (_, _) =>
         {
+            reportItem.Enabled = CrashJournal.Current.ReadReport() != null;
+            clipboardItem.Checked = _settings.UseClipboardInsertion;
             lastDictationItem.Enabled = _lastDictation != null && !_recorder.IsRecording && !_isTranscribing;
             captureItem.Checked = _captureRemaining > 0;
             captureItem.Enabled = !_recorder.IsRecording && !_isTranscribing;
@@ -126,7 +141,12 @@ public class InlautTrayApplicationContext : ApplicationContext
         _hotkeyReceiver.HotkeyPressed += ToggleDictation;
         _hotkeyReceiver.RegisterDefaultHotkey();
 
-        _indicator.BeginInvoke(new Action(() => _ = InitializeModelAsync()));
+        _indicator.BeginInvoke(new Action(() =>
+        {
+            _ = InitializeModelAsync();
+            if (CrashJournal.Current.ReadReport() != null) new CrashReportForm(CrashJournal.Current).Show();
+            if (AppSettings.LoadWarning != null) AppDialog.Information("Einstellungen prüfen", AppSettings.LoadWarning);
+        }));
     }
 
     private void InitIcons()
@@ -212,6 +232,9 @@ public class InlautTrayApplicationContext : ApplicationContext
 
     private void UpdateReadyStatus()
     {
+        _settings.ApplyTo(_pipeline);
+        _indicator.PositionPreference = _settings.IndicatorPosition;
+        _keyTrigger.Mode = _settings.TriggerMode;
         _notifyIcon.Text = _isModelReady ? $"inlaut - Bereit ({_settings.TriggerKeyName})" : "inlaut - Lade Sprachmodell...";
         if (_dictateMenuItem != null)
         {
@@ -247,7 +270,9 @@ public class InlautTrayApplicationContext : ApplicationContext
         try
         {
             _dictationTarget = DirectTextInserter.CaptureTarget();
-            _recorder.Start();
+            if (_settings.PlaySounds) RecordingSounds.Play(starting: true);
+            _recorder.Start(_settings.MicrophoneId);
+            LocalDiagnostics.Write("recording", new { });
             _notifyIcon.Icon = _recordingIcon;
             _notifyIcon.Text = _captureRemaining > 0 ? "inlaut - Testaufnahme (Audio + Text werden gespeichert)" : "inlaut - Aufnahme läuft...";
 
@@ -274,6 +299,7 @@ public class InlautTrayApplicationContext : ApplicationContext
         try
         {
             float[] samples = _recorder.Stop();
+            if (_settings.PlaySounds) RecordingSounds.Play(starting: false);
             LocalDiagnostics.Write("recorded", LocalDiagnostics.DescribeAudio(samples));
             bool captureRequested = _captureRemaining > 0;
             string? captureRoot = _captureRoot;

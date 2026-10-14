@@ -7,17 +7,32 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        if (args.Length == 3 && args[0] == "--crash-child")
+        {
+            var journal = new CrashJournal(args[1]); journal.Begin();
+            journal.NoteStage("recognized"); journal.NoteStage("SECRET_TRANSCRIPT");
+            if (args[2] == "clean") { journal.EndCleanly(); return 0; }
+            if (args[2] == "fault")
+            {
+                try { throw new InvalidOperationException("SECRET_TRANSCRIPT C:\\Users\\Private\\note.txt"); }
+                catch (Exception error) { journal.Record(error); }
+            }
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+            return 1;
+        }
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         using var host = new Form();
         using var trigger = new KeyTrigger(host);
-        using var watchdog = new System.Threading.Timer(_ => Environment.Exit(2), null, 30_000, Timeout.Infinite);
+        using var watchdog = new System.Threading.Timer(_ => Environment.Exit(2), null, 90_000, Timeout.Infinite);
         int result = 0;
         host.Shown += async (_, _) =>
         {
             try
             {
+                await SettingsChecks.Run(host, trigger, args.Contains("--hardware"));
+                await CrashChecks.Run();
                 foreach (int pixels in new[] { 20, 25, 30, 35, 40, 50, 60 })
                 foreach (string glyph in new[] { "\uE720", "\uE71A", "\uE713", "\uE8A5", "\uE897", "\uE8B7", "\uE9D9", "\uE946", "\uE7E8" })
                 {

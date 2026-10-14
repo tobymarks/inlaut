@@ -19,7 +19,24 @@ internal static class Program
             return;
         }
 
-        ApplicationConfiguration.Initialize();
-        Application.Run(new InlautTrayApplicationContext());
+        var journal = CrashJournal.Current;
+        journal.Begin();
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+        {
+            if (e.ExceptionObject is Exception error) journal.Record(error);
+        };
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+        Application.ThreadException += (_, e) =>
+        {
+            journal.Record(e.Exception);
+            Environment.Exit(1); // Do not continue with potentially corrupt UI state.
+        };
+        try
+        {
+            ApplicationConfiguration.Initialize();
+            Application.Run(new InlautTrayApplicationContext());
+        }
+        catch (Exception error) { journal.Record(error); Environment.ExitCode = 1; }
+        finally { journal.EndCleanly(); }
     }
 }

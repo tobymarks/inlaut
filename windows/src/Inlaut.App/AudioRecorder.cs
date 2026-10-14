@@ -1,96 +1,141 @@
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 
 namespace Inlaut.App;
 
+public record MicrophoneOption(string Id, string Name)
+{
+    public override string ToString() => Name;
+}
+
 public class AudioRecorder : IDisposable
 {
-    private WaveInEvent? _waveIn;
-    private MemoryStream? _audioBuffer;
-    private readonly object _lock = new();
-
+    private WasapiCapture? _capture;
+    private MMDevice? _device;
+    private MemoryStream? _buffer;
+    private WaveFormat? _format;
+    private readonly object _gate = new();
+    private bool _retain;
     public bool IsRecording { get; private set; }
     public float CurrentLevel { get; private set; }
+    public Exception? Failure { get; private set; }
+    public string ActiveDeviceName { get; private set; } = "";
+    public event Action? DeviceFailed;
 
-    public void Start()
+    public static List<MicrophoneOption> Devices()
     {
-        lock (_lock)
+        using var enumerator = new MMDeviceEnumerator();
+        var result = new List<MicrophoneOption> { new("", "Windows-Standardmikrofon") };
+        foreach (var device in enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active))
+            using (device) result.Add(new(device.ID, device.FriendlyName));
+        return result;
+    }
+
+    public void Start(string deviceId = "", bool retainAudio = true)
+    {
+        if (IsRecording) return;
+        Dispose();
+        Failure = null;
+        try
         {
-            if (IsRecording) return;
-
-            CurrentLevel = 0.0f;
-            _audioBuffer = new MemoryStream();
-            _waveIn = new WaveInEvent
+            using var enumerator = new MMDeviceEnumerator();
+            _device = string.IsNullOrEmpty(deviceId)
+                ? enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console)
+                : enumerator.GetDevice(deviceId);
+            if (_device.State != DeviceState.Active) throw new InvalidOperationException("Das gewählte Mikrofon ist nicht verbunden. Bitte in den Einstellungen ein anderes wählen.");
+            ActiveDeviceName = _device.FriendlyName;
+            _capture = new WasapiCapture(_device);
+            _format = _capture.WaveFormat;
+            _retain = retainAudio;
+            _buffer = retainAudio ? new MemoryStream() : null;
+            _capture.DataAvailable += (_, e) =>
             {
-                WaveFormat = new WaveFormat(16000, 16, 1) // 16 kHz Mono 16-bit
-            };
-
-            _waveIn.DataAvailable += (s, e) =>
-            {
-                lock (_lock)
+                lock (_gate)
                 {
-                    _audioBuffer?.Write(e.Buffer, 0, e.BytesRecorded);
-
-                    // Compute peak audio level for live visualizer
-                    float max = 0;
-                    for (int i = 0; i < e.BytesRecorded - 1; i += 2)
-                    {
-                        short sample = (short)(e.Buffer[i] | (e.Buffer[i + 1] << 8));
-                        float abs = Math.Abs(sample / 32768.0f);
-                        if (abs > max) max = abs;
-                    }
-                    CurrentLevel = max;
+                    if (!IsRecording) return;
+                    if (_retain) _buffer!.Write(e.Buffer, 0, e.BytesRecorded);
+                    using var block = new RawSourceWaveStream(new MemoryStream(e.Buffer, 0, e.BytesRecorded, false), _format);
+                    var provider = block.ToSampleProvider();
+                    float[] levels = new float[1024];
+                    float peak = 0;
+                    int read;
+                    while ((read = provider.Read(levels, 0, levels.Length)) > 0)
+                        for (int i = 0; i < read; i++) peak = Math.Max(peak, Math.Abs(levels[i]));
+                    CurrentLevel = Math.Clamp(peak, 0, 1);
                 }
             };
-
-            _waveIn.StartRecording();
+            _capture.RecordingStopped += (_, e) =>
+            {
+                if (e.Exception == null) return;
+                Failure = e.Exception;
+                DeviceFailed?.Invoke();
+            };
             IsRecording = true;
+            _capture.StartRecording();
         }
+        catch { Dispose(); throw; }
     }
 
     public float[] Stop()
     {
-        lock (_lock)
+        if (_capture == null) return [];
+        // Stop outside the buffer lock: capture shutdown joins its worker.
+        try { _capture.StopRecording(); } catch (Exception error) { Failure ??= error; }
+        try { _capture.Dispose(); } catch (Exception error) { Failure ??= error; }
+        _capture = null;
+        byte[] bytes;
+        lock (_gate)
         {
-            if (!IsRecording || _waveIn == null || _audioBuffer == null)
-            {
-                return Array.Empty<float>();
-            }
-
-            _waveIn.StopRecording();
-            _waveIn.Dispose();
-            _waveIn = null;
             IsRecording = false;
-            CurrentLevel = 0.0f;
-
-            byte[] bytes = _audioBuffer.ToArray();
-            _audioBuffer.Dispose();
-            _audioBuffer = null;
-
-            int sampleCount = bytes.Length / 2;
-            float[] samples = new float[sampleCount];
-
-            for (int i = 0; i < sampleCount; i++)
-            {
-                short sample = (short)(bytes[i * 2] | (bytes[i * 2 + 1] << 8));
-                samples[i] = sample / 32768.0f;
-            }
-
-            return samples;
+            CurrentLevel = 0;
+            bytes = _buffer?.ToArray() ?? [];
+            _buffer?.Dispose(); _buffer = null;
         }
+        _device?.Dispose(); _device = null;
+        if (Failure != null) throw new InvalidOperationException("Die Mikrofonaufnahme wurde unterbrochen. Bitte das Gerät prüfen und erneut diktieren.", Failure);
+        return bytes.Length == 0 ? [] : ConvertTo16kMono(bytes, _format!);
+    }
+
+    internal static float[] ConvertTo16kMono(byte[] bytes, WaveFormat format)
+    {
+        using var stream = new RawSourceWaveStream(new MemoryStream(bytes, false), format);
+        ISampleProvider samples = new MonoProvider(stream.ToSampleProvider());
+        if (samples.WaveFormat.SampleRate != 16000) samples = new WdlResamplingSampleProvider(samples, 16000);
+        var result = new List<float>();
+        float[] block = new float[4096];
+        int read;
+        while ((read = samples.Read(block, 0, block.Length)) > 0) result.AddRange(block.Take(read));
+        return result.ToArray();
     }
 
     public void Dispose()
     {
-        lock (_lock)
+        IsRecording = false;
+        try { _capture?.StopRecording(); } catch { }
+        try { _capture?.Dispose(); } catch { }
+        _capture = null;
+        lock (_gate) { _buffer?.Dispose(); _buffer = null; }
+        _device?.Dispose(); _device = null;
+        CurrentLevel = 0;
+    }
+
+    private sealed class MonoProvider(ISampleProvider source) : ISampleProvider
+    {
+        public WaveFormat WaveFormat { get; } = WaveFormat.CreateIeeeFloatWaveFormat(source.WaveFormat.SampleRate, 1);
+        public int Read(float[] buffer, int offset, int count)
         {
-            if (IsRecording)
+            int channels = source.WaveFormat.Channels;
+            float[] input = new float[count * channels];
+            int read = source.Read(input, 0, input.Length);
+            int frames = read / channels;
+            for (int i = 0; i < frames; i++)
             {
-                _waveIn?.StopRecording();
+                float value = 0;
+                for (int c = 0; c < channels; c++) value += input[i * channels + c];
+                buffer[offset + i] = value / channels;
             }
-            _waveIn?.Dispose();
-            _audioBuffer?.Dispose();
-            IsRecording = false;
-            CurrentLevel = 0.0f;
+            return frames;
         }
     }
 }

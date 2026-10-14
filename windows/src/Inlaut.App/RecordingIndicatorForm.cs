@@ -13,6 +13,7 @@ public enum IndicatorPhase
 
 public class RecordingIndicatorForm : FluentForm
 {
+    public string PositionPreference { get; set; } = "bottom";
     private IndicatorPhase _phase = IndicatorPhase.Hidden;
     private string _message = "";
     private readonly float[] _bars = new float[7] { 0.2f, 0.4f, 0.6f, 0.8f, 0.6f, 0.4f, 0.2f };
@@ -115,7 +116,8 @@ public class RecordingIndicatorForm : FluentForm
 
         var bounds = screen.WorkingArea;
         int x = bounds.Left + (bounds.Width - Width) / 2;
-        int y = bounds.Bottom - Height - (int)(24 * DeviceDpi / 96f); // 24px above taskbar
+        int inset = (int)(24 * DeviceDpi / 96f);
+        int y = PositionPreference == "top" ? bounds.Top + inset : bounds.Bottom - Height - inset;
         Location = new Point(x, y);
     }
 

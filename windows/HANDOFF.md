@@ -390,3 +390,61 @@ The audit identifies missing input-method controls, persisted voice-command/ß
 switches, microphone/model status, device selection, key-conflict feedback and
 save-error handling. Existing capabilities and future backend work are separated.
 Settings expansion is proposed, not implemented in beta.4.
+
+## Settings, microphone selection and opt-in crash reports — beta.5
+
+Implemented the Windows settings follow-up from #21: five grouped tabs, explicit
+Save/Close with draft isolation and discard warning, atomic settings replacement,
+visible save/load errors, constrained key selection, hold/toggle/combined modes,
+direct/clipboard input, voice commands, German ß correction, microphone selection
+by stable endpoint ID, 30-second maximum non-retaining level test, active model
+information, literal replacements, whole-dictation snippets, Mac-compatible JSON
+import/export/merge, indicator top/bottom, optional short start/end tones and
+per-user autostart. No preference is enabled automatically during upgrade.
+Autostart registry entry is removed by uninstall; settings remain preserved.
+
+Audio capture uses WASAPI device selection and converts native device samples to
+16 kHz mono before recognition. Optional diagnostic captures therefore represent
+that converted recognizer input, not an untouched native device-format recording.
+Default endpoint is resolved at every start; unavailable explicit devices fail
+visibly, without silently switching microphones. A device error ends the recording
+with an actionable error. Physical unplug/replug remains unverified.
+
+Text rules use the Mac lower-camel-case replacements/snippets JSON schema. Imports
+merge into an unsaved draft and reject invalid/duplicate normalized phrases.
+Windows validation is stricter than the Mac's permissive empty-entry filtering.
+Snippets match the whole normalized phrase and preserve their literal whitespace;
+replacement text is now literal, including dollar signs. Existing Office multiline
+constraints remain. No language/engine picker, Apple Intelligence correction,
+automatic updater or between-dictation spacing fix is implied by these settings.
+
+New local crash handling and explicit report handoff are described in
+CRASH_REPORTS.md. There is no automatic transmission. The initial report preview
+is local; a separate confirmation discloses transfer to GitHub when opening a
+prefilled issue. Final public submission is user-controlled in the browser.
+
+Validation on this Windows machine:
+- UiSmoke real controls -> save -> reload -> pipeline options/rules passed.
+  Actual multiline snippet dialog was populated and saved; import/export,
+  malformed import isolation, write-failure rollback and corrupt-file preservation
+  passed. Tests use isolated settings files, not the user's preferences.
+- Synthetic speech -> sample conversion -> actual recognizer -> enabled command
+  processing/replacement -> actual native text field matched exactly.
+- Physical default and explicit endpoint recording, non-retaining preview,
+  nonexistent endpoint rejection and restart recovery passed. No captured speech
+  from these hardware probes was saved.
+- Actual HKCU autostart registration/readback/removal passed, restoring the prior
+  registration in finally. Actual login is not tested. Short tones were invoked;
+  audibility across output devices remains a manual check.
+- Hold, toggle, double-tap and repeat suppression state-machine tests passed;
+  no physical shortcut injection implied. Actual top/bottom HUD positioning,
+  150 settings resizes, menu/HUD/recovery regression checks passed.
+- Isolated clean/forced/fault child-process exits produce the correct next-start
+  report state; message/path redaction, defer/discard, corrupt/unwritable marker
+  handling and large-URL fallback tested. No report was sent.
+- CoreSmoke passed. Native UI renders at 200% were visually inspected, including
+  tabs, the multiline editor and crash preview; real mixed-monitor DPI remains open.
+
+Before broader rollout: physical unplug/replug and sleep/resume, longer everyday
+use of the new recorder, actual login, Windows 11, large text/high contrast and
+mixed-monitor checks; signing/update policy and #20 transition work remain open.

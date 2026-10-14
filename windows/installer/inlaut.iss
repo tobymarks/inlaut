@@ -47,3 +47,6 @@ Name: "{autodesktop}\inlaut Beta"; Filename: "{app}\Inlaut.exe"; Tasks: desktopi
 
 [Run]
 Filename: "{app}\Inlaut.exe"; Description: "inlaut Beta starten"; Flags: nowait postinstall skipifsilent
+
+[Registry]
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueName: "inlaut"; Flags: dontcreatekey uninsdeletevalue

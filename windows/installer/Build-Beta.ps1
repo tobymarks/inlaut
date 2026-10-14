@@ -32,7 +32,7 @@ foreach ($name in $hashes.Keys) {
     else { Invoke-WebRequest -Uri "$modelUrl/$name" -OutFile $target }
     if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $hashes[$name]) { throw "Model checksum mismatch: $name" }
 }
-foreach ($name in @('README.md', 'HANDOFF.md', 'MODEL_EVALUATION.md')) {
+foreach ($name in @('README.md', 'HANDOFF.md', 'MODEL_EVALUATION.md', 'UX_REVIEW.md', 'CRASH_REPORTS.md')) {
     Copy-Item -LiteralPath (Join-Path $windowsRoot $name) -Destination $payload
 }
 Copy-Item -LiteralPath (Join-Path $repoRoot 'LICENSE') -Destination $payload

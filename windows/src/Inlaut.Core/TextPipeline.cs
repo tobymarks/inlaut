@@ -6,10 +6,14 @@ public class TextPipeline
     public bool VoiceCommandsEnabled { get; set; } = true;
     public bool SharpSEnabled { get; set; } = true;
     public List<Replacement> ReplacementsList { get; set; } = [];
+    public List<Snippet> Snippets { get; set; } = [];
 
     public string ProcessDictation(string raw)
     {
         if (string.IsNullOrWhiteSpace(raw)) return "";
+        string key = Snippet.Key(raw);
+        var snippet = key.Length == 0 ? null : Snippets.FirstOrDefault(s => Snippet.Key(s.Phrase) == key);
+        if (snippet != null) return snippet.Text; // Exact literal payload, including whitespace.
 
         string text = raw;
 

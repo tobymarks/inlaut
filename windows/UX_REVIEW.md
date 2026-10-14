@@ -58,3 +58,13 @@ future features. Preserve per-app considerations from #17 and boundary work #20.
 For each added setting, verify immediate effect, restart persistence, accessible
 label/focus order, small-window/DPI layout, and safe behavior during recording.
 Keep synthetic tests separate from private recordings and user settings.
+
+## Beta.5 implementation update
+
+The settings recommendations above were implemented in beta.5, including grouped
+controls, device selection/test, persisted text options/rules, literal snippets
+and Mac-schema import/export, top/bottom indicator, sounds and per-user startup.
+See HANDOFF.md for exact test evidence and limits, and CRASH_REPORTS.md for the
+new explicitly opt-in reporting flow. Original audit tables describe the beta.4
+baseline; language/model choices, tidying/self-corrections, trusted automatic
+updates and cross-dictation boundaries remain separate work.

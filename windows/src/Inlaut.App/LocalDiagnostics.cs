@@ -14,6 +14,7 @@ internal static class LocalDiagnostics
 
     public static void Write(string stage, object metrics)
     {
+        CrashJournal.Current.NoteStage(stage);
         try
         {
             lock (Gate)

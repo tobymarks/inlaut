@@ -19,7 +19,7 @@ public static class Replacements
 
             // Whole-word matching ignoring case
             var pattern = $@"(?<![\p{{L}}\p{{N}}]){Regex.Escape(rule.From)}(?![\p{{L}}\p{{N}}])";
-            result = Regex.Replace(result, pattern, rule.To ?? "", RegexOptions.IgnoreCase);
+            result = Regex.Replace(result, pattern, _ => rule.To ?? "", RegexOptions.IgnoreCase);
         }
 
         return result;

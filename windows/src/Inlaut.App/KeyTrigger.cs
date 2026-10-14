@@ -8,6 +8,7 @@ public class KeyTrigger : IDisposable
 {
     public Action? OnStart { get; set; }
     public Action? OnStop { get; set; }
+    public string Mode { get; set; } = "combined";
 
     private uint _triggerVkCode;
     private Action<uint>? _captureCallback;
@@ -23,9 +24,10 @@ public class KeyTrigger : IDisposable
     public bool IsSuspended
     {
         get => _isSuspended;
-        set { _isSuspended = value; _phase = Phase.Idle; _lastTapAt = DateTime.MinValue; _ignoreNextRelease = false; _holdTimer?.Stop(); }
+        set { _isSuspended = value; _phase = Phase.Idle; _keyDown = false; _lastTapAt = DateTime.MinValue; _ignoreNextRelease = false; _holdTimer?.Stop(); }
     }
     private bool _ignoreNextRelease = false;
+    private bool _keyDown;
 
     private IntPtr _hookId = IntPtr.Zero;
     private NativeMethods.LowLevelKeyboardProc? _proc;
@@ -43,6 +45,7 @@ public class KeyTrigger : IDisposable
     public void UpdateTriggerKey(uint newVkCode)
     {
         _triggerVkCode = newVkCode;
+        _keyDown = false;
         _phase = Phase.Idle;
         _holdTimer?.Stop();
     }
@@ -174,6 +177,8 @@ public class KeyTrigger : IDisposable
 
     private void HandleKeyDown()
     {
+        if (_keyDown) return;
+        _keyDown = true;
         // Ignore key repeat while holding
         if (_phase == Phase.Holding || _phase == Phase.Pressed)
         {
@@ -190,8 +195,17 @@ public class KeyTrigger : IDisposable
             return;
         }
 
+        if (Mode == "toggle")
+        {
+            _phase = Phase.HandsFree;
+            _ignoreNextRelease = true;
+            _lastTapAt = DateTime.MinValue;
+            TriggerStart();
+            return;
+        }
+
         // Check for double-tap from idle
-        if (_phase == Phase.Idle && (DateTime.UtcNow - _lastTapAt) < _doubleTapWindow)
+        if (Mode == "combined" && _phase == Phase.Idle && (DateTime.UtcNow - _lastTapAt) < _doubleTapWindow)
         {
             _phase = Phase.HandsFree;
             _ignoreNextRelease = true;
@@ -208,6 +222,7 @@ public class KeyTrigger : IDisposable
 
     private void HandleKeyUp()
     {
+        _keyDown = false;
         if (_ignoreNextRelease)
         {
             _ignoreNextRelease = false;
