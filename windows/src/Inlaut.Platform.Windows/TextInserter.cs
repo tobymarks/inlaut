@@ -28,7 +28,7 @@ public static class TextInserter
                         wScan = c,
                         dwFlags = NativeMethods.KEYEVENTF_UNICODE,
                         time = 0,
-                        dwExtraInfo = IntPtr.Zero
+                        dwExtraInfo = UIntPtr.Zero
                     }
                 }
             });
@@ -45,7 +45,7 @@ public static class TextInserter
                         wScan = c,
                         dwFlags = NativeMethods.KEYEVENTF_UNICODE | NativeMethods.KEYEVENTF_KEYUP,
                         time = 0,
-                        dwExtraInfo = IntPtr.Zero
+                        dwExtraInfo = UIntPtr.Zero
                     }
                 }
             });
