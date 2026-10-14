@@ -10,12 +10,17 @@ internal sealed class FluentMenu : ContextMenuStrip
         ShowCheckMargin = false;
         Font = WindowsTheme.Font();
         Renderer = new FluentMenuRenderer();
-        Opening += (_, _) =>
-        {
-            WindowsTheme.Refresh();
-            Prepare(this, Font);
-            LocalDiagnostics.Write("menu-layout", new { dpi = DeviceDpi, fontPoints = Font.SizeInPoints });
-        };
+    }
+
+    protected override void OnOpening(System.ComponentModel.CancelEventArgs e)
+    {
+        // Consumers update status, shortcut and recording glyph in Opening.
+        // Measure only after those updates, including on subsequent openings.
+        base.OnOpening(e);
+        if (e.Cancel) return;
+        WindowsTheme.Refresh();
+        Prepare(this, Font);
+        LocalDiagnostics.Write("menu-layout", new { dpi = DeviceDpi, fontPoints = Font.SizeInPoints });
     }
 
     private static void Prepare(ToolStripDropDown menu, Font font)
@@ -65,16 +70,27 @@ internal sealed class FluentMenu : ContextMenuStrip
         menu.Size = new Size(width, totalHeight);
     }
 
-    private static Bitmap Glyph(string glyph, int pixels)
+    internal static Bitmap Glyph(string glyph, int pixels)
     {
         var bitmap = new Bitmap(pixels, pixels);
         bitmap.SetResolution(96, 96);
         using var graphics = Graphics.FromImage(bitmap);
-        using var font = new Font(WindowsTheme.IconFamily, pixels, FontStyle.Regular, GraphicsUnit.Pixel);
+        using var family = new FontFamily(WindowsTheme.IconFamily);
         using var ink = new SolidBrush(WindowsTheme.Text);
-        using var format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-        graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-        graphics.DrawString(glyph, font, ink, new RectangleF(0, 0, pixels, pixels), format);
+        // Font em size is not the visible glyph bounds. Fit the actual outline
+        // with a transparent safety inset so ascenders/descenders never clip.
+        using var outline = new GraphicsPath();
+        outline.AddString(glyph, family, (int)FontStyle.Regular, pixels, PointF.Empty, StringFormat.GenericTypographic);
+        var bounds = outline.GetBounds();
+        if (bounds.Width <= 0 || bounds.Height <= 0) return bitmap;
+        float inset = Math.Max(2, pixels * .1f);
+        float factor = Math.Min((pixels - 2 * inset) / bounds.Width, (pixels - 2 * inset) / bounds.Height);
+        using var transform = new Matrix(factor, 0, 0, factor,
+            (pixels - bounds.Width * factor) / 2 - bounds.Left * factor,
+            (pixels - bounds.Height * factor) / 2 - bounds.Top * factor);
+        outline.Transform(transform);
+        graphics.SmoothingMode = SmoothingMode.AntiAlias;
+        graphics.FillPath(ink, outline);
         return bitmap;
     }
 

@@ -18,6 +18,22 @@ internal static class Program
         {
             try
             {
+                foreach (int pixels in new[] { 20, 25, 30, 35, 40, 50, 60 })
+                foreach (string glyph in new[] { "\uE720", "\uE71A", "\uE713", "\uE8A5", "\uE897", "\uE8B7", "\uE9D9", "\uE946", "\uE7E8" })
+                {
+                    using var icon = FluentMenu.Glyph(glyph, pixels);
+                    bool hasInk = false;
+                    for (int y = 0; y < pixels; y++)
+                    for (int x = 0; x < pixels; x++)
+                    {
+                        if (icon.GetPixel(x, y).A == 0) continue;
+                        hasInk = true;
+                        if (x == 0 || y == 0 || x == pixels - 1 || y == pixels - 1)
+                            throw new Exception($"Clipped menu icon {glyph} at {pixels}px");
+                    }
+                    if (!hasInk) throw new Exception("Empty menu icon");
+                }
+                Console.WriteLine("PASS: all nine menu glyphs have unclipped ink at 100–300% sizes");
                 using (var indicator = new RecordingIndicatorForm())
                 {
                     indicator.ShowMessage("Keine Sprache erkannt", 100);
@@ -41,6 +57,11 @@ internal static class Program
                 using (var settings = new SettingsForm(new AppSettings(), trigger, () => { }))
                 {
                     settings.Show();
+                    using (var bitmap = new Bitmap(settings.Width, settings.Height))
+                    {
+                        settings.DrawToBitmap(bitmap, new Rectangle(Point.Empty, settings.Size));
+                        bitmap.Save(Path.Combine(AppContext.BaseDirectory, "settings-native.png"));
+                    }
                     var keyLabel = Descendants(settings).OfType<Label>()
                         .Single(label => label.Text.StartsWith("Aktuelle Taste:"));
                     for (int i = 0; i < 150; i++)

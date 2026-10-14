@@ -374,3 +374,19 @@ unsigned status (possible Windows launch warnings), supported test environment,
 Office multiline requirements and known input/formatting limits. Windows signing
 remains open and is independent of macOS Developer ID/notarization. This assessment
 is not a claim that publication, final download verification or signing is done.
+
+## Tray icon fix and settings UX review — beta.4
+
+Fixed clipping by fitting actual glyph outlines into a padded bitmap instead of
+using font em size as image bounds. Menu layout now runs after current status,
+recording icon and shortcut updates. UiSmoke passed: nine glyphs at seven sizes
+(100–300%) have visible ink with transparent outer borders; image/text separation,
+150 settings resizes, status timer and recovery-view checks passed. Native main
+and submenu renders visually inspected at this machine's 200% DPI. Actual mixed-
+monitor placement remains unverified. No recognition/input behavior changed.
+
+See UX_REVIEW.md for the heuristic settings audit, Mac parity matrix and priorities.
+The audit identifies missing input-method controls, persisted voice-command/ß
+switches, microphone/model status, device selection, key-conflict feedback and
+save-error handling. Existing capabilities and future backend work are separated.
+Settings expansion is proposed, not implemented in beta.4.
