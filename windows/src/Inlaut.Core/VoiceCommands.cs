@@ -38,10 +38,6 @@ public static class VoiceCommands
         }
 
         string last = Capitalize(text[cursor..].Trim());
-        if (WordCount(last) <= 4 && last.EndsWith('.'))
-        {
-            last = last[..^1]; // Sign-off rule
-        }
         outText.Append(last);
 
         var result = outText.ToString();
@@ -49,7 +45,8 @@ public static class VoiceCommands
         {
             result = result.Replace("\n\n\n", "\n\n");
         }
-        return result.Trim();
+        // Edge breaks can be intentional commands in a subsequent dictation.
+        return result.Trim(' ', '\t', '\r');
     }
 
     private static string FinishLine(string raw, string punctuationBefore, bool capitalize)
@@ -60,6 +57,8 @@ public static class VoiceCommands
 
         char last = line[^1];
         if (".!?:;,".Contains(last)) return line;
+        string explicitPunctuation = punctuationBefore.Trim();
+        if (explicitPunctuation.Length > 0) return line + explicitPunctuation;
 
         // If line is short (salutation/closing like 'Viele Grüße'), keep comma
         if (WordCount(line) <= 4)

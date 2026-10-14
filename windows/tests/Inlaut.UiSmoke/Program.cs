@@ -33,6 +33,8 @@ internal static class Program
             {
                 await SettingsChecks.Run(host, trigger, args.Contains("--hardware"));
                 await CrashChecks.Run();
+                await UpdateChecks.Run();
+                if (args.Contains("--transitions")) await TransitionChecks.Run(host);
                 foreach (int pixels in new[] { 20, 25, 30, 35, 40, 50, 60 })
                 foreach (string glyph in new[] { "\uE720", "\uE71A", "\uE713", "\uE8A5", "\uE897", "\uE8B7", "\uE9D9", "\uE946", "\uE7E8" })
                 {

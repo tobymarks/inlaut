@@ -60,3 +60,13 @@ or saved. Nothing is automatically sent. Preparing a GitHub issue asks for
 explicit transfer consent; the final public submission is in the browser.
 Reports contain no audio, dictated text, text rules or exception messages/paths.
 See CRASH_REPORTS.md for details. Normal diagnostics remain metadata-only.
+
+### Beta.6 updates
+Windows can check for updates daily after you enable it, or manually through Help.
+Downloads/installations require a click. The first public build and its update helper
+must be signed with SignPath before secure in-app upgrades can work. Unsigned local
+test builds intentionally refuse update installation. See UPDATES.md for release
+qualification, signed feed generation and the beta-to-stable rollout procedure.
+Spoken line/paragraph commands now retain leading/trailing breaks and explicit
+punctuation. Automatic spacing/capitalization using preceding cursor text remains
+under investigation; a new native two-dictation test suite documents the limits.

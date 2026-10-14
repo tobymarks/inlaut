@@ -448,3 +448,48 @@ Validation on this Windows machine:
 Before broader rollout: physical unplug/replug and sleep/resume, longer everyday
 use of the new recorder, actual login, Windows 11, large text/high contrast and
 mixed-monitor checks; signing/update policy and #20 transition work remain open.
+
+## Signed-update preparation and transition regression — beta.6 (2026-10-15)
+
+User selected SignPath.io for Windows signing. Implemented a daily opt-in update
+check and manual check, beta/stable channels with beta-to-final promotion, bounded
+HTTPS feed/download, progress/cancellation, SHA-256 and Authenticode checks, exact
+installed-certificate trust, and a separately built single-file helper that waits
+for clean app exit, verifies again, installs to the same directory and restarts.
+No installation during recording/transcription or while settings are open. No
+background download/install, no telemetry and no crash-report upload. See UPDATES.md
+for the protocol, signing order, feed generation and certificate-rotation caveat.
+New-UpdateManifest.ps1 refuses unsigned or mismatched packages. No production feed,
+website deployment, signed artifact or public release has been published.
+
+The updater's complete successful signed upgrade remains a release gate: this
+machine currently has unsigned development builds. Sign app and helper, package,
+then sign installer with the same SignPath certificate; test two signed versions
+before website rollout. Signature rejection is intentional, not bypassed for tests.
+Tests cover semantic versions (including beta.9/beta.10), beta-to-final, channels,
+downgrade rejection, invalid/oversized feeds, 404/offline, download/cancellation,
+untrusted redirects, existing-file preservation, size/hash mismatches, unsigned
+package/app rejection and busy UI gating. The helper builds independently. Real
+installer failure/restart and power-loss recovery still need signed qualification.
+
+Further native transition testing uses two real insertions in an isolated RichTextBox,
+not just string concatenation. It uncovered leading/trailing spoken line/paragraph
+commands being stripped and explicit punctuation disappearing around short lines.
+Fixed Windows VoiceCommands/TextPipeline trimming and punctuation handling; pure
+line/paragraph commands now reach insertion. Direct multiline input remains limited
+to native editors; Office/web paths still need the existing clipboard option.
+15 native cases plus selection replacement and moved-cursor probes are covered.
+Four desired context corrections remain open in #20: separation/capitalization
+after a sentence, capitalization after a space/newline, and continuation spacing.
+No guesses are made from stale previous dictations or shared browser window handles.
+
+Mac transfer: Sources/VoiceCommands.swift currently trims .whitespacesAndNewlines
+and removes the final period from short lines (code inspection only). Reuse the
+synthetic CoreSmoke/TransitionChecks cases on Mac and adapt those behaviors there;
+macOS code has not been changed or run in this Windows session.
+
+Website German and English privacy text now distinguishes local normal dictation,
+last-dictation memory, stored rules, optional local test captures, local crash reports,
+explicit GitHub handoff/public posting, update-check/download connection metadata,
+and Windows certificate validation. This is a source change, not a live deployment
+or a claim of completed legal review.

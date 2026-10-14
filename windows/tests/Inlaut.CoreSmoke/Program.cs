@@ -12,6 +12,9 @@ var commands = new TextPipeline();
 if (commands.ProcessDictation("Erste Zeile neue Zeile zweite Zeile neuer Absatz letzter Absatz") != "Erste Zeile\nZweite Zeile\n\nLetzter Absatz")
     throw new Exception("German line/paragraph commands differ.");
 Console.WriteLine("PASS: German new-line and new-paragraph commands produce expected breaks");
+foreach (var pair in new[] { ("neue Zeile", "\n"), ("neuer Absatz", "\n\n"), ("neue Zeile Zweite Zeile.", "\nZweite Zeile."), ("Hallo. neuer Absatz Danke.", "Hallo.\n\nDanke."), ("Ende neue Zeile", "Ende\n") })
+    if (commands.ProcessDictation(pair.Item1) != pair.Item2) throw new Exception("Edge command or explicit punctuation lost");
+Console.WriteLine("PASS: standalone and edge line/paragraph commands and explicit punctuation preserved");
 
 foreach (int dpi in new[] { 96, 120, 144, 168, 192, 240, 288 })
 {

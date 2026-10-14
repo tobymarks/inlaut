@@ -28,6 +28,11 @@ public class InlautTrayApplicationContext : ApplicationContext
     private string? _captureRoot;
     private Icon _defaultIcon = null!;
     private Icon _recordingIcon = null!;
+    private readonly System.Windows.Forms.Timer _updateTimer = new() { Interval = 60_000 };
+    private UpdateForm? _updateForm;
+    private bool _checkingUpdates;
+    private UpdateManifest? _availableUpdate;
+    private DateTimeOffset _lastUpdateAttempt;
 
     public InlautTrayApplicationContext()
     {
@@ -98,6 +103,7 @@ public class InlautTrayApplicationContext : ApplicationContext
         helpItem.DropDownItems.Add(captureItem);
         var reportItem = FluentMenu.Item("Letzten Fehlerbericht ansehen…", "\uE9D9", (_, _) => new CrashReportForm(CrashJournal.Current).Show());
         helpItem.DropDownItems.Add(reportItem);
+        helpItem.DropDownItems.Add(FluentMenu.Item("Nach Updates suchen…", "\uE895", (_, _) => OpenUpdates()));
         helpItem.DropDownItems.Add(new ToolStripSeparator());
         helpItem.DropDownItems.Add(FluentMenu.Item("Über inlaut", "\uE946", (_, _) => ShowAbout()));
         contextMenu.Items.AddRange(new ToolStripItem[]
@@ -131,6 +137,16 @@ public class InlautTrayApplicationContext : ApplicationContext
         };
 
         _notifyIcon.DoubleClick += (s, e) => ToggleDictation();
+        _notifyIcon.BalloonTipClicked += (_, _) => { if (_availableUpdate != null) OpenUpdates(); };
+        try
+        {
+            string path = Path.Combine(UpdateForm.CacheRoot, "last-check.txt");
+            if (File.Exists(path)) DateTimeOffset.TryParse(File.ReadAllText(path), out _lastUpdateAttempt);
+            if (_lastUpdateAttempt > DateTimeOffset.UtcNow) _lastUpdateAttempt = DateTimeOffset.MinValue;
+        }
+        catch { }
+        _updateTimer.Tick += async (_, _) => await CheckUpdatesAutomatically();
+        _updateTimer.Start();
 
         // 1. Single Key Hold-to-Talk & Double-Tap Hands-Free
         _keyTrigger.OnStart = () => StartDictation();
@@ -353,7 +369,7 @@ public class InlautTrayApplicationContext : ApplicationContext
             });
             if (captureFailed)
                 _notifyIcon.ShowBalloonTip(4000, "Testaufnahme nicht vollständig gespeichert", "Bitte freien Speicherplatz und den Diagnoseordner prüfen. Das Diktieren bleibt verfügbar.", ToolTipIcon.Warning);
-            if (string.IsNullOrWhiteSpace(processed))
+            if (processed.Length == 0)
             {
                 statusMessage = "Keine Sprache erkannt";
                 return;
@@ -388,7 +404,7 @@ public class InlautTrayApplicationContext : ApplicationContext
         if (_settingsForm == null || _settingsForm.IsDisposed)
         {
             if (_recorder.IsRecording || _isTranscribing) return;
-            _settingsForm = new SettingsForm(_settings, _keyTrigger, UpdateReadyStatus);
+            _settingsForm = new SettingsForm(_settings, _keyTrigger, UpdateReadyStatus, checkUpdates: () => OpenUpdates());
             _settingsForm.FormClosed += (_, _) => _keyTrigger.IsSuspended = false;
         }
 
@@ -426,6 +442,7 @@ public class InlautTrayApplicationContext : ApplicationContext
             return;
         }
         _isExiting = true;
+        _updateTimer.Stop(); _updateTimer.Dispose();
         _settingsForm?.Dispose();
         _keyTrigger.Dispose();
         _indicator.Dispose();
@@ -435,5 +452,45 @@ public class InlautTrayApplicationContext : ApplicationContext
         _notifyIcon.Visible = false;
         _notifyIcon.Dispose();
         ExitThread();
+    }
+
+    private bool CanUpdate() => !_isExiting && !_recorder.IsRecording && !_isTranscribing && (_settingsForm == null || _settingsForm.IsDisposed);
+    private void OpenUpdates()
+    {
+        if (_updateForm is { IsDisposed: false }) { _updateForm.Activate(); return; }
+        _updateForm = new UpdateForm(_settings.BetaUpdates, CanUpdate, Exit,
+            _availableUpdate?.IsNewer(LocalDiagnostics.Version.Split('+')[0], _settings.BetaUpdates) == true ? _availableUpdate : null);
+        _updateForm.Show();
+    }
+    private async Task CheckUpdatesAutomatically()
+    {
+        if (_checkingUpdates || !CanUpdate() || !_isModelReady || _updateForm is { IsDisposed: false }) return;
+        if (!_settings.UpdateConsentAsked)
+        {
+            _keyTrigger.IsSuspended = true;
+            try
+            {
+                bool enabled = MessageBox.Show("Soll inlaut täglich nach Updates suchen?\n\nDabei wird inlaut.de kontaktiert (IP-Adresse und technische Verbindungsdaten, keine Diktate). Downloads von GitHub und Installationen erfolgen erst nach deinem Klick. Du kannst dies in den Einstellungen ändern.", "inlaut aktuell halten", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+                var next = _settings.Clone(); next.UpdateConsentAsked = true; next.AutomaticUpdates = enabled; next.Save(); _settings.CopyFrom(next);
+            }
+            catch (Exception ex) { _settings.UpdateConsentAsked = true; AppDialog.Error("Update-Einstellung nicht gespeichert", ex.Message); }
+            finally { _keyTrigger.IsSuspended = false; }
+        }
+        if (!_settings.AutomaticUpdates || DateTimeOffset.UtcNow - _lastUpdateAttempt < TimeSpan.FromHours(24)) return;
+        _checkingUpdates = true; _lastUpdateAttempt = DateTimeOffset.UtcNow;
+        try
+        {
+            Directory.CreateDirectory(UpdateForm.CacheRoot);
+            File.WriteAllText(Path.Combine(UpdateForm.CacheRoot, "last-check.txt"), _lastUpdateAttempt.ToString("O"));
+            using var client = new UpdateClient(); var result = await client.Check(_settings.BetaUpdates, CancellationToken.None);
+            if (_isExiting || !_settings.AutomaticUpdates) return;
+            if (result?.IsNewer(LocalDiagnostics.Version.Split('+')[0], _settings.BetaUpdates) == true)
+            {
+                _availableUpdate = result;
+                if (CanUpdate()) _notifyIcon.ShowBalloonTip(8000, "inlaut-Update verfügbar", "Version " + result.Version + " · Zum Prüfen und Installieren hier klicken oder Hilfe → Nach Updates suchen öffnen.", ToolTipIcon.Info);
+            }
+        }
+        catch { /* Offline/background failures stay quiet. Manual checks explain errors. */ }
+        finally { _checkingUpdates = false; }
     }
 }

@@ -35,7 +35,7 @@ internal static class SettingsChecks
                 if (original.UseClipboardInsertion || original.Replacements.Count != 0) throw new Exception("Unsaved draft affected live settings.");
                 if (!settings.SaveChanges() || changed != 1 || !startup) throw new Exception("Settings save did not apply.");
                 var loaded = AppSettings.Load(path);
-                if (!loaded.UseClipboardInsertion || loaded.VoiceCommands || loaded.SharpS || !loaded.PlaySounds || !loaded.LaunchAtLogin || loaded.IndicatorPosition != "top" || loaded.TriggerMode != "toggle" || loaded.TriggerVkCode != 0x77)
+                if (!loaded.AutomaticUpdates || !loaded.UpdateConsentAsked || loaded.BetaUpdates || !loaded.UseClipboardInsertion || loaded.VoiceCommands || loaded.SharpS || !loaded.PlaySounds || !loaded.LaunchAtLogin || loaded.IndicatorPosition != "top" || loaded.TriggerMode != "toggle" || loaded.TriggerVkCode != 0x77)
                     throw new Exception("Settings did not survive reload.");
                 var pipeline = new TextPipeline(); loaded.ApplyTo(pipeline);
                 if (pipeline.ProcessDictation("Testwort") != "$1 Euro" || pipeline.ProcessDictation("MEINE SIGNATUR.") != "  Grüße\n\nTeam  " || pipeline.ProcessDictation("neue Zeile") != "neue Zeile")

@@ -17,6 +17,10 @@ if (Test-Path -LiteralPath $payload) { throw "Use a fresh output directory: $pay
 New-Item -ItemType Directory -Path $payload -Force | Out-Null
 & $DotnetPath publish $project -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=false -o $payload
 if ($LASTEXITCODE -ne 0) { throw 'Application publish failed.' }
+$helper = Join-Path $destination 'update-host'
+& $DotnetPath publish (Join-Path $windowsRoot 'src/Inlaut.UpdateHost/Inlaut.UpdateHost.csproj') -c Release -r win-x64 --self-contained true -o $helper
+if ($LASTEXITCODE -ne 0) { throw 'Update helper publish failed.' }
+Copy-Item -LiteralPath (Join-Path $helper 'Inlaut.UpdateHost.exe') -Destination $payload
 $modelTarget = Join-Path $payload 'models'
 New-Item -ItemType Directory -Path $modelTarget | Out-Null
 $hashes = [ordered]@{
@@ -32,7 +36,7 @@ foreach ($name in $hashes.Keys) {
     else { Invoke-WebRequest -Uri "$modelUrl/$name" -OutFile $target }
     if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $hashes[$name]) { throw "Model checksum mismatch: $name" }
 }
-foreach ($name in @('README.md', 'HANDOFF.md', 'MODEL_EVALUATION.md', 'UX_REVIEW.md', 'CRASH_REPORTS.md')) {
+foreach ($name in @('README.md', 'HANDOFF.md', 'MODEL_EVALUATION.md', 'UX_REVIEW.md', 'CRASH_REPORTS.md', 'UPDATES.md')) {
     Copy-Item -LiteralPath (Join-Path $windowsRoot $name) -Destination $payload
 }
 Copy-Item -LiteralPath (Join-Path $repoRoot 'LICENSE') -Destination $payload

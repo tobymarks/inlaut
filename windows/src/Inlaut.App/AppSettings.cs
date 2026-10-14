@@ -15,6 +15,9 @@ public class AppSettings
     public string MicrophoneId { get; set; } = "";
     public bool PlaySounds { get; set; }
     public bool LaunchAtLogin { get; set; }
+    public bool AutomaticUpdates { get; set; }
+    public bool UpdateConsentAsked { get; set; }
+    public bool BetaUpdates { get; set; } = LocalDiagnostics.Version.Split('+')[0].Contains('-');
     public string IndicatorPosition { get; set; } = "bottom";
     public string TriggerMode { get; set; } = "combined";
     public List<Inlaut.Core.Replacement> Replacements { get; set; } = [];

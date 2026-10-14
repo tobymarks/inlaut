@@ -32,7 +32,7 @@ public class TextPipeline
             text = ReplacementsList.Apply(text);
         }
 
-        return text.Trim();
+        return text.Trim(' ', '\t', '\r');
     }
 
 }

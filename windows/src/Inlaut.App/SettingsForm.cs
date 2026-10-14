@@ -26,7 +26,7 @@ public class SettingsForm : FluentForm
     internal string Status => _status.Text;
 
     public SettingsForm(AppSettings settings, KeyTrigger keyTrigger, Action onSettingsChanged,
-        Action<AppSettings>? save = null, Action<bool>? startup = null)
+        Action<AppSettings>? save = null, Action<bool>? startup = null, Action? checkUpdates = null)
     {
         SuspendLayout();
         _settings = settings; _draft = settings.Clone(); _keyTrigger = keyTrigger; _onSettingsChanged = onSettingsChanged;
@@ -109,6 +109,12 @@ public class SettingsForm : FluentForm
         Note(behavior, "Autostart öffnet inlaut im Infobereich. Es beginnt keine Aufnahme. Für einen dauerhaften Autostart die installierte Version verwenden.");
 
         var help = Page(tabs, "Info & Hilfe");
+        Heading(help, "Updates");
+        Check(help, "Täglich automatisch nach Updates suchen", _draft.AutomaticUpdates, v => { _draft.AutomaticUpdates = v; _draft.UpdateConsentAsked = true; });
+        Check(help, "Auch Beta-Versionen anbieten", _draft.BetaUpdates, v => _draft.BetaUpdates = v);
+        Note(help, "Update-Suche: Verbindung zu inlaut.de; Download nach Bestätigung von GitHub. Keine Diktate oder Gerätekennung. Stabile Versionen werden auch im Beta-Kanal angeboten. Installation nach deinem Klick mit anschließendem Neustart.");
+        var updates = new Button { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Text = "Jetzt nach Updates suchen…" };
+        updates.Click += (_, _) => { if (checkUpdates != null) checkUpdates(); }; updates.Enabled = checkUpdates != null; help.Controls.Add(updates);
         Heading(help, "Spracherkennung");
         string modelDir = ModelManager.GetModelDirectory();
         bool available = ModelManager.HasValidModel(modelDir);
@@ -120,7 +126,7 @@ public class SettingsForm : FluentForm
         Note(help, "Die gesonderte Funktion „Testaufnahmen speichern“ unter Hilfe & Diagnose speichert dagegen Audio und Text lokal für bis zu 10 Diktate. Diagnoseprotokolle enthalten sonst nur technische Metadaten.");
         var diagnostics = new Button { AutoSizeMode = AutoSizeMode.GrowAndShrink, Text = "Diagnoseordner öffnen", AutoSize = true }; diagnostics.Click += (_, _) => OpenFolder(LocalDiagnostics.DirectoryPath); help.Controls.Add(diagnostics);
         var feedback = new LinkLabel { Text = "Fehler melden auf GitHub", AutoSize = true }; feedback.LinkClicked += (_, _) => Process.Start(new ProcessStartInfo("https://github.com/tobymarks/inlaut/issues") { UseShellExecute = true }); help.Controls.Add(feedback);
-        Note(help, "Version " + LocalDiagnostics.Version.Split('+')[0] + " · Windows-Beta\nUpdates werden derzeit manuell installiert. Windows-Signierung und automatischer Updateweg sind noch offen.");
+        Note(help, "Version " + LocalDiagnostics.Version.Split('+')[0] + " · Updates werden nur mit gültiger Windows-Signatur und dem vertrauten inlaut-Zertifikat installiert.");
         if (AppSettings.LoadWarning != null) SetStatus(AppSettings.LoadWarning, true);
         FormClosing += (_, e) =>
         {
