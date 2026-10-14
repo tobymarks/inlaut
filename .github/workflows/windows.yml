@@ -1,0 +1,55 @@
+name: Windows Build
+
+on:
+  push:
+    paths:
+      - 'windows/**'
+      - '.github/workflows/windows.yml'
+  pull_request:
+    paths:
+      - 'windows/**'
+      - '.github/workflows/windows.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build inlaut Windows CLI & Core
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore windows/Inlaut.sln
+
+      - name: Build Solution
+        run: dotnet build windows/Inlaut.sln -c Release --no-restore
+
+      - name: Publish Inlaut.Cli (Self-Contained win-x64)
+        run: >
+          dotnet publish windows/src/Inlaut.Cli/Inlaut.Cli.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          -p:PublishReadyToRun=false
+          -o publish/inlaut-windows-x64
+
+      - name: Copy helper scripts
+        shell: pwsh
+        run: |
+          Copy-Item "windows/scripts/run-prototype.bat" -Destination "publish/inlaut-windows-x64/"
+          Copy-Item "windows/README.md" -Destination "publish/inlaut-windows-x64/"
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: inlaut-windows-x64
+          path: publish/inlaut-windows-x64/
