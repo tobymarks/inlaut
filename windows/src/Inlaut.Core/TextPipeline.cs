@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace Inlaut.Core;
 
 public class TextPipeline
@@ -13,6 +15,9 @@ public class TextPipeline
 
         string text = raw;
 
+        // 1. Sanitize transducer/decoder silence artifacts (e.g. repeated "???", "....", "eeee")
+        text = SanitizeArtifacts(text);
+
         if (VoiceCommandsEnabled)
         {
             text = VoiceCommands.Apply(text, Languages);
@@ -27,6 +32,22 @@ public class TextPipeline
         {
             text = ReplacementsList.Apply(text);
         }
+
+        return text.Trim();
+    }
+
+    public static string SanitizeArtifacts(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "";
+
+        // Collapse repeated punctuation: "?????" -> "?", "....." -> "."
+        text = Regex.Replace(text, @"([\?\!\.\,\;\:\-])\1+", "$1");
+
+        // Collapse 3 or more repeated letters/characters: "eeeeeee" -> "ee"
+        text = Regex.Replace(text, @"(.)\1{2,}", "$1$1");
+
+        // Clean up spaces before punctuation: "Jetzt ," -> "Jetzt,"
+        text = Regex.Replace(text, @"\s+([\?\!\.\,\;\:])", "$1");
 
         return text;
     }

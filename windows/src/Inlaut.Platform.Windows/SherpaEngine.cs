@@ -7,19 +7,24 @@ public class SherpaEngine : IDisposable
 {
     private readonly OfflineRecognizer _recognizer;
 
-    public SherpaEngine(string modelDir, string provider = "cpu", int threads = 4)
+    public SherpaEngine(string modelDir)
     {
-        var config = new OfflineRecognizerConfig();
-        config.ModelConfig.Provider = provider;
-        config.ModelConfig.NumThreads = threads;
-        config.ModelConfig.Debug = 0;
-        config.DecodingMethod = "greedy_search";
+        if (!Directory.Exists(modelDir))
+        {
+            throw new DirectoryNotFoundException($"Model directory not found: {modelDir}");
+        }
 
         string tokensPath = Path.Combine(modelDir, "tokens.txt");
-        if (File.Exists(tokensPath))
+        if (!File.Exists(tokensPath))
         {
-            config.ModelConfig.Tokens = tokensPath;
+            throw new FileNotFoundException($"Tokens file not found at: {tokensPath}");
         }
+
+        var config = new OfflineRecognizerConfig();
+        config.ModelConfig.Tokens = tokensPath;
+        config.ModelConfig.NumThreads = Math.Max(2, Environment.ProcessorCount / 2);
+        config.ModelConfig.Debug = 0;
+        config.ModelConfig.Provider = "cpu";
 
         // 1. Check for NeMo Transducer model (Encoder, Decoder, Joiner) - Preferred for German STT
         string encoder = Path.Combine(modelDir, "encoder.int8.onnx");
@@ -37,6 +42,10 @@ public class SherpaEngine : IDisposable
             config.ModelConfig.Transducer.Decoder = decoder;
             config.ModelConfig.Transducer.Joiner = joiner;
             config.ModelConfig.ModelType = "nemo_transducer";
+            
+            // Use modified_beam_search to prevent repetition loops during silence/pauses
+            config.DecodingMethod = "modified_beam_search";
+            config.MaxActivePaths = 4;
         }
         else
         {
@@ -48,6 +57,7 @@ public class SherpaEngine : IDisposable
             {
                 config.ModelConfig.NeMoCtc.Model = ctcModel;
                 config.ModelConfig.ModelType = "nemo_ctc";
+                config.DecodingMethod = "greedy_search";
             }
             else
             {
@@ -69,10 +79,23 @@ public class SherpaEngine : IDisposable
 
     public (string Text, double DurationSec, double DecodeSec, double Rtf) TranscribeSamples(float[] samples, int sampleRate = 16000)
     {
-        double audioSec = (double)samples.Length / sampleRate;
+        if (samples == null || samples.Length == 0)
+        {
+            return ("", 0, 0, 0);
+        }
+
+        // Trim leading and trailing silence so joiner does not get stuck in silence emission loops
+        float[] trimmed = AudioTrimmer.TrimSilence(samples, sampleRate);
+        if (trimmed.Length == 0)
+        {
+            // Pure silence or background noise only
+            return ("", 0, 0, 0);
+        }
+
+        double audioSec = (double)trimmed.Length / sampleRate;
 
         using var stream = _recognizer.CreateStream();
-        stream.AcceptWaveform(sampleRate, samples);
+        stream.AcceptWaveform(sampleRate, trimmed);
 
         var sw = Stopwatch.StartNew();
         _recognizer.Decode(stream);
@@ -88,5 +111,6 @@ public class SherpaEngine : IDisposable
     public void Dispose()
     {
         _recognizer.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
