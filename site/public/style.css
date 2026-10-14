@@ -196,6 +196,7 @@ kbd { display: inline-block; font: 500 11px/1.5 var(--font-ui); padding: 3px 7px
 .project p { color: var(--muted); font-size: 15px; margin: 0 0 20px; max-width: 45em; }
 footer { padding-block: 26px 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
 footer .wrap { display: flex; gap: 20px; align-items: center; justify-content: space-between; }
+footer nav { display: flex; gap: 16px 24px; align-items: center; flex-wrap: wrap; }
 footer nav a { font-size: 12px; }
 .social { display: flex; gap: 14px; }
 .social a { display: inline-grid; place-items: center; width: 32px; height: 32px; color: var(--muted); transition: color 180ms; }
