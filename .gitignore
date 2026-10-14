@@ -14,3 +14,7 @@ site/.wrangler/
 site/www-redirect/.wrangler/
 NEXT-SESSION.txt
 metrics/
+
+# private, never public: outreach contacts and replies, machine-specific notes
+design/outreach/
+CLAUDE.local.md
