@@ -10,9 +10,16 @@ namespace Inlaut.Platform.Windows;
 /// acknowledgement: queued events can cross a concurrent focus change.</summary>
 public static class DirectTextInserter
 {
+    public readonly record struct InputTarget(IntPtr Window, IntPtr Control);
+    public static InputTarget CaptureTarget() => Focus();
+    public static void RequireTarget(InputTarget target)
+    {
+        if (Focus() != target)
+            throw new InvalidOperationException("Das Eingabefeld hat sich seit Beginn des Diktats geändert. Es wurde kein neuer Einfügeversuch gestartet.");
+    }
     private static readonly SemaphoreSlim Gate = new(1, 1);
 
-    public static async Task<string> InsertAsync(string text, CancellationToken cancellationToken = default, bool forcePacketForTest = false)
+    public static async Task<string> InsertAsync(string text, CancellationToken cancellationToken = default, bool forcePacketForTest = false, InputTarget? expectedTarget = null)
     {
         if (string.IsNullOrEmpty(text)) return "none";
         if (!await Gate.WaitAsync(0, cancellationToken))
@@ -20,7 +27,8 @@ public static class DirectTextInserter
         int inserted = 0;
         try
         {
-            var target = Focus();
+            var target = expectedTarget ?? Focus();
+            RequireTarget(target);
             var timer = Stopwatch.StartNew();
             while (ModifiersDown())
             {
@@ -139,14 +147,14 @@ public static class DirectTextInserter
             || value.Equals("RICHEDIT50W", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static (IntPtr Window, IntPtr Control) Focus()
+    private static InputTarget Focus()
     {
         IntPtr window = NativeMethods.GetForegroundWindow();
         uint thread = GetWindowThreadProcessId(window, out _);
         var info = new GuiThreadInfo { cbSize = Marshal.SizeOf<GuiThreadInfo>() };
         if (window == IntPtr.Zero || thread == 0 || !GetGUIThreadInfo(thread, ref info) || info.hwndFocus == IntPtr.Zero)
             throw new InvalidOperationException("Kein aktives Eingabefeld gefunden.");
-        return (window, info.hwndFocus);
+        return new InputTarget(window, info.hwndFocus);
     }
 
     private static void AddPair(List<NativeMethods.INPUT> inputs, ushort value, bool unicode)

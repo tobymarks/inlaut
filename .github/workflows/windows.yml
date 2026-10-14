@@ -40,37 +40,23 @@ jobs:
         timeout-minutes: 2
         run: dotnet run --project windows/tests/Inlaut.UiSmoke -c Release
 
-      - name: Publish Inlaut.App (Self-Contained win-x64)
-        run: >
-          dotnet publish windows/src/Inlaut.App/Inlaut.App.csproj
-          -c Release
-          -r win-x64
-          --self-contained true
-          -p:PublishReadyToRun=false
-          -o publish/inlaut-windows
-
-      - name: Bundle German On-Device Model (FastConformer Transducer INT8)
+      - name: Install pinned Inno Setup compiler
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "publish/inlaut-windows/models"
-          $baseUrl = "https://huggingface.co/csukuangfj/sherpa-onnx-nemo-transducer-stt_de_fastconformer_hybrid_large_pc-int8/resolve/main"
-          Write-Host "Downloading German FastConformer Transducer tokens..."
-          Invoke-WebRequest -Uri "$baseUrl/tokens.txt" -OutFile "publish/inlaut-windows/models/tokens.txt"
-          Write-Host "Downloading German FastConformer Transducer encoder (131 MB)..."
-          Invoke-WebRequest -Uri "$baseUrl/encoder.int8.onnx" -OutFile "publish/inlaut-windows/models/encoder.int8.onnx"
-          Write-Host "Downloading German FastConformer Transducer decoder (4 MB)..."
-          Invoke-WebRequest -Uri "$baseUrl/decoder.int8.onnx" -OutFile "publish/inlaut-windows/models/decoder.int8.onnx"
-          Write-Host "Downloading German FastConformer Transducer joiner (1.4 MB)..."
-          Invoke-WebRequest -Uri "$baseUrl/joiner.int8.onnx" -OutFile "publish/inlaut-windows/models/joiner.int8.onnx"
+          $installer = Join-Path $env:RUNNER_TEMP 'innosetup.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $installer
+          if ((Get-FileHash $installer -Algorithm SHA256).Hash -ne '9C73C3BAE7ED48D44112A0F48E66742C00090BDB5BEF71D9D3C056C66E97B732') { throw 'Compiler checksum mismatch' }
+          $compilerDir = Join-Path $env:RUNNER_TEMP 'inno'
+          $process = Start-Process $installer -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/CURRENTUSER', '/NOICONS', "/DIR=`"$compilerDir`"") -Wait -PassThru -WindowStyle Hidden
+          if ($process.ExitCode -ne 0) { throw "Compiler installation failed: $($process.ExitCode)" }
 
-      - name: Copy Documentation
+      - name: Build verified app and per-user beta installer
         shell: pwsh
-        run: |
-          Copy-Item "windows/README.md", "windows/DESIGN.md", "windows/HANDOFF.md" -Destination "publish/inlaut-windows/"
+        run: ./windows/installer/Build-Beta.ps1 -OutputDirectory ./publish/beta -CompilerPath "$env:RUNNER_TEMP/inno/ISCC.exe"
 
-      - name: Upload Build Artifact
+      - name: Upload app and installer
         uses: actions/upload-artifact@v4
         with:
-          name: inlaut-windows-app
-          path: publish/inlaut-windows/
+          name: inlaut-windows-beta
+          path: publish/beta/
           retention-days: 14

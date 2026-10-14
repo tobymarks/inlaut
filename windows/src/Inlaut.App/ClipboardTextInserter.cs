@@ -9,13 +9,14 @@ public static class ClipboardTextInserter
 {
     // Must run on the UI STA thread. A single paste avoids VK_PACKET bursts that
     // some editors turn into repetitions of the last character.
-    public static async Task InsertAsync(string text)
+    public static async Task InsertAsync(string text, DirectTextInserter.InputTarget? expectedTarget = null)
     {
         if (string.IsNullOrEmpty(text)) return;
         if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
             throw new InvalidOperationException("Clipboard insertion requires the UI thread.");
 
-        var target = NativeMethods.GetForegroundWindow();
+        var target = expectedTarget ?? DirectTextInserter.CaptureTarget();
+        DirectTextInserter.RequireTarget(target);
         var timer = Stopwatch.StartNew();
         while (ModifiersDown())
         {
@@ -24,8 +25,7 @@ public static class ClipboardTextInserter
             await Task.Delay(20);
         }
         await Task.Delay(50);
-        if (target == IntPtr.Zero || target != NativeMethods.GetForegroundWindow())
-            throw new InvalidOperationException("Das aktive Fenster hat sich geändert. Bitte erneut diktieren.");
+        DirectTextInserter.RequireTarget(target);
 
         // Materialize formats before replacing the clipboard: the source's OLE
         // object may no longer serve its data after losing clipboard ownership.
@@ -54,7 +54,8 @@ public static class ClipboardTextInserter
         uint sequence = NativeMethods.GetClipboardSequenceNumber();
         try
         {
-            if (target != NativeMethods.GetForegroundWindow() || ModifiersDown())
+            DirectTextInserter.RequireTarget(target);
+            if (ModifiersDown())
                 throw new InvalidOperationException("Fenster oder gedrückte Tasten haben sich geändert. Bitte erneut diktieren.");
             var keys = new[] { Key(0x11), Key(0x56), Key(0x56, true), Key(0x11, true) };
             uint sent = NativeMethods.SendInput((uint)keys.Length, keys, Marshal.SizeOf<NativeMethods.INPUT>());

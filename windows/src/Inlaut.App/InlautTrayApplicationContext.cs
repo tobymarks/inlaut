@@ -22,6 +22,8 @@ public class InlautTrayApplicationContext : ApplicationContext
     private bool _isModelReady;
     private bool _isTranscribing;
     private bool _isExiting;
+    private DirectTextInserter.InputTarget? _dictationTarget;
+    private string? _lastDictation;
     private int _captureRemaining;
     private string? _captureRoot;
     private Icon _defaultIcon = null!;
@@ -43,6 +45,10 @@ public class InlautTrayApplicationContext : ApplicationContext
         var statusItem = new ToolStripMenuItem("inlaut · Wird vorbereitet") { Enabled = false };
         _dictateMenuItem = FluentMenu.Item("Diktat starten", "\uE720", (_, _) => ToggleDictation());
         var settingsItem = FluentMenu.Item("Einstellungen…", "\uE713", (_, _) => OpenSettings());
+        var lastDictationItem = FluentMenu.Item("Letztes Diktat…", "\uE8A5", (_, _) =>
+        {
+            if (_lastDictation != null) new DictationReviewForm(_lastDictation).Show();
+        });
         var helpItem = new ToolStripMenuItem("Hilfe && Diagnose") { Tag = "\uE897" };
         var clipboardItem = new ToolStripMenuItem("Eingabe per Zwischenablage")
         {
@@ -83,11 +89,12 @@ public class InlautTrayApplicationContext : ApplicationContext
         helpItem.DropDownItems.Add(FluentMenu.Item("Über inlaut", "\uE946", (_, _) => ShowAbout()));
         contextMenu.Items.AddRange(new ToolStripItem[]
         {
-            statusItem, new ToolStripSeparator(), _dictateMenuItem, settingsItem, helpItem,
+            statusItem, new ToolStripSeparator(), _dictateMenuItem, lastDictationItem, settingsItem, helpItem,
             new ToolStripSeparator(), FluentMenu.Item("Beenden", "\uE7E8", (_, _) => Exit())
         });
         contextMenu.Opening += (_, _) =>
         {
+            lastDictationItem.Enabled = _lastDictation != null && !_recorder.IsRecording && !_isTranscribing;
             captureItem.Checked = _captureRemaining > 0;
             captureItem.Enabled = !_recorder.IsRecording && !_isTranscribing;
             clipboardItem.Enabled = !_recorder.IsRecording && !_isTranscribing;
@@ -239,6 +246,7 @@ public class InlautTrayApplicationContext : ApplicationContext
 
         try
         {
+            _dictationTarget = DirectTextInserter.CaptureTarget();
             _recorder.Start();
             _notifyIcon.Icon = _recordingIcon;
             _notifyIcon.Text = _captureRemaining > 0 ? "inlaut - Testaufnahme (Audio + Text werden gespeichert)" : "inlaut - Aufnahme läuft...";
@@ -320,17 +328,20 @@ public class InlautTrayApplicationContext : ApplicationContext
                 return;
             }
             string inputMethod = "clipboard";
+            _lastDictation = processed; // Memory only, replaced by the next recognized dictation.
+            if (_dictationTarget == null) throw new InvalidOperationException("Kein ursprüngliches Eingabefeld verfügbar.");
             if (_settings.UseClipboardInsertion)
-                await ClipboardTextInserter.InsertAsync(processed);
+                await ClipboardTextInserter.InsertAsync(processed, _dictationTarget);
             else
-                inputMethod = await DirectTextInserter.InsertAsync(processed);
+                inputMethod = await DirectTextInserter.InsertAsync(processed, expectedTarget: _dictationTarget);
             LocalDiagnostics.Write("input-sent", new { characters = processed.Length,
                 method = inputMethod });
         }
         catch (Exception ex)
         {
             LocalDiagnostics.Write("failed", new { type = ex.GetType().Name, code = ex.HResult });
-            _notifyIcon.ShowBalloonTip(3000, "inlaut Transkriptionsfehler", ex.Message, ToolTipIcon.Error);
+            _notifyIcon.ShowBalloonTip(5000, "Diktat konnte nicht abgeschlossen werden", ex.Message +
+                (_lastDictation != null ? " Der zuletzt erkannte Text ist im Menü unter „Letztes Diktat“ verfügbar." : ""), ToolTipIcon.Error);
         }
         finally
         {

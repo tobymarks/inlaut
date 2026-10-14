@@ -171,3 +171,41 @@ unrelated user work. Normal UI smoke does not record audio or change saved setti
   original and prepared sample counts and saved transcript matched the decode result.
 - ZIP integrity checked. Native Windows painting, menus and keyboard injection could
   not be executed on macOS. HTML design mockups were illustrations only.
+
+## 0.7.0-beta.1 — installer and original-target protection (2026-10-14)
+
+The app captures the native window/control at recording start and revalidates it
+before both direct and optional clipboard insertion. This closes the previous
+wrong-target window during recognition. It does not distinguish DOM editors with
+one native HWND, nor retract queued keyboard input. Starting from the tray may
+capture the tray as target; use the configured dictation key in the destination.
+
+The tray's "Letztes Diktat…" keeps the last recognized text in memory for explicit
+recovery after failures. No automatic retry, clipboard write or transcript file
+is added. Open review windows retain their text until closed/app exit.
+
+`installer/Build-Beta.ps1` builds a self-contained x64 application and per-user
+Inno Setup installer, using the compact FastConformer model with four fixed
+SHA-256 hashes. The CI compiler download is also hash-pinned. The beta has its
+own stable installer identity; app mutex, user settings and diagnostics are shared
+with portable builds. The installer refuses to install/uninstall while the app
+runs, and does not force-close it. See installer/BETA.md for build and rollback.
+
+Validation on Windows 10 / 192 DPI: CoreSmoke passed; 22 InputSmoke checks passed,
+including both original-target rejection paths, long Unicode input, native
+multiline, undo, readonly, overlap and unchanged clipboard. UI smoke passed 150
+settings resizes, menu icon/text layout and the new readonly recovery view at its
+DPI-adjusted minimum size. The focus-change idle test observed one already queued
+character in the second field: this is a measured case, not a universal bound.
+
+`--external-word` (or word-request.txt) prepares an opt-in long Word test; activate
+only a verified empty disposable document. The harness checks the foreground
+process, not whether a document is disposable. Actual Word validation remains
+open: computer control returned "coordinate input geometry is unavailable".
+The actual Codex field is also unverified. Do not infer these from isolated tests.
+
+General release gates still open: trusted signing, Windows 11/multi-monitor DPI,
+physical microphone unplug/reconnect, standby/resume, extended everyday use,
+actual target-app checks, and a supported update/rollback policy. NuGet security
+advisory retrieval was unavailable (NU1900); compilation and tests succeeded,
+but no successful dependency advisory scan is claimed.

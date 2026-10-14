@@ -37,6 +37,18 @@ internal static class Program
                 }
                 Console.WriteLine("PASS: 150 settings resizes and key-label changes");
 
+                using (var recovery = new DictationReviewForm("Grüße, Straße, 100000!\nZweite Zeile."))
+                {
+                    recovery.Show();
+                    recovery.Size = recovery.MinimumSize;
+                    await Task.Delay(100);
+                    var editor = Descendants(recovery).OfType<RichTextBox>().Single();
+                    if (!editor.ReadOnly || editor.Text != "Grüße, Straße, 100000!\nZweite Zeile." || editor.Height <= 0)
+                        throw new Exception($"Recovery text/layout is invalid: readonly={editor.ReadOnly}, height={editor.Height}, text={editor.Text.Length}, size={recovery.Size}");
+                    recovery.Close();
+                }
+                Console.WriteLine("PASS: recovery view preserves text in a read-only field at minimum size");
+
                 using (var menu = new FluentMenu())
                 {
                     menu.Items.Add(new ToolStripMenuItem("inlaut · Bereit") { Enabled = false });

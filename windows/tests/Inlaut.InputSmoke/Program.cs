@@ -45,19 +45,23 @@ internal static class Program
                     status.Text = "Drei Sprachdateien erkannt und vollständig eingefügt.";
                     return;
                 }
-                if (args.Contains("--external") || File.Exists(Path.Combine(AppContext.BaseDirectory, "external-request.txt")))
+                bool wordTest = args.Contains("--external-word") || File.Exists(Path.Combine(AppContext.BaseDirectory, "word-request.txt"));
+                if (wordTest || args.Contains("--external") || File.Exists(Path.Combine(AppContext.BaseDirectory, "external-request.txt")))
                 {
-                    status.Text = "Warte auf den leeren Windows-Editor (maximal 90 Sekunden).";
+                    string targetProcess = wordTest ? "WINWORD" : "notepad";
+                    status.Text = $"Warte auf ein leeres Testdokument in {targetProcess} (maximal 90 Sekunden).";
                     var deadline = Stopwatch.StartNew();
                     while (deadline.Elapsed.TotalSeconds < 90)
                     {
                         var active = NativeMethods.GetForegroundWindow();
                         GetWindowThreadProcessId(active, out uint pid);
-                        if (pid != 0 && Process.GetProcessById((int)pid).ProcessName.Equals("notepad", StringComparison.OrdinalIgnoreCase))
+                        if (pid != 0 && Process.GetProcessById((int)pid).ProcessName.Equals(targetProcess, StringComparison.OrdinalIgnoreCase))
                         {
-                            const string expected = "Direkte Eingabe ohne Zwischenablage: Grüße, Straße, ÄÖÜ äöü ß, 100000!\nZweite Zeile: vollständig und ohne Wiederholungen. 😀\n";
+                            string expected = wordTest
+                                ? string.Join(" ", Enumerable.Repeat("inlaut-Test: Grüße, Straße, ÄÖÜ äöü ß, 100000! Vollständig und ohne Wiederholungen.", 15))
+                                : "Direkte Eingabe ohne Zwischenablage: Grüße, Straße, ÄÖÜ äöü ß, 100000!\nZweite Zeile: vollständig und ohne Wiederholungen. 😀\n";
                             await DirectTextInserter.InsertAsync(expected);
-                            results.Add(new { mode = "external-notepad-sent", expected, clipboardUnchanged = clipboard == NativeMethods.GetClipboardSequenceNumber() });
+                            results.Add(new { mode = "external-sent", targetProcess, expected, clipboardUnchanged = clipboard == NativeMethods.GetClipboardSequenceNumber() });
                             status.Text = "Testtext gesendet. Ergebnis bitte im Editor prüfen.";
                             File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "external-results.json"), JsonSerializer.Serialize(results));
                             return;
@@ -123,6 +127,17 @@ internal static class Program
                     if (!replaced || !undo || !protectedField) throw new Exception("Auswahl, Rückgängig oder Schreibschutz fehlgeschlagen.");
                 }
                 plain.Clear(); rich.Clear(); plain.Focus();
+                var originalTarget = DirectTextInserter.CaptureTarget();
+                rich.Focus();
+                foreach (bool packets in new[] { false, true })
+                {
+                    bool rejected = false;
+                    try { await DirectTextInserter.InsertAsync("NICHT IM NEUEN FELD", forcePacketForTest: packets, expectedTarget: originalTarget); }
+                    catch (InvalidOperationException) { rejected = plain.Text.Length == 0 && rich.Text.Length == 0; }
+                    results.Add(new { mode = "target-changed-during-recognition", packets, exact = rejected });
+                    if (!rejected) throw new Exception("Original target was not preserved.");
+                }
+                plain.Focus();
                 var insertion = DirectTextInserter.InsertAsync(new string('a', 1000), forcePacketForTest: true);
                 await Task.Delay(500);
                 bool overlapRejected = false;
@@ -131,8 +146,8 @@ internal static class Program
                 rich.Focus();
                 bool focusRejected = false;
                 try { await insertion; } catch (InvalidOperationException) { focusRejected = true; }
-                // SendInput queues events. At most the last accepted scalar can be
-                // dispatched after focus changes; focus checks cannot retract it.
+                // SendInput queues events. This idle test permits one late scalar;
+                // it does not establish that bound for a busy external editor.
                 bool safe = overlapRejected && focusRejected && rich.Text.Length <= 1 && plain.Text.Length < 1000;
                 results.Add(new { mode = "focus-and-overlap-guard", exact = safe, overlapRejected, focusRejected, firstLength = plain.Text.Length, secondLength = rich.Text.Length });
                 if (!safe) throw new Exception("Fokusschutz fehlgeschlagen.");
