@@ -22,6 +22,12 @@ internal static class Program
             uint clipboard = NativeMethods.GetClipboardSequenceNumber();
             try
             {
+                string reliabilityRequest = Path.Combine(AppContext.BaseDirectory, "reliability-request.json");
+                if (File.Exists(reliabilityRequest))
+                {
+                    await ReliabilityChecks.Run(JsonSerializer.Deserialize<ReliabilityChecks.Request>(File.ReadAllText(reliabilityRequest))!, host, plain, rich);
+                    return;
+                }
                 string audioRequest = Path.Combine(AppContext.BaseDirectory, "audio-request.json");
                 if (File.Exists(audioRequest))
                 {
@@ -66,6 +72,15 @@ internal static class Program
                                 : "Direkte Eingabe ohne Zwischenablage: Grüße, Straße, ÄÖÜ äöü ß, 100000!\nZweite Zeile: vollständig und ohne Wiederholungen. 😀\n");
                             var elapsed = Stopwatch.StartNew();
                             var inputTarget = DirectTextInserter.CaptureTarget();
+                            string? recognized = null;
+                            if (officeRequest?.AudioFile != null)
+                            {
+                                if (officeRequest.Model == null) throw new ArgumentException("AudioFile requires Model.");
+                                using var engine = await Task.Run(() => new SherpaEngine(officeRequest.Model, threads: 2));
+                                recognized = (await Task.Run(() => engine.TranscribeFile(officeRequest.AudioFile))).Text;
+                                expected = new Inlaut.Core.TextPipeline().ProcessDictation(recognized);
+                                if (string.IsNullOrWhiteSpace(expected)) throw new Exception("No speech recognized for Office test.");
+                            }
                             var targetClass = new System.Text.StringBuilder(256);
                             GetClassName(inputTarget.Control, targetClass, targetClass.Capacity);
                             string method;
@@ -74,8 +89,8 @@ internal static class Program
                                 await Inlaut.App.ClipboardTextInserter.InsertAsync(expected, inputTarget);
                                 method = "clipboard";
                             }
-                            else method = await DirectTextInserter.InsertAsync(expected);
-                            results.Add(new { mode = "external-sent", targetProcess, targetClass = targetClass.ToString(), expected, method, sentMs = elapsed.ElapsedMilliseconds, clipboardUnchanged = clipboard == NativeMethods.GetClipboardSequenceNumber() });
+                            else method = await DirectTextInserter.InsertAsync(expected, expectedTarget: inputTarget);
+                            results.Add(new { mode = "external-sent", targetProcess, targetClass = targetClass.ToString(), recognized, expected, method, sentMs = elapsed.ElapsedMilliseconds, clipboardUnchanged = clipboard == NativeMethods.GetClipboardSequenceNumber() });
                             status.Text = "Testtext gesendet. Ergebnis bitte im Editor prüfen.";
                             File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "external-results.json"), JsonSerializer.Serialize(results));
                             return;
@@ -180,5 +195,5 @@ internal static class Program
     [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
     private static extern int GetClassName(IntPtr window, System.Text.StringBuilder name, int count);
     private record AudioRequest(string Model, string Audio, string[] Expected);
-    private record OfficeRequest(string Process, string Text, bool UseClipboard = false);
+    private record OfficeRequest(string Process, string Text, bool UseClipboard = false, string? AudioFile = null, string? Model = null);
 }

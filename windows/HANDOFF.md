@@ -263,3 +263,53 @@ fixed text, not microphone-to-Office recognition tests.
 InputSmoke office-request.json now optionally accepts UseClipboard=true, and
 records the target control class. Default remains false. Run only in a verified
 isolated text field and independently compare the resulting document contents.
+
+## Audio-to-Office and repeat/guard tests — 2026-10-14
+
+Test-only changes; installed application remains 0.7.0-beta.3.
+InputSmoke now supports reliability-request.json with Model, Audio and Cycles
+(default 100; 0 runs guard checks only). GenerateReliabilityAudio.ps1 -Destination
+<folder> generates the six WAV fixtures using Microsoft Hedda Desktop, 16 kHz
+mono PCM. Run on Windows with System.Speech and that voice installed. Publish
+InputSmoke, place the request beside the executable, then activate its isolated
+window. Do not type or switch applications during the automated guard checks:
+they synthesize Shift down/up (released in finally), cancellation and focus changes.
+The request has priority over audio-request.json and office-request.json; remove
+it before running Office tests. Results are incrementally saved beside the exe.
+
+100 cycles through one loaded INT8 recognizer (2 CPU threads) completed in 140 s:
+17 short sentences, 17 spoken line/paragraph-command samples, 17 ~77 s samples,
+17 ten-second silences, 16 fifty-millisecond silences, 16 low-amplitude noise
+samples (seed 17, PCM values -30..30). All 51 speech results were stable across
+repeats and matched the inserted field text; all 49 negative samples were empty.
+This is not a representative accuracy benchmark: output equality checks transport,
+repeat equality checks stability, and noise here is below the silence threshold.
+The 50 ms sample is silence, not clipped speech. Maximum decode times were 0.56 s,
+0.60 s and 7.63 s respectively. No microphone capture or physical hotkey tested.
+
+Private bytes: 259 MiB minimum, 1328 MiB after first long sample, 1360 MiB maximum,
+1348 MiB at completion. Maximum working set 1129 MiB. No unbounded growth observed
+in this 140-second run; this does NOT establish leak freedom or low memory use for
+long dictations. Long-audio memory remains a production optimization candidate.
+
+Guard checks passed: cancellation before input (0 chars), cancellation after
+200 ms (23 queued chars delivered), subsequent insertion succeeds; changed target
+rejects direct AND clipboard input before touching a field; held Shift delays
+input until release; Shift during paced input aborts (31 chars delivered), then
+subsequent insertion succeeds. Clipboard sequence unchanged in isolated tests.
+Queued input is not retractable, so partial delivery on interruption is expected.
+
+OfficeRequest additionally accepts AudioFile and Model. It captures the target
+BEFORE recognition and passes that target through both insertion methods. The
+same spoken command sample was recognized, processed and pasted through the
+existing opt-in clipboard path into the owned Word, PowerPoint and Excel test
+files. Global clipboard preference remains false. Independent readback confirmed:
+- Word: exact appended result, with one additional automatic separating space.
+- PowerPoint title: exact appended result with one separating space and U+000B
+  soft line breaks normalized to LF. Native paragraph semantics not established.
+- Excel: first attempt rejected a changed target. Repeat with active F2 cell edit
+  persisted the entire exact result in A5; verified sharedStrings and worksheet
+  XML after saving. Existing A2/A3 were preserved, A4 remained empty.
+This validates file-audio -> recognizer -> text pipeline -> Office, not microphone
+or hotkey capture. Multiline Office still requires opt-in clipboard mode; Excel
+requires cell-edit mode. Arbitrary rich clipboard format preservation unverified.
