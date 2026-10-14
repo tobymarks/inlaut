@@ -18,25 +18,33 @@ public class KeyTrigger : IDisposable
     private readonly TimeSpan _doubleTapWindow = TimeSpan.FromMilliseconds(400);
     private readonly int _holdDelayMs = 220;
 
-    private System.Threading.Timer? _holdTimer;
+    private System.Windows.Forms.Timer? _holdTimer;
+    private bool _isSuspended;
+    public bool IsSuspended
+    {
+        get => _isSuspended;
+        set { _isSuspended = value; _phase = Phase.Idle; _lastTapAt = DateTime.MinValue; _ignoreNextRelease = false; _holdTimer?.Stop(); }
+    }
     private bool _ignoreNextRelease = false;
 
     private IntPtr _hookId = IntPtr.Zero;
     private NativeMethods.LowLevelKeyboardProc? _proc;
-    private readonly SynchronizationContext? _syncContext;
+    private readonly Control _dispatcher;
 
-    public KeyTrigger(uint initialTriggerVkCode = 0xA2) // Default: VK_LCONTROL
+    public KeyTrigger(Control dispatcher, uint initialTriggerVkCode = 0xA2) // Default: VK_LCONTROL
     {
         _triggerVkCode = initialTriggerVkCode;
-        _syncContext = SynchronizationContext.Current;
-        _holdTimer = new System.Threading.Timer(OnHoldTimerFired, null, Timeout.Infinite, Timeout.Infinite);
+        _dispatcher = dispatcher;
+        _ = dispatcher.Handle;
+        _holdTimer = new System.Windows.Forms.Timer { Interval = _holdDelayMs };
+        _holdTimer.Tick += (_, _) => OnHoldTimerFired();
     }
 
     public void UpdateTriggerKey(uint newVkCode)
     {
         _triggerVkCode = newVkCode;
         _phase = Phase.Idle;
-        _holdTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+        _holdTimer?.Stop();
     }
 
     public void SetCaptureMode(Action<uint> callback)
@@ -68,7 +76,7 @@ public class KeyTrigger : IDisposable
             _hookId = IntPtr.Zero;
         }
 
-        _holdTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+        _holdTimer?.Stop();
         _phase = Phase.Idle;
     }
 
@@ -103,6 +111,9 @@ public class KeyTrigger : IDisposable
         if (nCode >= 0)
         {
             var hookStruct = Marshal.PtrToStructure<NativeMethods.KBDLLHOOKSTRUCT>(lParam);
+            // Our paste shortcut and other synthetic input must never trigger dictation.
+            if ((hookStruct.flags & 0x10) != 0)
+                return NativeMethods.CallNextHookEx(_hookId, nCode, wParam, lParam);
             int msg = wParam.ToInt32();
 
             // Key capture mode (for settings window)
@@ -119,9 +130,14 @@ public class KeyTrigger : IDisposable
                     capturedVk = (hookStruct.flags & 0x01) != 0 ? (uint)NativeMethods.VK_RMENU : (uint)NativeMethods.VK_LMENU;
                 }
 
-                _captureCallback(capturedVk);
+                var callback = _captureCallback;
+                _captureCallback = null;
+                Post(() => callback(capturedVk));
                 return (IntPtr)1; // Consume key during capture
             }
+
+            if (IsSuspended)
+                return NativeMethods.CallNextHookEx(_hookId, nCode, wParam, lParam);
 
             if (MatchesTrigger(hookStruct.vkCode, hookStruct.flags))
             {
@@ -141,7 +157,7 @@ public class KeyTrigger : IDisposable
                 if ((msg == NativeMethods.WM_KEYDOWN || msg == NativeMethods.WM_SYSKEYDOWN) &&
                     (_phase == Phase.Pressed || _phase == Phase.Holding))
                 {
-                    _holdTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+                    _holdTimer?.Stop();
                     if (_phase == Phase.Holding)
                     {
                         // Cancel dictation
@@ -169,7 +185,7 @@ public class KeyTrigger : IDisposable
             // A single tap finishes hands-free dictation
             _phase = Phase.Idle;
             _ignoreNextRelease = true;
-            _holdTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+            _holdTimer?.Stop();
             TriggerStop();
             return;
         }
@@ -180,14 +196,14 @@ public class KeyTrigger : IDisposable
             _phase = Phase.HandsFree;
             _ignoreNextRelease = true;
             _lastTapAt = DateTime.MinValue;
-            _holdTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+            _holdTimer?.Stop();
             TriggerStart();
             return;
         }
 
         // First tap / press
         _phase = Phase.Pressed;
-        _holdTimer?.Change(_holdDelayMs, Timeout.Infinite);
+        _holdTimer?.Start();
     }
 
     private void HandleKeyUp()
@@ -202,7 +218,7 @@ public class KeyTrigger : IDisposable
         {
             // Let go after holding -> finish dictation
             _phase = Phase.Idle;
-            _holdTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+            _holdTimer?.Stop();
             TriggerStop();
             return;
         }
@@ -210,15 +226,16 @@ public class KeyTrigger : IDisposable
         if (_phase == Phase.Pressed)
         {
             // Released before holdDelay -> it was a single tap!
-            _holdTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+            _holdTimer?.Stop();
             _phase = Phase.Idle;
             _lastTapAt = DateTime.UtcNow; // Wait for potential second tap
             return;
         }
     }
 
-    private void OnHoldTimerFired(object? state)
+    private void OnHoldTimerFired()
     {
+        _holdTimer?.Stop();
         if (_phase == Phase.Pressed)
         {
             _phase = Phase.Holding;
@@ -226,29 +243,15 @@ public class KeyTrigger : IDisposable
         }
     }
 
-    private void TriggerStart()
+    // Never run recording, layout or settings IO inside the keyboard hook.
+    private void Post(Action action)
     {
-        if (_syncContext != null)
-        {
-            _syncContext.Post(_ => OnStart?.Invoke(), null);
-        }
-        else
-        {
-            OnStart?.Invoke();
-        }
+        if (!_dispatcher.IsDisposed && _dispatcher.IsHandleCreated)
+            _dispatcher.BeginInvoke(action);
     }
 
-    private void TriggerStop()
-    {
-        if (_syncContext != null)
-        {
-            _syncContext.Post(_ => OnStop?.Invoke(), null);
-        }
-        else
-        {
-            OnStop?.Invoke();
-        }
-    }
+    private void TriggerStart() => Post(() => { if (!IsSuspended) OnStart?.Invoke(); });
+    private void TriggerStop() => Post(() => OnStop?.Invoke());
 
     public void Dispose()
     {

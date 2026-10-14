@@ -6,6 +6,7 @@ namespace Inlaut.Platform.Windows;
 public class SherpaEngine : IDisposable
 {
     private readonly OfflineRecognizer _recognizer;
+    public object DiagnosticConfiguration { get; }
 
     public SherpaEngine(string modelDir, string provider = "cpu", int? threads = null)
     {
@@ -68,6 +69,14 @@ public class SherpaEngine : IDisposable
         config.FeatConfig.SampleRate = 16000;
         config.FeatConfig.FeatureDim = 80;
 
+        DiagnosticConfiguration = new
+        {
+            modelType = config.ModelConfig.ModelType, decodingMethod = config.DecodingMethod,
+            threads = config.ModelConfig.NumThreads, provider, sampleRate = 16000,
+            trimThreshold = 0.006f, trimPaddingMs = 180,
+            files = Directory.GetFiles(modelDir).Where(p => p.EndsWith(".onnx") || p.EndsWith("tokens.txt"))
+                .Select(p => new { name = Path.GetFileName(p), bytes = new FileInfo(p).Length }).ToArray()
+        };
         _recognizer = new OfflineRecognizer(config);
     }
 
@@ -77,7 +86,7 @@ public class SherpaEngine : IDisposable
         return TranscribeSamples(reader.Samples, reader.SampleRate);
     }
 
-    public (string Text, double DurationSec, double DecodeSec, double Rtf) TranscribeSamples(float[] samples, int sampleRate = 16000)
+    public (string Text, double DurationSec, double DecodeSec, double Rtf) TranscribeSamples(float[] samples, int sampleRate = 16000, Action<float[]>? preparedSamples = null)
     {
         if (samples == null || samples.Length == 0)
         {
@@ -86,6 +95,7 @@ public class SherpaEngine : IDisposable
 
         // Trim leading and trailing silence so joiner does not get stuck in silence emission loops
         float[] trimmed = AudioTrimmer.TrimSilence(samples, sampleRate);
+        preparedSamples?.Invoke(trimmed);
         if (trimmed.Length == 0)
         {
             // Pure silence or background noise only

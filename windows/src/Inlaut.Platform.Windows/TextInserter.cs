@@ -75,6 +75,12 @@ public static class TextInserter
             });
         }
 
-        NativeMethods.SendInput((uint)inputs.Count, inputs.ToArray(), Marshal.SizeOf<NativeMethods.INPUT>());
+        uint sent = NativeMethods.SendInput((uint)inputs.Count, inputs.ToArray(), Marshal.SizeOf<NativeMethods.INPUT>());
+        if (sent != inputs.Count)
+        {
+            throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error(),
+                $"Windows hat nur {sent} von {inputs.Count} Eingabeereignissen angenommen. " +
+                "Bitte prüfen, ob das Zielprogramm als Administrator läuft.");
+        }
     }
 }

@@ -33,6 +33,13 @@ jobs:
       - name: Build Solution
         run: dotnet build windows/Inlaut.sln -c Release --no-restore
 
+      - name: Text preservation regression
+        run: dotnet run --project windows/tests/Inlaut.CoreSmoke -c Release
+
+      - name: Settings layout regression
+        timeout-minutes: 2
+        run: dotnet run --project windows/tests/Inlaut.UiSmoke -c Release
+
       - name: Publish Inlaut.App (Self-Contained win-x64)
         run: >
           dotnet publish windows/src/Inlaut.App/Inlaut.App.csproj
@@ -59,7 +66,7 @@ jobs:
       - name: Copy Documentation
         shell: pwsh
         run: |
-          Copy-Item "windows/README.md" -Destination "publish/inlaut-windows/"
+          Copy-Item "windows/README.md", "windows/DESIGN.md", "windows/HANDOFF.md" -Destination "publish/inlaut-windows/"
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4

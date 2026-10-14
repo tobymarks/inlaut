@@ -1,79 +1,35 @@
-using System.Drawing;
-using System.Windows.Forms;
-
 namespace Inlaut.App;
 
-public class DownloadProgressForm : Form
+public class DownloadProgressForm : FluentForm
 {
-    private readonly Label _titleLabel;
     private readonly Label _statusLabel;
     private readonly ProgressBar _progressBar;
 
     public DownloadProgressForm()
     {
-        Text = "inlaut";
-        Width = 480;
-        Height = 220;
+        Text = "inlaut vorbereiten";
+        ClientSize = new Size(500, 240);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterScreen;
-        MaximizeBox = false;
-        MinimizeBox = false;
-        BackColor = Color.FromArgb(248, 249, 250);
-
-        _titleLabel = new Label
-        {
-            Text = "inlaut wird vorbereitet",
-            Font = new Font("Segoe UI", 14, FontStyle.Bold),
-            ForeColor = Color.FromArgb(20, 20, 20),
-            Location = new Point(30, 25),
-            AutoSize = true
-        };
-
-        var subtitleLabel = new Label
-        {
-            Text = "Das lokale deutsche Sprachmodell wird für die Offline-Nutzung geladen.",
-            Font = new Font("Segoe UI", 9.5f, FontStyle.Regular),
-            ForeColor = Color.FromArgb(100, 100, 100),
-            Location = new Point(30, 60),
-            Width = 410,
-            Height = 35
-        };
-
-        _progressBar = new ProgressBar
-        {
-            Location = new Point(30, 105),
-            Width = 405,
-            Height = 18,
-            Minimum = 0,
-            Maximum = 100,
-            Value = 5
-        };
-
-        _statusLabel = new Label
-        {
-            Text = "Initialisiere...",
-            Font = new Font("Segoe UI", 9, FontStyle.Regular),
-            ForeColor = Color.FromArgb(80, 80, 80),
-            Location = new Point(30, 132),
-            Width = 405,
-            AutoSize = false
-        };
-
-        Controls.Add(_titleLabel);
-        Controls.Add(subtitleLabel);
-        Controls.Add(_progressBar);
-        Controls.Add(_statusLabel);
+        MaximizeBox = MinimizeBox = false;
+        // Closing the view must not leave a download reporting to a disposed form.
+        ControlBox = false;
+        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(24), ColumnCount = 1 };
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        layout.Controls.Add(new Label { Text = "Einmal laden. Offline diktieren.", Font = WindowsTheme.Font(18, FontStyle.Bold), AutoSize = true, Dock = DockStyle.Top, Margin = new Padding(0, 0, 0, 12) });
+        layout.Controls.Add(new Label { Text = "Das deutsche Sprachmodell wird heruntergeladen und bleibt auf deinem Rechner.", Tag = "secondary", AutoSize = true, Dock = DockStyle.Top, Margin = new Padding(0, 0, 0, 20) });
+        _progressBar = new ProgressBar { Dock = DockStyle.Top, Height = 6, Minimum = 0, Maximum = 100, Margin = new Padding(0, 0, 0, 12), AccessibleName = "Downloadfortschritt" };
+        layout.Controls.Add(_progressBar);
+        _statusLabel = new Label { Text = "Download wird vorbereitet…", Tag = "secondary", AutoSize = true, Dock = DockStyle.Top, Margin = Padding.Empty };
+        layout.Controls.Add(_statusLabel);
+        Controls.Add(layout);
     }
 
     public void UpdateProgress(string status, int percent)
     {
-        if (InvokeRequired)
-        {
-            BeginInvoke(() => UpdateProgress(status, percent));
-            return;
-        }
-
-        _statusLabel.Text = status;
+        if (IsDisposed || Disposing) return;
+        if (InvokeRequired) { BeginInvoke(() => UpdateProgress(status, percent)); return; }
+        _statusLabel.Text = $"{status}  {Math.Clamp(percent, 0, 100)} %";
         _progressBar.Value = Math.Clamp(percent, 0, 100);
     }
 }

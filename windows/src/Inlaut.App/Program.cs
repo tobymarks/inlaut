@@ -14,12 +14,8 @@ internal static class Program
 
         if (!isOnlyInstance)
         {
-            MessageBox.Show(
-                "inlaut läuft bereits im Infobereich (unten rechts in der Taskleiste).",
-                "inlaut",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
+            ApplicationConfiguration.Initialize();
+            AppDialog.Information("inlaut läuft bereits", "Du findest inlaut im Infobereich der Taskleiste.");
             return;
         }
 

@@ -8,7 +8,12 @@
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <RootNamespace>Inlaut.App</RootNamespace>
     <AssemblyName>Inlaut</AssemblyName>
+    <Version>0.6.1-diagnostics.1</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Inlaut.UiSmoke" />
+  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\inlaut-32.png" />

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Inlaut.Core/Inlaut.Core.csproj" />
+    <Compile Include="../../src/Inlaut.App/IndicatorLayout.cs" Link="IndicatorLayout.cs" />
+  </ItemGroup>
+</Project>

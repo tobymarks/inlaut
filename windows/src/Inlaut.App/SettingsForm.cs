@@ -3,7 +3,7 @@ using Inlaut.Platform.Windows;
 
 namespace Inlaut.App;
 
-public class SettingsForm : Form
+public class SettingsForm : FluentForm
 {
     private readonly AppSettings _settings;
     private readonly KeyTrigger _keyTrigger;
@@ -25,7 +25,9 @@ public class SettingsForm : Form
 
     private void InitializeComponents()
     {
+        SuspendLayout();
         Text = "inlaut — Einstellungen";
+        AutoScaleDimensions = new SizeF(96, 96);
         AutoScaleMode = AutoScaleMode.Dpi;
         ClientSize = new Size(560, 560);
         MinimumSize = new Size(460, 460);
@@ -33,43 +35,45 @@ public class SettingsForm : Form
         FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = false;
         MinimizeBox = false;
-        Font = new Font("Segoe UI", 9.5f, FontStyle.Regular);
-        BackColor = Color.FromArgb(248, 249, 251);
+        Font = WindowsTheme.Font();
+        BackColor = WindowsTheme.Background;
 
         // Bottom action bar (docked to bottom of form)
         var bottomPanel = new Panel
         {
             Dock = DockStyle.Bottom,
             Height = 56,
-            BackColor = Color.FromArgb(240, 242, 246),
+            BackColor = WindowsTheme.Background,
             Padding = new Padding(16, 10, 16, 10)
         };
 
-        var closeBtn = new Button
+        var closeBtn = new FluentButton
         {
             Text = "Fertig",
+            Accent = true,
             Dock = DockStyle.Right,
             Width = 100,
-            BackColor = Color.FromArgb(220, 226, 235),
+            BackColor = WindowsTheme.Surface,
             FlatStyle = FlatStyle.Flat,
-            Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
-            Cursor = Cursors.Hand
+            Font = WindowsTheme.Font(),
+            Cursor = Cursors.Default
         };
         closeBtn.FlatAppearance.BorderSize = 0;
         closeBtn.Click += (s, e) => Close();
         bottomPanel.Controls.Add(closeBtn);
 
-        var openFolderBtn = new Button
+        var openFolderBtn = new FluentButton
         {
-            Text = "📁 Modellordner",
+            Text = "Modellordner",
             Dock = DockStyle.Left,
-            Width = 130,
-            BackColor = Color.White,
+            Width = 150,
+            BackColor = WindowsTheme.Surface,
+            Tag = "surface",
             FlatStyle = FlatStyle.Flat,
-            Font = new Font("Segoe UI", 9f, FontStyle.Regular),
-            Cursor = Cursors.Hand
+            Font = WindowsTheme.Font(),
+            Cursor = Cursors.Default
         };
-        openFolderBtn.FlatAppearance.BorderColor = Color.FromArgb(210, 215, 225);
+        openFolderBtn.FlatAppearance.BorderColor = WindowsTheme.Border;
         openFolderBtn.Click += (s, e) =>
         {
             string dir = ModelManager.GetModelDirectory();
@@ -77,37 +81,36 @@ public class SettingsForm : Form
         };
         bottomPanel.Controls.Add(openFolderBtn);
 
-        Controls.Add(bottomPanel);
 
         // Scrollable content container
         var scrollContainer = new Panel
         {
             Dock = DockStyle.Fill,
             AutoScroll = true,
-            Padding = new Padding(20)
+            Padding = new Padding(24)
         };
 
-        var contentFlow = new FlowLayoutPanel
+        // One-way layout: the table owns widths; children only request height.
+        // No SizeChanged handlers may write widths back into their parents.
+        var contentFlow = new TableLayoutPanel
         {
             Dock = DockStyle.Top,
             AutoSize = true,
             AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            FlowDirection = FlowDirection.TopDown,
-            WrapContents = false,
-            Width = scrollContainer.ClientSize.Width - 40
+            ColumnCount = 1,
+            GrowStyle = TableLayoutPanelGrowStyle.AddRows,
+            Padding = Padding.Empty,
+            Margin = Padding.Empty
         };
-
-        scrollContainer.Resize += (s, e) =>
-        {
-            contentFlow.Width = scrollContainer.ClientSize.Width - 40;
-        };
+        contentFlow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
         // 1. Header Title & Description
         var titleLabel = new Label
         {
-            Text = "Aufnahme-Taste konfigurieren",
-            Font = new Font("Segoe UI", 13f, FontStyle.Bold),
+            Text = "Diktieren",
+            Font = WindowsTheme.Font(20, FontStyle.Bold),
             AutoSize = true,
+            Dock = DockStyle.Top,
             Margin = new Padding(0, 0, 0, 4)
         };
         contentFlow.Controls.Add(titleLabel);
@@ -115,8 +118,10 @@ public class SettingsForm : Form
         var descLabel = new Label
         {
             Text = "Halte die Taste gedrückt zum Diktieren, oder tippe sie zweimal kurz für Daueraufnahme.",
-            ForeColor = Color.FromArgb(90, 100, 115),
+            ForeColor = WindowsTheme.Secondary,
+            Tag = "secondary",
             AutoSize = true,
+            Dock = DockStyle.Top,
             Margin = new Padding(0, 0, 0, 16)
         };
         contentFlow.Controls.Add(descLabel);
@@ -124,49 +129,53 @@ public class SettingsForm : Form
         // 2. Current Key Card
         var cardPanel = new Panel
         {
-            Width = contentFlow.Width,
+            Dock = DockStyle.Top,
             AutoSize = true,
-            BackColor = Color.White,
+            BackColor = WindowsTheme.Surface,
+            Tag = "surface",
             Padding = new Padding(16),
             Margin = new Padding(0, 0, 0, 16)
         };
         cardPanel.Paint += (s, e) =>
         {
-            using var pen = new Pen(Color.FromArgb(215, 220, 230), 1.2f);
-            e.Graphics.DrawRectangle(pen, 0, 0, cardPanel.Width - 1, cardPanel.Height - 1);
+            using var pen = new Pen(WindowsTheme.Border, 1.2f);
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            using var outline = WindowsTheme.Rounded(new RectangleF(0, 0, cardPanel.Width - 1, cardPanel.Height - 1), 4 * DeviceDpi / 96f);
+            e.Graphics.DrawPath(pen, outline);
         };
-        contentFlow.SizeChanged += (s, e) => cardPanel.Width = contentFlow.Width;
 
-        var cardInner = new FlowLayoutPanel
+        var cardInner = new TableLayoutPanel
         {
             Dock = DockStyle.Top,
             AutoSize = true,
-            FlowDirection = FlowDirection.TopDown,
-            WrapContents = false,
-            Width = cardPanel.ClientSize.Width
+            ColumnCount = 1,
+            GrowStyle = TableLayoutPanelGrowStyle.AddRows
         };
-        cardPanel.SizeChanged += (s, e) => cardInner.Width = cardPanel.ClientSize.Width - 32;
+
+        cardInner.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
         _currentKeyLabel = new Label
         {
-            Text = $"Aktuelle Taste:  {_settings.TriggerKeyName}",
-            Font = new Font("Segoe UI", 11f, FontStyle.Bold),
-            ForeColor = Color.FromArgb(30, 40, 55),
+            Text = $"Aktuelle Taste:  {AppSettings.GetFriendlyKeyName(_settings.TriggerVkCode)}",
+            Font = WindowsTheme.Font(11, FontStyle.Bold),
+            ForeColor = WindowsTheme.Text,
             AutoSize = true,
+            Dock = DockStyle.Top,
             Margin = new Padding(0, 0, 0, 12)
         };
         cardInner.Controls.Add(_currentKeyLabel);
 
-        _captureButton = new Button
+        _captureButton = new FluentButton
         {
-            Text = "⌨️ Neue Taste durch Drücken festlegen...",
+            Text = "Taste ändern…",
             Height = 40,
-            Width = 360,
-            BackColor = Color.FromArgb(30, 105, 225),
-            ForeColor = Color.White,
+            Dock = DockStyle.Top,
+            AutoSize = true,
+            BackColor = WindowsTheme.Surface,
+            ForeColor = WindowsTheme.Text,
             FlatStyle = FlatStyle.Flat,
-            Font = new Font("Segoe UI", 10f, FontStyle.Bold),
-            Cursor = Cursors.Hand,
+            Font = WindowsTheme.Font(),
+            Cursor = Cursors.Default,
             Margin = new Padding(0, 0, 0, 4)
         };
         _captureButton.FlatAppearance.BorderSize = 0;
@@ -179,74 +188,84 @@ public class SettingsForm : Form
         // 3. Quick Presets
         var presetLabel = new Label
         {
-            Text = "Schnellauswahl für typische Tastaturen (z. B. MacBook ohne F8):",
-            Font = new Font("Segoe UI", 9f, FontStyle.Regular),
-            ForeColor = Color.FromArgb(100, 110, 125),
+            Text = "Oder eine Taste auswählen",
+            Font = WindowsTheme.Font(),
+            ForeColor = WindowsTheme.Secondary,
+            Tag = "secondary",
             AutoSize = true,
+            Dock = DockStyle.Top,
             Margin = new Padding(0, 0, 0, 6)
         };
         contentFlow.Controls.Add(presetLabel);
 
         var presetsFlow = new FlowLayoutPanel
         {
-            Width = contentFlow.Width,
+            Dock = DockStyle.Top,
             AutoSize = true,
             FlowDirection = FlowDirection.LeftToRight,
             Margin = new Padding(0, 0, 0, 16)
         };
-        contentFlow.SizeChanged += (s, e) => presetsFlow.Width = contentFlow.Width;
 
-        AddPresetButton(presetsFlow, "Linke Strg (neben Fn)", 0xA2);
+        AddPresetButton(presetsFlow, "Strg links", 0xA2);
         AddPresetButton(presetsFlow, "Caps Lock", 0x14);
-        AddPresetButton(presetsFlow, "Rechte Alt / Option", 0xA5);
+        AddPresetButton(presetsFlow, "Alt rechts", 0xA5);
         AddPresetButton(presetsFlow, "F8", 0x77);
-        AddPresetButton(presetsFlow, "^ (Dach)", 0xDC);
+        AddPresetButton(presetsFlow, "^ / °", 0xDC);
 
         contentFlow.Controls.Add(presetsFlow);
 
         // 4. Test Area
         var testPanel = new Panel
         {
-            Width = contentFlow.Width,
+            Dock = DockStyle.Top,
             Height = 65,
-            BackColor = Color.FromArgb(238, 242, 248),
+            BackColor = WindowsTheme.Background,
             Padding = new Padding(12),
             Margin = new Padding(0, 0, 0, 16)
         };
-        contentFlow.SizeChanged += (s, e) => testPanel.Width = contentFlow.Width;
 
         _testStatusLabel = new Label
         {
-            Text = "🧪 Taste hier testen: Drücke oder doppeltippe deine gewählte Taste...",
-            ForeColor = Color.FromArgb(70, 80, 95),
+            Text = "Diktieren ist pausiert, solange die Einstellungen geöffnet sind.",
+            ForeColor = WindowsTheme.Text,
             Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleCenter,
-            Font = new Font("Segoe UI", 9.5f, FontStyle.Regular)
+            Font = WindowsTheme.Font()
         };
         testPanel.Controls.Add(_testStatusLabel);
         contentFlow.Controls.Add(testPanel);
 
         scrollContainer.Controls.Add(contentFlow);
         Controls.Add(scrollContainer);
+        Controls.Add(bottomPanel);
 
+        AcceptButton = closeBtn;
+        CancelButton = closeBtn;
         KeyPreview = true;
         KeyDown += OnFormKeyDown;
+        FormClosed += (_, _) =>
+        {
+            _isCapturing = false;
+            _keyTrigger.EndCaptureMode();
+        };
+        ResumeLayout(true);
     }
 
     private void AddPresetButton(FlowLayoutPanel panel, string name, uint vkCode)
     {
-        var btn = new Button
+        var btn = new FluentButton
         {
             Text = name,
             AutoSize = true,
             Height = 34,
-            BackColor = Color.White,
+            BackColor = WindowsTheme.Surface,
+            Tag = "surface",
             FlatStyle = FlatStyle.Flat,
-            Font = new Font("Segoe UI", 9f, FontStyle.Regular),
+            Font = WindowsTheme.Font(),
             Margin = new Padding(0, 0, 8, 8),
-            Cursor = Cursors.Hand
+            Cursor = Cursors.Default
         };
-        btn.FlatAppearance.BorderColor = Color.FromArgb(200, 205, 215);
+        btn.FlatAppearance.BorderColor = WindowsTheme.Border;
         btn.Click += (s, e) => ApplyKey(vkCode);
         panel.Controls.Add(btn);
     }
@@ -254,8 +273,8 @@ public class SettingsForm : Form
     private void StartKeyCapture()
     {
         _isCapturing = true;
-        _captureButton.Text = "⏳ Drücke jetzt eine Taste (oder Escape)...";
-        _captureButton.BackColor = Color.FromArgb(220, 60, 60);
+        _captureButton.Text = "Taste drücken · Esc zum Abbrechen";
+        _captureButton.BackColor = WindowsTheme.Surface;
         _keyTrigger.SetCaptureMode(OnKeyCaptured);
     }
 
@@ -272,8 +291,8 @@ public class SettingsForm : Form
         if (vkCode == (uint)Keys.Escape)
         {
             _isCapturing = false;
-            _captureButton.Text = "⌨️ Neue Taste durch Drücken festlegen...";
-            _captureButton.BackColor = Color.FromArgb(30, 105, 225);
+            _captureButton.Text = "Taste ändern…";
+            _captureButton.BackColor = WindowsTheme.Surface;
             _keyTrigger.EndCaptureMode();
             return;
         }
@@ -290,15 +309,15 @@ public class SettingsForm : Form
         _settings.TriggerKeyName = AppSettings.GetFriendlyKeyName(vkCode);
         _settings.Save();
 
-        _currentKeyLabel.Text = $"Aktuelle Taste:  {_settings.TriggerKeyName}";
-        _captureButton.Text = "⌨️ Neue Taste durch Drücken festlegen...";
-        _captureButton.BackColor = Color.FromArgb(30, 105, 225);
+        _currentKeyLabel.Text = $"Aktuelle Taste:  {AppSettings.GetFriendlyKeyName(_settings.TriggerVkCode)}";
+        _captureButton.Text = "Taste ändern…";
+        _captureButton.BackColor = WindowsTheme.Surface;
 
         _keyTrigger.UpdateTriggerKey(vkCode);
         _onSettingsChanged();
 
-        _testStatusLabel.Text = $"✅ Taste geändert zu: {_settings.TriggerKeyName}!";
-        _testStatusLabel.ForeColor = Color.FromArgb(30, 140, 50);
+        _testStatusLabel.Text = $"Gespeichert: {AppSettings.GetFriendlyKeyName(vkCode)}";
+        _testStatusLabel.ForeColor = WindowsTheme.Text;
     }
 
     private void OnFormKeyDown(object? sender, KeyEventArgs e)

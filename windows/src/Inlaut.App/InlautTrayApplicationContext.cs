@@ -20,34 +20,71 @@ public class InlautTrayApplicationContext : ApplicationContext
     private SettingsForm? _settingsForm;
     private SherpaEngine? _engine;
     private bool _isModelReady;
+    private bool _isTranscribing;
+    private bool _isExiting;
+    private int _captureRemaining;
+    private string? _captureRoot;
     private Icon _defaultIcon = null!;
     private Icon _recordingIcon = null!;
 
     public InlautTrayApplicationContext()
     {
+        LocalDiagnostics.Write("startup", new { os = Environment.OSVersion.VersionString });
         _settings = AppSettings.Load();
         _recorder = new AudioRecorder();
         _pipeline = new TextPipeline();
         _hotkeyReceiver = new HotkeyReceiver();
-        _keyTrigger = new KeyTrigger(_settings.TriggerVkCode);
         _indicator = new RecordingIndicatorForm();
+        _keyTrigger = new KeyTrigger(_indicator, _settings.TriggerVkCode);
 
         InitIcons();
 
-        var contextMenu = new ContextMenuStrip();
-        _dictateMenuItem = new ToolStripMenuItem($"🎙️ Diktat starten / stoppen ({_settings.TriggerKeyName})", null, (s, e) => ToggleDictation());
-        var settingsItem = new ToolStripMenuItem("⚙️ Einstellungen (Taste festlegen)...", null, (s, e) => OpenSettings());
-        var openFolderItem = new ToolStripMenuItem("📁 Modell-Ordner öffnen", null, (s, e) => OpenModelFolder());
-        var aboutItem = new ToolStripMenuItem("ℹ️ Über inlaut", null, (s, e) => ShowAbout());
-        var exitItem = new ToolStripMenuItem("❌ Beenden", null, (s, e) => Exit());
-
-        contextMenu.Items.Add(_dictateMenuItem);
-        contextMenu.Items.Add(new ToolStripSeparator());
-        contextMenu.Items.Add(settingsItem);
-        contextMenu.Items.Add(openFolderItem);
-        contextMenu.Items.Add(aboutItem);
-        contextMenu.Items.Add(new ToolStripSeparator());
-        contextMenu.Items.Add(exitItem);
+        var contextMenu = new FluentMenu();
+        var statusItem = new ToolStripMenuItem("inlaut · Wird vorbereitet") { Enabled = false };
+        _dictateMenuItem = FluentMenu.Item("Diktat starten", "\uE720", (_, _) => ToggleDictation());
+        var settingsItem = FluentMenu.Item("Einstellungen…", "\uE713", (_, _) => OpenSettings());
+        var helpItem = new ToolStripMenuItem("Hilfe && Diagnose") { Tag = "\uE897" };
+        helpItem.DropDownItems.Add(FluentMenu.Item("Modellordner öffnen", "\uE8B7", (_, _) => OpenModelFolder()));
+        helpItem.DropDownItems.Add(FluentMenu.Item("Diagnoseordner öffnen", "\uE9D9", (_, _) =>
+        {
+            Directory.CreateDirectory(LocalDiagnostics.DirectoryPath);
+            Process.Start(new ProcessStartInfo("explorer.exe", LocalDiagnostics.DirectoryPath) { UseShellExecute = true });
+        }));
+        var captureItem = new ToolStripMenuItem("Testaufnahmen speichern")
+        {
+            ToolTipText = "Speichert bis zu 10 Diktate mit Audio und Text lokal. Keine Übertragung."
+        };
+        captureItem.Click += (_, _) =>
+        {
+            if (_captureRemaining > 0) _captureRemaining = 0;
+            else
+            {
+                _captureRemaining = 10;
+                _captureRoot = Path.Combine(LocalDiagnostics.DirectoryPath, "captures", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N")[..8]);
+                _notifyIcon?.ShowBalloonTip(5000, "Testaufnahmen aktiviert", "Die nächsten 10 Diktate werden mit Audio und Text lokal im Diagnoseordner gespeichert. Keine automatische Übertragung.", ToolTipIcon.Info);
+            }
+            captureItem.Checked = _captureRemaining > 0;
+        };
+        helpItem.DropDownItems.Add(captureItem);
+        helpItem.DropDownItems.Add(new ToolStripSeparator());
+        helpItem.DropDownItems.Add(FluentMenu.Item("Über inlaut", "\uE946", (_, _) => ShowAbout()));
+        contextMenu.Items.AddRange(new ToolStripItem[]
+        {
+            statusItem, new ToolStripSeparator(), _dictateMenuItem, settingsItem, helpItem,
+            new ToolStripSeparator(), FluentMenu.Item("Beenden", "\uE7E8", (_, _) => Exit())
+        });
+        contextMenu.Opening += (_, _) =>
+        {
+            captureItem.Checked = _captureRemaining > 0;
+            captureItem.Enabled = !_recorder.IsRecording && !_isTranscribing;
+            captureItem.Text = _captureRemaining > 0 ? $"Testaufnahmen speichern ({_captureRemaining} übrig)" : "Testaufnahmen speichern";
+            statusItem.Text = "inlaut · " + (_recorder.IsRecording ? "Aufnahme läuft" : _isTranscribing ? "Text wird erkannt" : _isModelReady ? "Bereit" : "Wird vorbereitet");
+            _dictateMenuItem.Text = _recorder.IsRecording ? "Diktat beenden" : "Diktat starten";
+            _dictateMenuItem.Tag = _recorder.IsRecording ? "\uE71A" : "\uE720";
+            _dictateMenuItem.ShortcutKeyDisplayString = AppSettings.GetFriendlyKeyName(_settings.TriggerVkCode);
+            _dictateMenuItem.Enabled = _isModelReady && !_isTranscribing && !_keyTrigger.IsSuspended;
+            settingsItem.Enabled = !_recorder.IsRecording && !_isTranscribing;
+        };
 
         _notifyIcon = new NotifyIcon
         {
@@ -68,7 +105,7 @@ public class InlautTrayApplicationContext : ApplicationContext
         _hotkeyReceiver.HotkeyPressed += ToggleDictation;
         _hotkeyReceiver.RegisterDefaultHotkey();
 
-        _ = InitializeModelAsync();
+        _indicator.BeginInvoke(new Action(() => _ = InitializeModelAsync()));
     }
 
     private void InitIcons()
@@ -110,7 +147,7 @@ public class InlautTrayApplicationContext : ApplicationContext
             string modelDir = ModelManager.GetModelDirectory();
             if (!ModelManager.HasValidModel(modelDir))
             {
-                var progressForm = new DownloadProgressForm();
+                using var progressForm = new DownloadProgressForm();
                 progressForm.Show();
 
                 modelDir = await ModelManager.EnsureModelAvailableAsync((status, percent) =>
@@ -123,7 +160,17 @@ public class InlautTrayApplicationContext : ApplicationContext
                 progressForm.Dispose();
             }
 
-            _engine = new SherpaEngine(modelDir);
+            var loadTimer = Stopwatch.StartNew();
+            var engine = await Task.Run(() => new SherpaEngine(modelDir, threads: Math.Clamp(Environment.ProcessorCount / 2, 2, 4)));
+            if (_isExiting) { engine.Dispose(); return; }
+            _engine = engine;
+            LocalDiagnostics.Write("model-ready", new
+            {
+                loadSeconds = loadTimer.Elapsed.TotalSeconds,
+                decoder = "modified_beam_search (transducer) / greedy_search (CTC)",
+                files = Directory.GetFiles(modelDir).Where(p => p.EndsWith(".onnx") || p.EndsWith("tokens.txt"))
+                    .Select(p => new { name = Path.GetFileName(p), bytes = new FileInfo(p).Length }).ToArray()
+            });
             _isModelReady = true;
 
             UpdateReadyStatus();
@@ -136,17 +183,19 @@ public class InlautTrayApplicationContext : ApplicationContext
         }
         catch (Exception ex)
         {
+            if (_isExiting) return;
             _notifyIcon.Text = "inlaut - Fehler beim Laden des Modells";
-            MessageBox.Show($"Fehler beim Initialisieren des Sprachmodells:\n\n{ex.Message}", "inlaut Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            AppDialog.Error("Sprachmodell konnte nicht geladen werden", ex.Message);
         }
     }
 
     private void UpdateReadyStatus()
     {
-        _notifyIcon.Text = $"inlaut - Bereit ({_settings.TriggerKeyName})";
+        _notifyIcon.Text = _isModelReady ? $"inlaut - Bereit ({_settings.TriggerKeyName})" : "inlaut - Lade Sprachmodell...";
         if (_dictateMenuItem != null)
         {
-            _dictateMenuItem.Text = $"🎙️ Diktat starten / stoppen ({_settings.TriggerKeyName})";
+            _dictateMenuItem.Text = "Diktat starten";
+            _dictateMenuItem.ShortcutKeyDisplayString = AppSettings.GetFriendlyKeyName(_settings.TriggerVkCode);
         }
     }
 
@@ -164,6 +213,8 @@ public class InlautTrayApplicationContext : ApplicationContext
 
     private void StartDictation()
     {
+        if (_isTranscribing || _keyTrigger.IsSuspended) return;
+
         if (!_isModelReady || _engine == null)
         {
             _notifyIcon.ShowBalloonTip(2000, "inlaut", "Das Sprachmodell wird noch vorbereitet...", ToolTipIcon.Warning);
@@ -176,65 +227,110 @@ public class InlautTrayApplicationContext : ApplicationContext
         {
             _recorder.Start();
             _notifyIcon.Icon = _recordingIcon;
-            _notifyIcon.Text = "inlaut - Aufnahme läuft...";
+            _notifyIcon.Text = _captureRemaining > 0 ? "inlaut - Testaufnahme (Audio + Text werden gespeichert)" : "inlaut - Aufnahme läuft...";
 
             // Show floating indicator at bottom center
             _indicator.ShowRecording(() => _recorder.CurrentLevel);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Mikrofon konnte nicht gestartet werden:\n{ex.Message}", "inlaut Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            AppDialog.Error("Mikrofon konnte nicht gestartet werden", ex.Message);
         }
     }
 
-    private void StopDictation()
+    private async void StopDictation()
     {
-        if (!_recorder.IsRecording) return;
+        if (!_recorder.IsRecording || _isTranscribing || _engine == null) return;
 
+        var engine = _engine;
+        _isTranscribing = true;
         _notifyIcon.Icon = _defaultIcon;
         _notifyIcon.Text = "inlaut - Transkribiere...";
         _indicator.ShowTranscribing();
 
-        float[] samples = _recorder.Stop();
-
-        if (samples.Length < 1600) // Less than 0.1s
+        try
         {
-            UpdateReadyStatus();
-            _indicator.HideIndicator();
-            return;
-        }
+            float[] samples = _recorder.Stop();
+            LocalDiagnostics.Write("recorded", LocalDiagnostics.DescribeAudio(samples));
+            bool captureRequested = _captureRemaining > 0;
+            string? captureRoot = _captureRoot;
+            if (captureRequested) _captureRemaining--;
+            if (samples.Length < 1600 && !captureRequested) return;
+            bool captureFailed = false;
 
-        Task.Run(() =>
-        {
-            try
+            string processed = await Task.Run(() =>
             {
-                var (rawText, audioSec, decodeSec, rtf) = _engine.TranscribeSamples(samples, 16000);
-
-                if (!string.IsNullOrWhiteSpace(rawText))
+                DictationCapture? capture = null;
+                void Save(Action action)
                 {
-                    string processed = _pipeline.ProcessDictation(rawText);
-                    TextInserter.InsertText(processed);
+                    try { action(); }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        captureFailed = true;
+                        LocalDiagnostics.Write("capture-write-failed", new { type = ex.GetType().Name });
+                    }
                 }
-            }
-            catch (Exception ex)
+                if (captureRequested && captureRoot != null)
+                    Save(() => capture = new DictationCapture(captureRoot, samples, 16000, new
+                    {
+                        version = LocalDiagnostics.Version, utc = DateTimeOffset.UtcNow,
+                        microphoneDeviceIndex = 0, engine = engine.DiagnosticConfiguration,
+                        voiceCommands = _pipeline.VoiceCommandsEnabled, sharpS = _pipeline.SharpSEnabled,
+                        languages = _pipeline.Languages.Select(x => x.ToString()).ToArray(),
+                        replacements = _pipeline.ReplacementsList
+                    }));
+                try
+                {
+                    var (rawText, audioSec, decodeSec, rtf) = engine.TranscribeSamples(samples, 16000,
+                        prepared => { if (capture != null) Save(() => capture.Prepared(prepared)); });
+                    LocalDiagnostics.Write("recognized", new
+                    {
+                        audioSec, decodeSec, rtf, text = LocalDiagnostics.DescribeText(rawText)
+                    });
+                    string processed = _pipeline.ProcessDictation(rawText);
+                    if (capture != null) Save(() => capture.Complete(rawText, processed, audioSec, decodeSec));
+                    LocalDiagnostics.Write("processed", LocalDiagnostics.DescribeText(processed));
+                    return processed;
+                }
+                catch (Exception ex)
+                {
+                    if (capture != null) Save(() => capture.Failed(ex.GetType().Name));
+                    throw;
+                }
+            });
+            if (captureFailed)
+                _notifyIcon.ShowBalloonTip(4000, "Testaufnahme nicht vollständig gespeichert", "Bitte freien Speicherplatz und den Diagnoseordner prüfen. Das Diktieren bleibt verfügbar.", ToolTipIcon.Warning);
+            if (string.IsNullOrWhiteSpace(processed))
             {
-                _notifyIcon.ShowBalloonTip(3000, "inlaut Transkriptionsfehler", ex.Message, ToolTipIcon.Error);
+                _notifyIcon.ShowBalloonTip(3000, "Keine Sprache erkannt", "Für dieses Diktat wurde kein Text erkannt.", ToolTipIcon.Info);
+                return;
             }
-            finally
-            {
-                _indicator.Invoke(() => _indicator.HideIndicator());
-                UpdateReadyStatus();
-            }
-        });
+            await ClipboardTextInserter.InsertAsync(processed);
+            LocalDiagnostics.Write("paste-sent", new { characters = processed.Length, method = "clipboard" });
+        }
+        catch (Exception ex)
+        {
+            LocalDiagnostics.Write("failed", new { type = ex.GetType().Name, code = ex.HResult });
+            _notifyIcon.ShowBalloonTip(3000, "inlaut Transkriptionsfehler", ex.Message, ToolTipIcon.Error);
+        }
+        finally
+        {
+            _isTranscribing = false;
+            _indicator.HideIndicator();
+            UpdateReadyStatus();
+        }
     }
 
     private void OpenSettings()
     {
         if (_settingsForm == null || _settingsForm.IsDisposed)
         {
+            if (_recorder.IsRecording || _isTranscribing) return;
             _settingsForm = new SettingsForm(_settings, _keyTrigger, UpdateReadyStatus);
+            _settingsForm.FormClosed += (_, _) => _keyTrigger.IsSuspended = false;
         }
 
+        _keyTrigger.IsSuspended = true;
         _settingsForm.Show();
         _settingsForm.BringToFront();
     }
@@ -256,24 +352,18 @@ public class InlautTrayApplicationContext : ApplicationContext
 
     private void ShowAbout()
     {
-        MessageBox.Show(
-            "inlaut — Lokales Diktieren für Windows\nVersion 0.5.0-prototype\n\n" +
-            "• 100% On-Device & Offline Speech-to-Text\n" +
-            "• Keine Daten verlassen deinen Rechner\n\n" +
-            "Bedienung:\n" +
-            $"• Halten: {_settings.TriggerKeyName} gedrückt halten zum Diktieren\n" +
-            $"• Freihand: {_settings.TriggerKeyName} doppeltippen\n" +
-            "• Tastenkürzel: Strg + Alt + Leertaste\n" +
-            "• Taste ändern: Rechtsklick auf Tray -> Einstellungen\n\n" +
-            "https://inlaut.de",
-            "Über inlaut",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Information
-        );
+        var about = new AboutForm();
+        about.Show();
     }
 
     private void Exit()
     {
+        if (_isTranscribing)
+        {
+            _notifyIcon.ShowBalloonTip(2000, "inlaut", "Bitte die laufende Transkription abwarten.", ToolTipIcon.Info);
+            return;
+        }
+        _isExiting = true;
         _settingsForm?.Dispose();
         _keyTrigger.Dispose();
         _indicator.Dispose();
