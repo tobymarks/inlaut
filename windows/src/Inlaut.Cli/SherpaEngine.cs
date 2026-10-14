@@ -75,8 +75,7 @@ public class SherpaEngine : IDisposable
 
         double decodeSec = sw.Elapsed.TotalSeconds;
         double rtf = audioSec > 0 ? decodeSec / audioSec : 0;
-        var result = _recognizer.GetResult(stream);
-        string text = result.Text?.Trim() ?? "";
+        string text = stream.Result.Text?.Trim() ?? "";
 
         return (text, audioSec, decodeSec, rtf);
     }
