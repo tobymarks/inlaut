@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json;
 using SherpaOnnx;
 
 namespace Inlaut.Platform.Windows;
@@ -8,14 +9,28 @@ public class SherpaEngine : IDisposable
     private readonly OfflineRecognizer _recognizer;
     public object DiagnosticConfiguration { get; }
 
-    public SherpaEngine(string modelDir, string provider = "cpu", int? threads = null)
+    public SherpaEngine(string modelDir, string provider = "cpu", int? threads = null, string? modelFamily = null)
     {
         if (!Directory.Exists(modelDir))
         {
             throw new DirectoryNotFoundException($"Model directory not found: {modelDir}");
         }
 
+        // An explicit local profile lets portable test distributions select the
+        // correct decoder without guessing from directory names or file sizes.
+        string profile = Path.Combine(modelDir, "inlaut-model.json");
+        if (modelFamily == null && File.Exists(profile))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(profile));
+            modelFamily = document.RootElement.GetProperty("family").GetString();
+        }
+        modelFamily ??= "nemo";
+
         string tokensPath = Path.Combine(modelDir, "tokens.txt");
+        if (modelFamily == "whisper")
+            tokensPath = Directory.GetFiles(modelDir, "*-tokens.txt").Single();
+        if (modelFamily is not ("nemo" or "nemo-tdt" or "whisper"))
+            throw new ArgumentException("Unsupported model family.", nameof(modelFamily));
         if (!File.Exists(tokensPath))
         {
             throw new FileNotFoundException($"Tokens file not found at: {tokensPath}");
@@ -37,7 +52,20 @@ public class SherpaEngine : IDisposable
         string joiner = Path.Combine(modelDir, "joiner.int8.onnx");
         if (!File.Exists(joiner)) joiner = Path.Combine(modelDir, "joiner.onnx");
 
-        if (File.Exists(encoder) && File.Exists(decoder) && File.Exists(joiner))
+        if (modelFamily == "whisper")
+        {
+            string FindWhisper(string part)
+            {
+                var quantized = Directory.GetFiles(modelDir, $"*-{part}.int8.onnx");
+                return quantized.Length > 0 ? quantized.Single() : Directory.GetFiles(modelDir, $"*-{part}.onnx").Single();
+            }
+            config.ModelConfig.Whisper.Encoder = FindWhisper("encoder");
+            config.ModelConfig.Whisper.Decoder = FindWhisper("decoder");
+            config.ModelConfig.Whisper.Language = "de";
+            config.ModelConfig.Whisper.Task = "transcribe";
+            config.DecodingMethod = "greedy_search";
+        }
+        else if (File.Exists(encoder) && File.Exists(decoder) && File.Exists(joiner))
         {
             config.ModelConfig.Transducer.Encoder = encoder;
             config.ModelConfig.Transducer.Decoder = decoder;
@@ -45,7 +73,7 @@ public class SherpaEngine : IDisposable
             config.ModelConfig.ModelType = "nemo_transducer";
             
             // Use modified_beam_search to prevent repetition loops during silence/pauses
-            config.DecodingMethod = "modified_beam_search";
+            config.DecodingMethod = modelFamily == "nemo-tdt" ? "greedy_search" : "modified_beam_search";
             config.MaxActivePaths = 4;
         }
         else
@@ -71,6 +99,7 @@ public class SherpaEngine : IDisposable
 
         DiagnosticConfiguration = new
         {
+            modelFamily,
             modelType = config.ModelConfig.ModelType, decodingMethod = config.DecodingMethod,
             threads = config.ModelConfig.NumThreads, provider, sampleRate = 16000,
             trimThreshold = 0.006f, trimPaddingMs = 180,

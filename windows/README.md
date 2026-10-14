@@ -4,7 +4,36 @@ Native, hochperformante On-Device-Diktier-App für Windows 10 & 11 ohne Cloud-Zw
 
 Für die Fortsetzung der Entwicklung direkt unter Windows: [HANDOFF.md](HANDOFF.md).
 
-## Testversion 0.6.1-diagnostics.1
+## Qualitätstestversion 0.6.4-model-preview.1
+
+Separates portables Paket mit Parakeet TDT v3 INT8 und der beschleunigten Eingabe
+aus 0.6.3. Im kleinen Vergleich mit menschlichen deutschen Sprachaufnahmen erkannte
+es mehr richtig als das kompakte Modell, benötigt aber etwa 640 MiB Modellplatz
+und rund 1 GiB RAM. Die kleine Variante 0.6.3 bleibt verfügbar; der Standarddownload
+wird noch nicht umgestellt. Messwerte und Grenzen: [MODEL_EVALUATION.md](MODEL_EVALUATION.md).
+
+## Testversion 0.6.3-input-preview.1
+
+Die Tray-App fügt Text jetzt standardmäßig direkt in native Windows-Textfelder
+ein, ohne die Zwischenablage zu verwenden. Andere Felder erhalten einzeiligen
+Text Zeichen für Zeichen. Unter **Hilfe & Diagnose → Eingabe per
+Zwischenablage** lässt sich der bisherige Weg zum Vergleich einschalten.
+Native Felder erhalten den Text in einem Schritt mit Rückgängig-Unterstützung.
+Die beschleunigte zeichenweise Ausgabe erreicht im isolierten Test rund 200 Zeichen
+pro Sekunde; 1260 Zeichen benötigen etwa 6,2 Sekunden. Das Verhalten im konkreten
+ChatGPT-/Codex-Feld muss noch separat bestätigt werden.
+Währenddessen bitte im Zieltextfeld bleiben: Bei Fokuswechsel oder Zusatztasten
+wird abgebrochen, bereits eingefügter Text bleibt stehen. Im zeichenweisen Weg
+können bereits an Windows übergebene Zeichen noch im neu fokussierten
+Feld ankommen. Mehrzeilige Eingabe in anderen als nativen Windows-Textfeldern
+benötigt vorerst den ausdrücklich auswählbaren Zwischenablage-Modus.
+Es gibt keinen automatischen zweiten Einfügeversuch.
+
+Das Tray-Menü hat mehr Abstand, getrennte Spalten für Symbole und Tastenkürzel
+und einheitliche Untermenüs. Getestet auf Windows 10 bei 200 % Skalierung.
+Details und verbleibende Prüfungen stehen in `HANDOFF.md`.
+
+### Vorherige Diagnoseversion 0.6.1
 
 Menüsymbole verwenden jetzt die native Bildspalte; die Aufnahmeanzeige berechnet
 getrennte Bereiche für Symbol, gemessenen Text und Pegelbalken in Bildschirm-Pixeln.
@@ -36,7 +65,7 @@ verwenden denselben Stil. Die bewährte Fenstergröße und das skalierbare Layou
 Details und Microsoft-Referenzen stehen in `DESIGN.md`.
 
 Die Diagnose hat die Zeichenketten auf die Übergabe an das Zielprogramm eingegrenzt.
-Diese Version verwendet deshalb einen einzelnen Einfügevorgang (Strg+V).
+Der weiterhin verfügbare Vergleichsmodus verwendet einen einzelnen Einfügevorgang (Strg+V).
 Die Zwischenablage wird vorübergehend genutzt und danach wiederhergestellt,
 sofern zwischenzeitlich nichts Neues kopiert wurde. Der Diktattext wird für den
 Windows-Zwischenablageverlauf und die Cloud-Synchronisation ausgeschlossen.
@@ -75,7 +104,7 @@ von jeweils ungefähr 1 MB werden aufbewahrt und können jederzeit gelöscht wer
   * Das Taskleisten-Icon signalisiert den Aufnahmestatus mit einem roten Punkt.
 * **Nach dem Diktat:**
   * Sobald du die Tastenkombination erneut drückst, wird das Gesprochene lokal auf deinem Rechner transkribiert, durch die inlaut-Textpipeline bereinigt (Scharf-S-Wiederherstellung, Sprachbefehle, Formatierungen) und **direkt an der Cursor-Position in das aktive Fenster eingefügt** (Word, Browser, Outlook, Teams, Editor...).
-  * Die vorherige Zwischenablage wird nach dem Einfügen wiederhergestellt, solange nichts Neues kopiert wurde.
+  * Standardmäßig bleibt die Zwischenablage unberührt. Nur im Vergleichsmodus wird sie vorübergehend verwendet und anschließend wiederhergestellt, solange nichts Neues kopiert wurde.
 
 ---
 
@@ -96,7 +125,7 @@ von jeweils ungefähr 1 MB werden aufbewahrt und können jederzeit gelöscht wer
   * `HotkeyReceiver`: Systemweiter Tastatur-Hook für `Strg + Alt + Leertaste`.
 * **`Inlaut.Platform.Windows`**:
   * `SherpaEngine`: Lokale Inferenz mit FastConformer / Parakeet Modellen auf CPU oder DirectML via `sherpa-onnx`.
-  * `TextInserter`: Unicode-Eingabe für den CLI-Prototyp. Die Tray-App verwendet `ClipboardTextInserter` mit einem Strg+V-Befehl und Wiederherstellung der Zwischenablage.
+  * `TextInserter`: ursprüngliche Unicode-Ausgabe für den CLI-Prototyp und Vergleichstests. Die Tray-App verwendet standardmäßig `DirectTextInserter`; `ClipboardTextInserter` bleibt als auswählbarer Vergleichsmodus erhalten.
 * **`Inlaut.Core`** (.NET 8):
   * Plattformunabhängige Textlogik (`SharpS`, `VoiceCommands`, `Replacements`, `TextPipeline`), identisch zur macOS-Version.
 

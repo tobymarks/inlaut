@@ -44,6 +44,19 @@ public class InlautTrayApplicationContext : ApplicationContext
         _dictateMenuItem = FluentMenu.Item("Diktat starten", "\uE720", (_, _) => ToggleDictation());
         var settingsItem = FluentMenu.Item("Einstellungen…", "\uE713", (_, _) => OpenSettings());
         var helpItem = new ToolStripMenuItem("Hilfe && Diagnose") { Tag = "\uE897" };
+        var clipboardItem = new ToolStripMenuItem("Eingabe per Zwischenablage")
+        {
+            CheckOnClick = true,
+            Checked = _settings.UseClipboardInsertion,
+            ToolTipText = "Aus: direkte Texteingabe ohne Zwischenablage. Ein: bisheriger Einfügeweg zum Vergleich."
+        };
+        clipboardItem.Click += (_, _) =>
+        {
+            _settings.UseClipboardInsertion = clipboardItem.Checked;
+            _settings.Save();
+        };
+        helpItem.DropDownItems.Add(clipboardItem);
+        helpItem.DropDownItems.Add(new ToolStripSeparator());
         helpItem.DropDownItems.Add(FluentMenu.Item("Modellordner öffnen", "\uE8B7", (_, _) => OpenModelFolder()));
         helpItem.DropDownItems.Add(FluentMenu.Item("Diagnoseordner öffnen", "\uE9D9", (_, _) =>
         {
@@ -77,6 +90,7 @@ public class InlautTrayApplicationContext : ApplicationContext
         {
             captureItem.Checked = _captureRemaining > 0;
             captureItem.Enabled = !_recorder.IsRecording && !_isTranscribing;
+            clipboardItem.Enabled = !_recorder.IsRecording && !_isTranscribing;
             captureItem.Text = _captureRemaining > 0 ? $"Testaufnahmen speichern ({_captureRemaining} übrig)" : "Testaufnahmen speichern";
             statusItem.Text = "inlaut · " + (_recorder.IsRecording ? "Aufnahme läuft" : _isTranscribing ? "Text wird erkannt" : _isModelReady ? "Bereit" : "Wird vorbereitet");
             _dictateMenuItem.Text = _recorder.IsRecording ? "Diktat beenden" : "Diktat starten";
@@ -167,7 +181,7 @@ public class InlautTrayApplicationContext : ApplicationContext
             LocalDiagnostics.Write("model-ready", new
             {
                 loadSeconds = loadTimer.Elapsed.TotalSeconds,
-                decoder = "modified_beam_search (transducer) / greedy_search (CTC)",
+                configuration = engine.DiagnosticConfiguration,
                 files = Directory.GetFiles(modelDir).Where(p => p.EndsWith(".onnx") || p.EndsWith("tokens.txt"))
                     .Select(p => new { name = Path.GetFileName(p), bytes = new FileInfo(p).Length }).ToArray()
             });
@@ -305,8 +319,13 @@ public class InlautTrayApplicationContext : ApplicationContext
                 _notifyIcon.ShowBalloonTip(3000, "Keine Sprache erkannt", "Für dieses Diktat wurde kein Text erkannt.", ToolTipIcon.Info);
                 return;
             }
-            await ClipboardTextInserter.InsertAsync(processed);
-            LocalDiagnostics.Write("paste-sent", new { characters = processed.Length, method = "clipboard" });
+            string inputMethod = "clipboard";
+            if (_settings.UseClipboardInsertion)
+                await ClipboardTextInserter.InsertAsync(processed);
+            else
+                inputMethod = await DirectTextInserter.InsertAsync(processed);
+            LocalDiagnostics.Write("input-sent", new { characters = processed.Length,
+                method = inputMethod });
         }
         catch (Exception ex)
         {

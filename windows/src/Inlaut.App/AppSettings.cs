@@ -9,6 +9,7 @@ public class AppSettings
     public string TriggerKeyName { get; set; } = "Linke Strg-Taste";
     public int HoldDelayMs { get; set; } = 220;
     public int DoubleTapWindowMs { get; set; } = 400;
+    public bool UseClipboardInsertion { get; set; } = false;
 
     private static readonly string SettingsFilePath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

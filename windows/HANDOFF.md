@@ -1,7 +1,7 @@
 # Windows handoff — 2026-10-14
 
 Continue on branch `feature/windows-prototype` in `tobymarks/inlaut`.
-Current version: **0.6.1-diagnostics.1**. This file describes the work and open
+Current version: **0.6.4-model-preview.1** (separate Parakeet portable trial; 0.6.3 retains the compact model). This file describes the work and open
 checks from the macOS development session; the source of truth is the code.
 
 ## What the user confirmed
@@ -18,12 +18,29 @@ checks from the macOS development session; the source of truth is the code.
 
 ## Current behavior and changes
 
-- Tray app pastes via clipboard + Ctrl+V on the UI STA thread. Previous clipboard formats
+- Windows continuation: the tray defaults to `DirectTextInserter`. Known native
+  Unicode Edit/RichEdit fields use EM_REPLACESEL with undo and a 2-second timeout,
+  targeting the original control. Read-only, disabled and password fields are
+  rejected; multiline text is rejected for single-line native fields.
+  Other targets use a worker-thread high-resolution timer with 4 ms waits between Unicode scalars, modifier-release
+  timeout, input-field/foreground checks and a nonoverlap gate. No clipboard is
+  accessed. The generic packet path rejects multiline text before insertion;
+  Unicode newlines were ignored by RichEdit in tests, and Return key events can
+  submit chats, so we do not use them. Use the explicit clipboard mode where needed.
+- **Known packet-fallback limitation:** a focus change can redirect queued events before
+  the next focus check aborts. A prior test reproduced one character in the second field;
+  this is an observation, NOT a universal upper bound for slow targets.
+  Already inserted text is retained; there is no automatic retry or clipboard fallback.
+  Native field replacement cannot redirect text into the newly focused field.
+  Metadata records `input-sent` with `native-edit`, `unicode-paced` or `clipboard`.
+- The previous clipboard + Ctrl+V path remains selectable via
+  **Hilfe & Diagnose → Eingabe per Zwischenablage** (unchecked by default).
+  Previous clipboard formats
   are restored after 750 ms if the sequence number is unchanged. Windows history/cloud
   exclusion formats are set. This remains a timed heuristic, not target-app acknowledgement.
-- **Outstanding user requirement:** return to reliable insertion without the clipboard.
+- **User requirement under validation:** reliable insertion without the clipboard.
   The user copies between apps while dictating and does not want interference. Do not
-  describe this requirement as solved. Keep the working clipboard path as a comparison
+  describe this requirement as universally solved. Keep the working clipboard path as a comparison
   while diagnosing/pacing/replacing the CLI's Unicode SendInput path on real Windows.
 - Model initialization runs off the UI thread. Overlapping decodes are blocked.
 - Trigger timer and callbacks run on the UI thread, outside the keyboard hook. Injected
@@ -74,6 +91,57 @@ The app downloads a missing model on first start; GitHub Actions also bundles th
 The Windows Build workflow produces `inlaut-windows-app` with executable, model and docs.
 
 ## Next checks on actual Windows
+
+0.6.3 fallback timing: 4 ms waitable timer, without global timer-resolution changes.
+TextBox/RichTextBox preserved all 84/1260/3360 UTF-16-unit samples, including emoji
+and combining marks. 1260 units took 6.2 s and 3360 units 16.4–16.6 s on this PC.
+No queue-drain delay was observed at this pacing. Native replacement, selection,
+undo, read-only protection, nonoverlap, focus abort and clipboard preservation passed.
+An experimental 1 ms wait queued work faster than RichEdit consumed it (2.9 s
+tail on a long sample); it is deliberately not shipped. SendInput completion is
+still not proof of target delivery. A separate WebView2 test passed textarea and
+contenteditable equality for 72/1094/2919 UTF-16 units; ~5.9–6.0 s for 1094 units.
+The corpus avoids trailing spaces: Chromium turns a trailing ordinary space into
+NBSP in contenteditable (observed in an earlier test, not a lost character).
+Actual Codex field verification remains open; the isolated web test is not that app.
+
+Model selection is now explicitly requested: compare German quality, disk size,
+peak working set and latency before changing the default. The new opt-in
+`Inlaut.ModelBenchmark` console project produces per-clip text/timing and normalized
+word error rate from a local corpus (`expected.json`, `test-1.wav` etc.). Run each
+model in a fresh process. Synthetic speech is only a smoke test, not a sufficient
+basis for a claim of best real-world recognition quality.
+See [MODEL_EVALUATION.md](MODEL_EVALUATION.md) for measured three-model results on
+20 public human clips, corpus limitations, the separate Parakeet quality trial,
+and the still-open broader model/default decision.
+
+Windows 10 Enterprise 22H2 / 192 DPI validation on 2026-10-14:
+- New direct path preserved sentences, umlauts, 100000, supplementary Unicode,
+  combining accents and line breaks in WinForms TextBox and RichTextBox.
+- Native Notepad received the fixed direct-input sample with both line breaks;
+  clipboard sequence number stayed unchanged.
+- Three local synthetic German WAVs (Microsoft Hedda, PCM16 mono 16 kHz) passed
+  SherpaEngine → default TextPipeline → direct input → RichTextBox equality.
+  All words matched the references; one internal sentence period was omitted.
+  This is a tiny synthetic corpus, not a microphone/general-quality benchmark.
+- Old burst insertion also passed in the isolated fields. Original punctuation
+  corruption was NOT reproduced, so its root cause remains unconfirmed.
+- 150 settings resizes and menu image/text separation passed. Native DrawToBitmap
+  renders were visually inspected at 200%; these are control renders, not desktop
+  screenshots. Menus now have measured widths, 40 logical-pixel rows, aligned icon,
+  label and shortcut columns, a right-aligned arrow and a themed checkmark.
+- Desktop capture repeatedly timed out. Actual hover, monitor transitions and
+  other scaling/theme combinations still need verification.
+
+`windows/tests/Inlaut.InputSmoke` is an opt-in interactive input test. It types
+only into its own two fields by default and does not modify clipboard contents.
+It records exact text comparisons and the bounded focus-change limitation.
+`--external` waits up to 90 seconds for Notepad to become foreground and injects
+a fixed sample; use only with a disposable, empty editor. An `external-request.txt`
+beside the executable enables the same mode for launchers without argument support.
+An `audio-request.json` beside the executable enables synthetic audio tests with
+`Model`, `Audio` (test-1.wav etc.) and `Expected` string-array fields. Results stay
+next to the test executable. Never commit real user recordings or transcripts.
 
 1. Inspect actual Windows display scale and test native menu/HUD at that DPI, then 100%,
    150%, 200% where practical, including moving between differently scaled monitors.

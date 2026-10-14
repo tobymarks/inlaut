@@ -39,8 +39,21 @@ internal static class Program
 
                 using (var menu = new FluentMenu())
                 {
-                    menu.Items.Add(FluentMenu.Item("Diktat starten", "\uE720", (_, _) => { }));
+                    menu.Items.Add(new ToolStripMenuItem("inlaut · Bereit") { Enabled = false });
+                    menu.Items.Add(new ToolStripSeparator());
+                    var dictate = FluentMenu.Item("Diktat starten", "\uE720", (_, _) => { });
+                    dictate.ShortcutKeyDisplayString = "Strg links";
+                    menu.Items.Add(dictate);
                     menu.Items.Add(FluentMenu.Item("Einstellungen…", "\uE713", (_, _) => { }));
+                    var help = new ToolStripMenuItem("Hilfe && Diagnose") { Tag = "\uE897" };
+                    help.DropDownItems.Add(new ToolStripMenuItem("Eingabe per Zwischenablage") { Checked = true });
+                    help.DropDownItems.Add(new ToolStripSeparator());
+                    help.DropDownItems.Add(FluentMenu.Item("Modellordner öffnen", "\uE8B7", (_, _) => { }));
+                    help.DropDownItems.Add(FluentMenu.Item("Diagnoseordner öffnen", "\uE9D9", (_, _) => { }));
+                    help.DropDownItems.Add(new ToolStripMenuItem("Testaufnahmen speichern"));
+                    menu.Items.Add(help);
+                    menu.Items.Add(new ToolStripSeparator());
+                    menu.Items.Add(FluentMenu.Item("Beenden", "\uE7E8", (_, _) => { }));
                     var images = new Dictionary<ToolStripItem, Rectangle>();
                     var texts = new Dictionary<ToolStripItem, Rectangle>();
                     menu.Show(host, new Point(20, 20));
@@ -48,9 +61,21 @@ internal static class Program
                     menu.Renderer.RenderItemText += (_, e) => { if (e.Text == e.Item.Text) texts[e.Item] = e.TextRectangle; };
                     menu.Invalidate();
                     await Task.Delay(100);
-                    if (images.Count != 2 || texts.Count != 2) throw new Exception("Menu did not render native image/text slots");
+                    if (images.Count != 4 || texts.Count != 5) throw new Exception("Menu did not render native image/text slots");
                     foreach (var item in images.Keys)
                         if (images[item].IntersectsWith(texts[item])) throw new Exception("Menu image overlaps text");
+                    using (var bitmap = new Bitmap(menu.Width, menu.Height))
+                    {
+                        menu.DrawToBitmap(bitmap, menu.ClientRectangle);
+                        bitmap.Save(Path.Combine(AppContext.BaseDirectory, "menu-native.png"));
+                    }
+                    help.ShowDropDown();
+                    await Task.Delay(100);
+                    using (var bitmap = new Bitmap(help.DropDown.Width, help.DropDown.Height))
+                    {
+                        help.DropDown.DrawToBitmap(bitmap, help.DropDown.ClientRectangle);
+                        bitmap.Save(Path.Combine(AppContext.BaseDirectory, "submenu-native.png"));
+                    }
                     menu.Close();
                 }
                 Console.WriteLine("PASS: menu image and text occupy separate native layout slots");
