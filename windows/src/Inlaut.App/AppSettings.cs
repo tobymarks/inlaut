@@ -4,9 +4,12 @@ namespace Inlaut.App;
 
 public class AppSettings
 {
+    // Missing properties in older settings keep the previously tested German behavior.
+    public string SpeechLanguage { get; set; } = "de";
+    public string InterfaceLanguage { get; set; } = "de";
     // Default to Left Control (VK_LCONTROL = 0xA2), which is right next to Fn on MacBooks
     public uint TriggerVkCode { get; set; } = 0xA2;
-    public string TriggerKeyName { get; set; } = "Linke Strg-Taste";
+    public string TriggerKeyName { get; set; } = UiText.Get("Linke Strg-Taste");
     public int HoldDelayMs { get; set; } = 220;
     public int DoubleTapWindowMs { get; set; } = 400;
     public bool UseClipboardInsertion { get; set; } = false;
@@ -44,10 +47,12 @@ public class AppSettings
         }
         catch
         {
-            LoadWarning = "Einstellungen konnten nicht geladen werden. Die vorhandene Datei bleibt erhalten; vorläufig gelten Standardwerte.";
+            LoadWarning = UiText.Get("Einstellungen konnten nicht geladen werden. Die vorhandene Datei bleibt erhalten; vorläufig gelten Standardwerte.");
         }
 
         var defaultSettings = new AppSettings();
+        if (!File.Exists(path ?? SettingsFilePath) && System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName != "de")
+        { defaultSettings.SpeechLanguage = "en"; defaultSettings.InterfaceLanguage = "en"; }
         return defaultSettings;
     }
 
@@ -79,13 +84,14 @@ public class AppSettings
     }
     public void Validate()
     {
-        if (MicrophoneId == null || TriggerKeyName == null || TriggerMode is not ("combined" or "hold" or "toggle") || IndicatorPosition is not ("bottom" or "top") ||
+        if (SpeechLanguage is not ("de" or "en") || InterfaceLanguage is not ("de" or "en") || MicrophoneId == null || TriggerKeyName == null || TriggerMode is not ("combined" or "hold" or "toggle") || IndicatorPosition is not ("bottom" or "top") ||
             TriggerVkCode > 255 || HoldDelayMs < 100 || HoldDelayMs > 2000 || DoubleTapWindowMs < 100 || DoubleTapWindowMs > 1500)
-            throw new ArgumentException("Ungültige Einstellungen.");
+            throw new ArgumentException(UiText.Get("Ungültige Einstellungen."));
         new Inlaut.Core.TextRules { Replacements = Replacements, Snippets = Snippets }.Validate();
     }
-    public void ApplyTo(Inlaut.Core.TextPipeline pipeline)
+    public void ApplyTo(Inlaut.Core.TextPipeline pipeline, string? activeLanguage = null)
     {
+        pipeline.Languages = [(activeLanguage ?? SpeechLanguage) == "en" ? Inlaut.Core.SpokenLanguage.English : Inlaut.Core.SpokenLanguage.German];
         pipeline.VoiceCommandsEnabled = VoiceCommands;
         pipeline.SharpSEnabled = SharpS;
         pipeline.ReplacementsList = Replacements.ToList();
@@ -96,32 +102,32 @@ public class AppSettings
     {
         return vkCode switch
         {
-            0xA2 => "Strg links",
-            0xA3 => "Strg rechts",
-            0x11 => "Strg",
+            0xA2 => UiText.Get("Strg links"),
+            0xA3 => UiText.Get("Strg rechts"),
+            0x11 => UiText.Get("Strg"),
             0x14 => "Caps Lock",
-            0x12 => "Alt-Taste",
-            0xA4 => "Alt links",
-            0xA5 => "Alt rechts",
-            0x5B => "Windows links",
-            0x5C => "Windows rechts",
-            0xC0 => "^ (Zirkumflex / Tilde)",
-            0xDC => "^ / ° (Dach-Taste)",
-            0x20 => "Leertaste",
-            0x09 => "Tabulator",
+            0x12 => UiText.Get("Alt-Taste"),
+            0xA4 => UiText.Get("Alt links"),
+            0xA5 => UiText.Get("Alt rechts"),
+            0x5B => UiText.Get("Windows links"),
+            0x5C => UiText.Get("Windows rechts"),
+            0xC0 => UiText.Get("^ (Zirkumflex / Tilde)"),
+            0xDC => UiText.Get("^ / ° (Dach-Taste)"),
+            0x20 => UiText.Get("Leertaste"),
+            0x09 => UiText.Get("Tabulator"),
             0x1B => "Escape",
-            0x2D => "Einfügen",
-            0x24 => "Pos 1",
-            0x23 => "Ende",
-            0x21 => "Bild auf",
-            0x22 => "Bild ab",
+            0x2D => UiText.Get("Einfügen"),
+            0x24 => UiText.Get("Pos 1"),
+            0x23 => UiText.Get("Ende"),
+            0x21 => UiText.Get("Bild auf"),
+            0x22 => UiText.Get("Bild ab"),
             0x90 => "Num Lock",
-            0x91 => "Rollen (Scroll Lock)",
+            0x91 => UiText.Get("Rollen (Scroll Lock)"),
             0x13 => "Pause",
             >= 0x70 and <= 0x87 => $"F{vkCode - 0x70 + 1}",
-            >= 0x41 and <= 0x5A => $"Buchstabe '{(char)vkCode}'",
-            >= 0x30 and <= 0x39 => $"Ziffer '{(char)vkCode}'",
-            _ => $"Taste (Code {vkCode} / 0x{vkCode:X2})"
+            >= 0x41 and <= 0x5A => UiText.Format("Buchstabe '{0}'", (char)vkCode),
+            >= 0x30 and <= 0x39 => UiText.Format("Ziffer '{0}'", (char)vkCode),
+            _ => UiText.Format("Taste (Code {0} / 0x{0:X2})", vkCode)
         };
     }
 }

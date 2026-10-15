@@ -18,8 +18,9 @@ public static class VoiceCommands
     {
         if (string.IsNullOrEmpty(text) || languages.Count == 0) return text;
 
-        var matches = CommandRegex.Matches(text);
-        if (matches.Count == 0) return text;
+        var matches = CommandRegex.Matches(text).Cast<Match>().Where(match =>
+            languages.Contains(match.Groups[2].Value.StartsWith("new", StringComparison.OrdinalIgnoreCase) ? SpokenLanguage.English : SpokenLanguage.German)).ToArray();
+        if (matches.Length == 0) return text;
 
         var outText = new System.Text.StringBuilder();
         int cursor = 0;

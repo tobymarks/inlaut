@@ -34,7 +34,7 @@ public class RecordingIndicatorForm : FluentForm
         ClientSize = new Size(224, 48);
         BackColor = WindowsTheme.Surface;
         Tag = "surface";
-        AccessibleName = "inlaut Aufnahmestatus";
+        AccessibleName = UiText.Get("inlaut Aufnahmestatus");
         DoubleBuffered = true;
 
         _animTimer = new System.Windows.Forms.Timer
@@ -65,7 +65,7 @@ public class RecordingIndicatorForm : FluentForm
         _messageTimer.Stop();
         _levelProvider = levelProvider;
         _phase = IndicatorPhase.Recording;
-        AccessibleDescription = "Aufnahme läuft";
+        AccessibleDescription = UiText.Get("Aufnahme läuft");
         UpdatePosition();
         Show();
         if (WindowsTheme.Animations) _animTimer.Start();
@@ -76,7 +76,7 @@ public class RecordingIndicatorForm : FluentForm
     {
         _messageTimer.Stop();
         _phase = IndicatorPhase.Transcribing;
-        AccessibleDescription = "Sprache wird in Text umgewandelt";
+        AccessibleDescription = UiText.Get("Sprache wird in Text umgewandelt");
         if (WindowsTheme.Animations) _animTimer.Start();
         _levelProvider = null;
         UpdatePosition();
@@ -171,7 +171,7 @@ public class RecordingIndicatorForm : FluentForm
     {
         if (!IsHandleCreated) return;
         using var graphics = CreateGraphics();
-        string text = _phase == IndicatorPhase.Message ? _message : "Wird erkannt…";
+        string text = _phase == IndicatorPhase.Message ? _message : UiText.Get("Wird erkannt…");
         var measured = TextRenderer.MeasureText(graphics, text, Font, Size.Empty, TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
         _layout = IndicatorLayout.Create(DeviceDpi, measured);
         ClientSize = _layout.Size;
@@ -190,7 +190,7 @@ public class RecordingIndicatorForm : FluentForm
         g.FillPath(fill, path);
         g.DrawPath(border, path);
         var icon = _layout.Icon;
-        string text = _phase == IndicatorPhase.Recording ? "Hört zu…" : _phase == IndicatorPhase.Transcribing ? "Wird erkannt…" : _message;
+        string text = _phase == IndicatorPhase.Recording ? UiText.Get("Hört zu…") : _phase == IndicatorPhase.Transcribing ? UiText.Get("Wird erkannt…") : _message;
         TextRenderer.DrawText(g, text, Font, _layout.Text, WindowsTheme.Text,
             TextFormatFlags.NoPadding | TextFormatFlags.SingleLine | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis);
         if (_phase == IndicatorPhase.Recording)

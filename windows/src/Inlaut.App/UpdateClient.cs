@@ -17,13 +17,13 @@ internal sealed class UpdateClient : IDisposable
     {
         for (int redirects = 0; redirects < 5; redirects++)
         {
-            if (url.Scheme != "https" || !url.IsDefaultPort || url.UserInfo != "" || url.Host is not ("inlaut.de" or "github.com" or "release-assets.githubusercontent.com" or "objects.githubusercontent.com")) throw new IOException("Unzulässige Download-Weiterleitung.");
+            if (url.Scheme != "https" || !url.IsDefaultPort || url.UserInfo != "" || url.Host is not ("inlaut.de" or "github.com" or "release-assets.githubusercontent.com" or "objects.githubusercontent.com")) throw new IOException(UiText.Get("Unzulässige Download-Weiterleitung."));
             var response = await _http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
             if ((int)response.StatusCode is >= 300 and < 400 && response.Headers.Location != null)
             { var location = response.Headers.Location; response.Dispose(); url = location.IsAbsoluteUri ? location : new Uri(url, location); continue; }
             return response;
         }
-        throw new IOException("Zu viele Download-Weiterleitungen.");
+        throw new IOException(UiText.Get("Zu viele Download-Weiterleitungen."));
     }
     public async Task<UpdateManifest?> Check(bool beta, CancellationToken token)
     {
@@ -44,12 +44,12 @@ internal sealed class UpdateClient : IDisposable
         try
         {
             using var response = await Get(new Uri(manifest.Url), token); response.EnsureSuccessStatusCode();
-            if (response.Content.Headers.ContentLength is long size && size != manifest.Size) throw new IOException("Download-Größe stimmt nicht.");
+            if (response.Content.Headers.ContentLength is long size && size != manifest.Size) throw new IOException(UiText.Get("Download-Größe stimmt nicht."));
             using var stream = await response.Content.ReadAsStreamAsync(token);
             await using var file = new FileStream(destination, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true);
             created = true;
             long received = await CopyBounded(stream, file, manifest.Size, progress, token);
-            if (received != manifest.Size) throw new IOException("Update-Download unvollständig.");
+            if (received != manifest.Size) throw new IOException(UiText.Get("Update-Download unvollständig."));
         }
         catch { if (created && File.Exists(destination)) File.Delete(destination); throw; }
     }
@@ -58,7 +58,7 @@ internal sealed class UpdateClient : IDisposable
         byte[] buffer = new byte[81920]; long total = 0; int count;
         while ((count = await input.ReadAsync(buffer, token)) != 0)
         {
-            total += count; if (total > limit) throw new IOException("Download überschreitet die erlaubte Größe.");
+            total += count; if (total > limit) throw new IOException(UiText.Get("Download überschreitet die erlaubte Größe."));
             await output.WriteAsync(buffer.AsMemory(0, count), token); progress?.Report((int)(total * 100 / limit));
         }
         return total;

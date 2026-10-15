@@ -57,3 +57,8 @@ try
     Console.WriteLine("PASS: lossless PCM16 capture, prepared audio, Unicode transcript and empty result");
 }
 finally { Directory.Delete(captureRoot, true); }
+
+var english = new TextPipeline { Languages = [SpokenLanguage.English] };
+if (english.ProcessDictation("First line new line second line new paragraph last paragraph") != "First line\nSecond line\n\nLast paragraph" || english.ProcessDictation("gross") != "gross" || english.ProcessDictation("neue Zeile") != "neue Zeile")
+    throw new Exception("English pipeline commands or language isolation failed");
+Console.WriteLine("PASS: English commands and isolation from German spelling/commands");

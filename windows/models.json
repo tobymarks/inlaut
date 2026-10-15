@@ -1,0 +1,62 @@
+[
+  {
+    "language": "de",
+    "directory": "fastconformer-de",
+    "baseUrl": "https://huggingface.co/csukuangfj/sherpa-onnx-nemo-transducer-stt_de_fastconformer_hybrid_large_pc-int8/resolve/df32693bc4328136c455af24035a5ee1ec708df0/",
+    "archiveUrl": null,
+    "archiveSha256": null,
+    "archiveDirectory": null,
+    "files": [
+      {
+        "name": "encoder.int8.onnx",
+        "size": 131114014,
+        "sha256": "10fbb959c36c461afb02ea87c109119eb001f30e91a130663bd6d5bbcba74ba9"
+      },
+      {
+        "name": "decoder.int8.onnx",
+        "size": 3955863,
+        "sha256": "4633a4b0a3f21f7ace4df02e772f5b5e63d45f84a71ee1e2660998fc4beb46ad"
+      },
+      {
+        "name": "joiner.int8.onnx",
+        "size": 1408183,
+        "sha256": "80f493f2885f6ccbd9cf9c20f4b6c616c2eb6dae48df6a5d4a0653354f7fe66b"
+      },
+      {
+        "name": "tokens.txt",
+        "size": 10686,
+        "sha256": "abb1136142604d6d1766ad5060bd4f4b1048d7a096cd094b2d40eec3e666be9f"
+      }
+    ]
+  },
+  {
+    "language": "en",
+    "directory": "fastconformer-en",
+    "baseUrl": null,
+    "archiveUrl": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-nemo-fast-conformer-transducer-en-24500-int8.tar.bz2",
+    "archiveSha256": "0a3323333a70360b6d85bc88b076ccaeeb31e90ce8cc1b72f322ba85d8d0632d",
+    "archiveDirectory": "sherpa-onnx-nemo-fast-conformer-transducer-en-24500-int8",
+    "files": [
+      {
+        "name": "encoder.int8.onnx",
+        "size": 131113521,
+        "sha256": "a4dfc9dc8ebac0be98239733a37d45725c133a67bc7c041ee33829074af46011"
+      },
+      {
+        "name": "decoder.int8.onnx",
+        "size": 3955864,
+        "sha256": "800a2159c120d80480b0b67c4d75600f04e4b68d2b703ed22682e93272a542ca"
+      },
+      {
+        "name": "joiner.int8.onnx",
+        "size": 1408182,
+        "sha256": "2c6b719177aa9bff94434450cb527a35b45911d240389bd7d225b76acc4a6cdf"
+      },
+      {
+        "name": "tokens.txt",
+        "size": 11433,
+        "sha256": "89c165b98df7af718ec0e872177279bfad4ade51331f1be92753c9583a1ef30d"
+      }
+    ]
+  }
+]

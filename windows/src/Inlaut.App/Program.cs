@@ -10,12 +10,13 @@ internal static class Program
     [STAThread]
     static void Main()
     {
+        UiText.Language = AppSettings.Load().InterfaceLanguage;
         using var mutex = new Mutex(true, AppMutexName, out bool isOnlyInstance);
 
         if (!isOnlyInstance)
         {
             ApplicationConfiguration.Initialize();
-            AppDialog.Information("inlaut läuft bereits", "Du findest inlaut im Infobereich der Taskleiste.");
+            AppDialog.Information(UiText.Get("inlaut läuft bereits"), UiText.Get("Du findest inlaut im Infobereich der Taskleiste."));
             return;
         }
 

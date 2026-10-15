@@ -16,6 +16,7 @@ public class InlautTrayApplicationContext : ApplicationContext
     private readonly RecordingIndicatorForm _indicator;
     private readonly TextPipeline _pipeline;
     private readonly AppSettings _settings;
+    private readonly string _activeSpeechLanguage;
     private ToolStripMenuItem? _dictateMenuItem;
     private SettingsForm? _settingsForm;
     private SherpaEngine? _engine;
@@ -38,9 +39,10 @@ public class InlautTrayApplicationContext : ApplicationContext
     {
         LocalDiagnostics.Write("startup", new { os = Environment.OSVersion.VersionString });
         _settings = AppSettings.Load();
+        _activeSpeechLanguage = _settings.SpeechLanguage;
         _recorder = new AudioRecorder();
         _pipeline = new TextPipeline();
-        _settings.ApplyTo(_pipeline);
+        _settings.ApplyTo(_pipeline, _activeSpeechLanguage);
         _hotkeyReceiver = new HotkeyReceiver();
         _indicator = new RecordingIndicatorForm();
         _keyTrigger = new KeyTrigger(_indicator, _settings.TriggerVkCode);
@@ -57,37 +59,37 @@ public class InlautTrayApplicationContext : ApplicationContext
         InitIcons();
 
         var contextMenu = new FluentMenu();
-        var statusItem = new ToolStripMenuItem("inlaut · Wird vorbereitet") { Enabled = false };
-        _dictateMenuItem = FluentMenu.Item("Diktat starten", "\uE720", (_, _) => ToggleDictation());
-        var settingsItem = FluentMenu.Item("Einstellungen…", "\uE713", (_, _) => OpenSettings());
-        var lastDictationItem = FluentMenu.Item("Letztes Diktat…", "\uE8A5", (_, _) =>
+        var statusItem = new ToolStripMenuItem(UiText.Get("inlaut · Wird vorbereitet")) { Enabled = false };
+        _dictateMenuItem = FluentMenu.Item(UiText.Get("Diktat starten"), "\uE720", (_, _) => ToggleDictation());
+        var settingsItem = FluentMenu.Item(UiText.Get("Einstellungen…"), "\uE713", (_, _) => OpenSettings());
+        var lastDictationItem = FluentMenu.Item(UiText.Get("Letztes Diktat…"), "\uE8A5", (_, _) =>
         {
             if (_lastDictation != null) new DictationReviewForm(_lastDictation).Show();
         });
-        var helpItem = new ToolStripMenuItem("Hilfe && Diagnose") { Tag = "\uE897" };
-        var clipboardItem = new ToolStripMenuItem("Eingabe per Zwischenablage")
+        var helpItem = new ToolStripMenuItem(UiText.Get("Hilfe && Diagnose")) { Tag = "\uE897" };
+        var clipboardItem = new ToolStripMenuItem(UiText.Get("Eingabe per Zwischenablage"))
         {
             CheckOnClick = true,
             Checked = _settings.UseClipboardInsertion,
-            ToolTipText = "Aus: direkte Texteingabe ohne Zwischenablage. Ein: bisheriger Einfügeweg zum Vergleich."
+            ToolTipText = UiText.Get("Aus: direkte Texteingabe ohne Zwischenablage. Ein: bisheriger Einfügeweg zum Vergleich.")
         };
         clipboardItem.Click += (_, _) =>
         {
             bool previous = _settings.UseClipboardInsertion;
             try { _settings.UseClipboardInsertion = clipboardItem.Checked; _settings.Save(); }
-            catch (Exception ex) { _settings.UseClipboardInsertion = previous; clipboardItem.Checked = previous; AppDialog.Error("Einstellung nicht gespeichert", ex.Message); }
+            catch (Exception ex) { _settings.UseClipboardInsertion = previous; clipboardItem.Checked = previous; AppDialog.Error(UiText.Get("Einstellung nicht gespeichert"), UiText.Get(ex.Message)); }
         };
         helpItem.DropDownItems.Add(clipboardItem);
         helpItem.DropDownItems.Add(new ToolStripSeparator());
-        helpItem.DropDownItems.Add(FluentMenu.Item("Modellordner öffnen", "\uE8B7", (_, _) => OpenModelFolder()));
-        helpItem.DropDownItems.Add(FluentMenu.Item("Diagnoseordner öffnen", "\uE9D9", (_, _) =>
+        helpItem.DropDownItems.Add(FluentMenu.Item(UiText.Get("Modellordner öffnen"), "\uE8B7", (_, _) => OpenModelFolder()));
+        helpItem.DropDownItems.Add(FluentMenu.Item(UiText.Get("Diagnoseordner öffnen"), "\uE9D9", (_, _) =>
         {
             Directory.CreateDirectory(LocalDiagnostics.DirectoryPath);
             Process.Start(new ProcessStartInfo("explorer.exe", LocalDiagnostics.DirectoryPath) { UseShellExecute = true });
         }));
-        var captureItem = new ToolStripMenuItem("Testaufnahmen speichern")
+        var captureItem = new ToolStripMenuItem(UiText.Get("Testaufnahmen speichern"))
         {
-            ToolTipText = "Speichert bis zu 10 Diktate mit Audio und Text lokal. Keine Übertragung."
+            ToolTipText = UiText.Get("Speichert bis zu 10 Diktate mit Audio und Text lokal. Keine Übertragung.")
         };
         captureItem.Click += (_, _) =>
         {
@@ -96,20 +98,20 @@ public class InlautTrayApplicationContext : ApplicationContext
             {
                 _captureRemaining = 10;
                 _captureRoot = Path.Combine(LocalDiagnostics.DirectoryPath, "captures", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N")[..8]);
-                _notifyIcon?.ShowBalloonTip(5000, "Testaufnahmen aktiviert", "Die nächsten 10 Diktate werden mit Audio und Text lokal im Diagnoseordner gespeichert. Keine automatische Übertragung.", ToolTipIcon.Info);
+                _notifyIcon?.ShowBalloonTip(5000, UiText.Get("Testaufnahmen aktiviert"), UiText.Get("Die nächsten 10 Diktate werden mit Audio und Text lokal im Diagnoseordner gespeichert. Keine automatische Übertragung."), ToolTipIcon.Info);
             }
             captureItem.Checked = _captureRemaining > 0;
         };
         helpItem.DropDownItems.Add(captureItem);
-        var reportItem = FluentMenu.Item("Letzten Fehlerbericht ansehen…", "\uE9D9", (_, _) => new CrashReportForm(CrashJournal.Current).Show());
+        var reportItem = FluentMenu.Item(UiText.Get("Letzten Fehlerbericht ansehen…"), "\uE9D9", (_, _) => new CrashReportForm(CrashJournal.Current).Show());
         helpItem.DropDownItems.Add(reportItem);
-        helpItem.DropDownItems.Add(FluentMenu.Item("Nach Updates suchen…", "\uE895", (_, _) => OpenUpdates()));
+        helpItem.DropDownItems.Add(FluentMenu.Item(UiText.Get("Nach Updates suchen…"), "\uE895", (_, _) => OpenUpdates()));
         helpItem.DropDownItems.Add(new ToolStripSeparator());
-        helpItem.DropDownItems.Add(FluentMenu.Item("Über inlaut", "\uE946", (_, _) => ShowAbout()));
+        helpItem.DropDownItems.Add(FluentMenu.Item(UiText.Get("Über inlaut"), "\uE946", (_, _) => ShowAbout()));
         contextMenu.Items.AddRange(new ToolStripItem[]
         {
             statusItem, new ToolStripSeparator(), _dictateMenuItem, lastDictationItem, settingsItem, helpItem,
-            new ToolStripSeparator(), FluentMenu.Item("Beenden", "\uE7E8", (_, _) => Exit())
+            new ToolStripSeparator(), FluentMenu.Item(UiText.Get("Beenden"), "\uE7E8", (_, _) => Exit())
         });
         contextMenu.Opening += (_, _) =>
         {
@@ -119,9 +121,9 @@ public class InlautTrayApplicationContext : ApplicationContext
             captureItem.Checked = _captureRemaining > 0;
             captureItem.Enabled = !_recorder.IsRecording && !_isTranscribing;
             clipboardItem.Enabled = !_recorder.IsRecording && !_isTranscribing;
-            captureItem.Text = _captureRemaining > 0 ? $"Testaufnahmen speichern ({_captureRemaining} übrig)" : "Testaufnahmen speichern";
-            statusItem.Text = "inlaut · " + (_recorder.IsRecording ? "Aufnahme läuft" : _isTranscribing ? "Text wird erkannt" : _isModelReady ? "Bereit" : "Wird vorbereitet");
-            _dictateMenuItem.Text = _recorder.IsRecording ? "Diktat beenden" : "Diktat starten";
+            captureItem.Text = _captureRemaining > 0 ? UiText.Format("Testaufnahmen speichern ({0} übrig)", _captureRemaining) : UiText.Get("Testaufnahmen speichern");
+            statusItem.Text = "inlaut · " + (_recorder.IsRecording ? UiText.Get("Aufnahme läuft") : _isTranscribing ? UiText.Get("Text wird erkannt") : _isModelReady ? UiText.Get("Bereit") : UiText.Get("Wird vorbereitet"));
+            _dictateMenuItem.Text = _recorder.IsRecording ? UiText.Get("Diktat beenden") : UiText.Get("Diktat starten");
             _dictateMenuItem.Tag = _recorder.IsRecording ? "\uE71A" : "\uE720";
             _dictateMenuItem.ShortcutKeyDisplayString = AppSettings.GetFriendlyKeyName(_settings.TriggerVkCode);
             _dictateMenuItem.Enabled = _isModelReady && !_isTranscribing && !_keyTrigger.IsSuspended;
@@ -132,7 +134,7 @@ public class InlautTrayApplicationContext : ApplicationContext
         {
             Icon = _defaultIcon,
             ContextMenuStrip = contextMenu,
-            Text = "inlaut - Initialisiere Sprachmodell...",
+            Text = UiText.Get("inlaut - Initialisiere Sprachmodell..."),
             Visible = true
         };
 
@@ -161,7 +163,7 @@ public class InlautTrayApplicationContext : ApplicationContext
         {
             _ = InitializeModelAsync();
             if (CrashJournal.Current.ReadReport() != null) new CrashReportForm(CrashJournal.Current).Show();
-            if (AppSettings.LoadWarning != null) AppDialog.Information("Einstellungen prüfen", AppSettings.LoadWarning);
+            if (AppSettings.LoadWarning != null) AppDialog.Information(UiText.Get("Einstellungen prüfen"), AppSettings.LoadWarning);
         }));
     }
 
@@ -201,8 +203,8 @@ public class InlautTrayApplicationContext : ApplicationContext
     {
         try
         {
-            string modelDir = ModelManager.GetModelDirectory();
-            if (!ModelManager.HasValidModel(modelDir))
+            string modelDir = ModelManager.GetModelDirectory(_activeSpeechLanguage);
+            if (!ModelManager.HasValidModel(modelDir, _activeSpeechLanguage))
             {
                 using var progressForm = new DownloadProgressForm();
                 progressForm.Show();
@@ -210,7 +212,7 @@ public class InlautTrayApplicationContext : ApplicationContext
                 modelDir = await ModelManager.EnsureModelAvailableAsync((status, percent) =>
                 {
                     progressForm.UpdateProgress(status, percent);
-                });
+                }, _activeSpeechLanguage);
 
                 await Task.Delay(400);
                 progressForm.Close();
@@ -218,7 +220,7 @@ public class InlautTrayApplicationContext : ApplicationContext
             }
 
             var loadTimer = Stopwatch.StartNew();
-            var engine = await Task.Run(() => new SherpaEngine(modelDir, threads: Math.Clamp(Environment.ProcessorCount / 2, 2, 4)));
+            var engine = await Task.Run(() => LoadVerifiedModel(modelDir));
             if (_isExiting) { engine.Dispose(); return; }
             _engine = engine;
             LocalDiagnostics.Write("model-ready", new
@@ -233,28 +235,34 @@ public class InlautTrayApplicationContext : ApplicationContext
             UpdateReadyStatus();
             _notifyIcon.ShowBalloonTip(
                 3500,
-                "inlaut ist bereit",
-                $"• {_settings.TriggerKeyName} halten: Diktieren bis zum Loslassen\n• Doppeltippen: Daueraufnahme\n• Taste ändern: Rechtsklick auf Tray -> Einstellungen",
+                UiText.Get("inlaut ist bereit"),
+                UiText.Format("• {0} halten: Diktieren bis zum Loslassen\n• Doppeltippen: Daueraufnahme\n• Taste ändern: Rechtsklick auf Tray -> Einstellungen", AppSettings.GetFriendlyKeyName(_settings.TriggerVkCode)),
                 ToolTipIcon.Info
             );
         }
         catch (Exception ex)
         {
             if (_isExiting) return;
-            _notifyIcon.Text = "inlaut - Fehler beim Laden des Modells";
-            AppDialog.Error("Sprachmodell konnte nicht geladen werden", ex.Message);
+            _notifyIcon.Text = UiText.Get("inlaut - Fehler beim Laden des Modells");
+            AppDialog.Error(UiText.Get("Sprachmodell konnte nicht geladen werden"), UiText.Get(ex.Message));
         }
+    }
+
+    private SherpaEngine LoadVerifiedModel(string directory)
+    {
+        ModelManager.VerifyModel(directory, _activeSpeechLanguage);
+        return new SherpaEngine(directory, threads: Math.Clamp(Environment.ProcessorCount / 2, 2, 4));
     }
 
     private void UpdateReadyStatus()
     {
-        _settings.ApplyTo(_pipeline);
+        _settings.ApplyTo(_pipeline, _activeSpeechLanguage);
         _indicator.PositionPreference = _settings.IndicatorPosition;
         _keyTrigger.Mode = _settings.TriggerMode;
-        _notifyIcon.Text = _isModelReady ? $"inlaut - Bereit ({_settings.TriggerKeyName})" : "inlaut - Lade Sprachmodell...";
+        _notifyIcon.Text = _isModelReady ? UiText.Format("inlaut - Bereit ({0})", AppSettings.GetFriendlyKeyName(_settings.TriggerVkCode)) : UiText.Get("inlaut - Lade Sprachmodell...");
         if (_dictateMenuItem != null)
         {
-            _dictateMenuItem.Text = "Diktat starten";
+            _dictateMenuItem.Text = UiText.Get("Diktat starten");
             _dictateMenuItem.ShortcutKeyDisplayString = AppSettings.GetFriendlyKeyName(_settings.TriggerVkCode);
         }
     }
@@ -277,7 +285,7 @@ public class InlautTrayApplicationContext : ApplicationContext
 
         if (!_isModelReady || _engine == null)
         {
-            _indicator.ShowMessage("Modell wird vorbereitet…");
+            _indicator.ShowMessage(UiText.Get("Modell wird vorbereitet…"));
             return;
         }
 
@@ -290,14 +298,14 @@ public class InlautTrayApplicationContext : ApplicationContext
             _recorder.Start(_settings.MicrophoneId);
             LocalDiagnostics.Write("recording", new { });
             _notifyIcon.Icon = _recordingIcon;
-            _notifyIcon.Text = _captureRemaining > 0 ? "inlaut - Testaufnahme (Audio + Text werden gespeichert)" : "inlaut - Aufnahme läuft...";
+            _notifyIcon.Text = _captureRemaining > 0 ? UiText.Get("inlaut - Testaufnahme (Audio + Text werden gespeichert)") : UiText.Get("inlaut - Aufnahme läuft...");
 
             // Show floating indicator at bottom center
             _indicator.ShowRecording(() => _recorder.CurrentLevel);
         }
         catch (Exception ex)
         {
-            AppDialog.Error("Mikrofon konnte nicht gestartet werden", ex.Message);
+            AppDialog.Error(UiText.Get("Mikrofon konnte nicht gestartet werden"), UiText.Get(ex.Message));
         }
     }
 
@@ -308,7 +316,7 @@ public class InlautTrayApplicationContext : ApplicationContext
         var engine = _engine;
         _isTranscribing = true;
         _notifyIcon.Icon = _defaultIcon;
-        _notifyIcon.Text = "inlaut - Transkribiere...";
+        _notifyIcon.Text = UiText.Get("inlaut - Transkribiere...");
         _indicator.ShowTranscribing();
         string? statusMessage = null;
 
@@ -322,7 +330,7 @@ public class InlautTrayApplicationContext : ApplicationContext
             if (captureRequested) _captureRemaining--;
             if (samples.Length < 1600 && !captureRequested)
             {
-                statusMessage = "Zu kurz aufgenommen";
+                statusMessage = UiText.Get("Zu kurz aufgenommen");
                 return;
             }
             bool captureFailed = false;
@@ -368,15 +376,15 @@ public class InlautTrayApplicationContext : ApplicationContext
                 }
             });
             if (captureFailed)
-                _notifyIcon.ShowBalloonTip(4000, "Testaufnahme nicht vollständig gespeichert", "Bitte freien Speicherplatz und den Diagnoseordner prüfen. Das Diktieren bleibt verfügbar.", ToolTipIcon.Warning);
+                _notifyIcon.ShowBalloonTip(4000, UiText.Get("Testaufnahme nicht vollständig gespeichert"), UiText.Get("Bitte freien Speicherplatz und den Diagnoseordner prüfen. Das Diktieren bleibt verfügbar."), ToolTipIcon.Warning);
             if (processed.Length == 0)
             {
-                statusMessage = "Keine Sprache erkannt";
+                statusMessage = UiText.Get("Keine Sprache erkannt");
                 return;
             }
             string inputMethod = "clipboard";
             _lastDictation = processed; // Memory only, replaced by the next recognized dictation.
-            if (_dictationTarget == null) throw new InvalidOperationException("Kein ursprüngliches Eingabefeld verfügbar.");
+            if (_dictationTarget == null) throw new InvalidOperationException(UiText.Get("Kein ursprüngliches Eingabefeld verfügbar."));
             if (_settings.UseClipboardInsertion)
                 await ClipboardTextInserter.InsertAsync(processed, _dictationTarget);
             else
@@ -387,8 +395,8 @@ public class InlautTrayApplicationContext : ApplicationContext
         catch (Exception ex)
         {
             LocalDiagnostics.Write("failed", new { type = ex.GetType().Name, code = ex.HResult });
-            _notifyIcon.ShowBalloonTip(5000, "Diktat konnte nicht abgeschlossen werden", ex.Message +
-                (_lastDictation != null ? " Der zuletzt erkannte Text ist im Menü unter „Letztes Diktat“ verfügbar." : ""), ToolTipIcon.Error);
+            _notifyIcon.ShowBalloonTip(5000, UiText.Get("Diktat konnte nicht abgeschlossen werden"), UiText.Get(ex.Message) +
+                (_lastDictation != null ? UiText.Get(" Der zuletzt erkannte Text ist im Menü unter „Letztes Diktat“ verfügbar.") : ""), ToolTipIcon.Error);
         }
         finally
         {
@@ -415,7 +423,7 @@ public class InlautTrayApplicationContext : ApplicationContext
 
     private void OpenModelFolder()
     {
-        string dir = ModelManager.GetModelDirectory();
+        string dir = ModelManager.GetModelDirectory(_activeSpeechLanguage);
         if (Directory.Exists(dir))
         {
             Process.Start(new ProcessStartInfo("explorer.exe", dir) { UseShellExecute = true });
@@ -438,7 +446,7 @@ public class InlautTrayApplicationContext : ApplicationContext
     {
         if (_isTranscribing)
         {
-            _notifyIcon.ShowBalloonTip(2000, "inlaut", "Bitte die laufende Transkription abwarten.", ToolTipIcon.Info);
+            _notifyIcon.ShowBalloonTip(2000, "inlaut", UiText.Get("Bitte die laufende Transkription abwarten."), ToolTipIcon.Info);
             return;
         }
         _isExiting = true;
@@ -472,10 +480,10 @@ public class InlautTrayApplicationContext : ApplicationContext
             _keyTrigger.IsSuspended = true;
             try
             {
-                bool enabled = MessageBox.Show("Soll inlaut täglich nach Updates suchen?\n\nDabei wird inlaut.de kontaktiert (IP-Adresse und technische Verbindungsdaten, keine Diktate). Downloads von GitHub und Installationen erfolgen erst nach deinem Klick. Du kannst dies in den Einstellungen ändern.", "inlaut aktuell halten", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+                bool enabled = MessageBox.Show(UiText.Get("Soll inlaut täglich nach Updates suchen?\n\nDabei wird inlaut.de kontaktiert (IP-Adresse und technische Verbindungsdaten, keine Diktate). Downloads von GitHub und Installationen erfolgen erst nach deinem Klick. Du kannst dies in den Einstellungen ändern."), UiText.Get("inlaut aktuell halten"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
                 var next = _settings.Clone(); next.UpdateConsentAsked = true; next.AutomaticUpdates = enabled; next.Save(); _settings.CopyFrom(next);
             }
-            catch (Exception ex) { _settings.UpdateConsentAsked = true; AppDialog.Error("Update-Einstellung nicht gespeichert", ex.Message); }
+            catch (Exception ex) { _settings.UpdateConsentAsked = true; AppDialog.Error(UiText.Get("Update-Einstellung nicht gespeichert"), UiText.Get(ex.Message)); }
             finally { _keyTrigger.IsSuspended = false; }
         }
         if (!_settings.AutomaticUpdates || DateTimeOffset.UtcNow - _lastUpdateAttempt < TimeSpan.FromHours(24)) return;
@@ -489,7 +497,7 @@ public class InlautTrayApplicationContext : ApplicationContext
             if (result?.IsNewer(LocalDiagnostics.Version.Split('+')[0], _settings.BetaUpdates) == true)
             {
                 _availableUpdate = result;
-                if (CanUpdate()) _notifyIcon.ShowBalloonTip(8000, "inlaut-Update verfügbar", "Version " + result.Version + " · Zum Prüfen und Installieren hier klicken oder Hilfe → Nach Updates suchen öffnen.", ToolTipIcon.Info);
+                if (CanUpdate()) _notifyIcon.ShowBalloonTip(8000, UiText.Get("inlaut-Update verfügbar"), "Version " + result.Version + UiText.Get(" · Zum Prüfen und Installieren hier klicken oder Hilfe → Nach Updates suchen öffnen."), ToolTipIcon.Info);
             }
         }
         catch { /* Offline/background failures stay quiet. Manual checks explain errors. */ }

@@ -23,20 +23,28 @@ $helper = Join-Path $destination 'update-host'
 & $DotnetPath publish (Join-Path $windowsRoot 'src/Inlaut.UpdateHost/Inlaut.UpdateHost.csproj') -c Release -r win-x64 --self-contained true "-p:Version=$version" -p:Product=inlaut "-p:InformationalVersion=$version" -p:IncludeSourceRevisionInInformationalVersion=false -o $helper
 if ($LASTEXITCODE -ne 0) { throw 'Update helper publish failed.' }
 Copy-Item -LiteralPath (Join-Path $helper 'Inlaut.UpdateHost.exe') -Destination $payload
-$modelTarget = Join-Path $payload 'models'
-New-Item -ItemType Directory -Path $modelTarget | Out-Null
-$hashes = [ordered]@{
-    'decoder.int8.onnx' = '4633A4B0A3F21F7ACE4DF02E772F5B5E63D45F84A71EE1E2660998FC4BEB46AD'
-    'encoder.int8.onnx' = '10FBB959C36C461AFB02EA87C109119EB001F30E91A130663BD6D5BBCBA74BA9'
-    'joiner.int8.onnx' = '80F493F2885F6CCBD9CF9C20F4B6C616C2EB6DAE48DF6A5D4A0653354F7FE66B'
-    'tokens.txt' = 'ABB1136142604D6D1766AD5060BD4F4B1048D7A096CD094B2D40EEC3E666BE9F'
-}
-$modelUrl = 'https://huggingface.co/csukuangfj/sherpa-onnx-nemo-transducer-stt_de_fastconformer_hybrid_large_pc-int8/resolve/main'
-foreach ($name in $hashes.Keys) {
-    $target = Join-Path $modelTarget $name
-    if ($ModelDirectory) { Copy-Item -LiteralPath (Join-Path $ModelDirectory $name) -Destination $target }
-    else { Invoke-WebRequest -Uri "$modelUrl/$name" -OutFile $target }
-    if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $hashes[$name]) { throw "Model checksum mismatch: $name" }
+$catalog = Get-Content -LiteralPath (Join-Path $windowsRoot 'models.json') -Raw | ConvertFrom-Json
+foreach ($model in $catalog) {
+    $modelTarget = Join-Path $payload "models/$($model.directory)"
+    New-Item -ItemType Directory -Path $modelTarget -Force | Out-Null
+    $source = $null
+    if ($ModelDirectory -and $model.language -eq 'de') { $source = $ModelDirectory }
+    elseif ($model.archiveUrl) {
+        $archive = Join-Path $destination "$($model.language).tar.bz2"
+        Invoke-WebRequest -Uri $model.archiveUrl -OutFile $archive
+        if ((Get-FileHash $archive -Algorithm SHA256).Hash -ne $model.archiveSha256) { throw 'Model archive checksum mismatch' }
+        & tar -xf $archive -C $destination
+        if ($LASTEXITCODE -ne 0) { throw 'Model archive extraction failed' }
+        $source = Join-Path $destination $model.archiveDirectory
+    }
+    foreach ($file in $model.files) {
+        $target = Join-Path $modelTarget $file.name
+        if ($source) { Copy-Item -LiteralPath (Join-Path $source $file.name) -Destination $target }
+        else { Invoke-WebRequest -Uri "$($model.baseUrl)$($file.name)" -OutFile $target }
+        if ((Get-Item $target).Length -ne $file.size -or (Get-FileHash $target -Algorithm SHA256).Hash -ne $file.sha256) {
+            throw "Model checksum mismatch: $($model.language)/$($file.name)"
+        }
+    }
 }
 foreach ($name in @('README.md', 'HANDOFF.md', 'MODEL_EVALUATION.md', 'UX_REVIEW.md', 'CRASH_REPORTS.md', 'UPDATES.md')) {
     Copy-Item -LiteralPath (Join-Path $windowsRoot $name) -Destination $payload
