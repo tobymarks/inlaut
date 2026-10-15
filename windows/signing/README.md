@@ -42,9 +42,11 @@ It has not been submitted.
 
 ## GitHub configuration
 
-Create environment `windows-signing`, restrict deployment branches to `main` and
-`feature/windows-prototype`, and require maintainer approval where supported.
-Set environment variables:
+The GitHub environment `windows-signing` was created on 2026-10-15. It allows
+only `main` and `feature/windows-prototype` and requires approval by `tobymarks`
+(self-approval is allowed because this is a single-maintainer project). No API
+token or certificate variables have been set yet. After Foundation provisioning,
+set environment variables:
 
 - `SIGNPATH_ORGANIZATION_ID`: actual Foundation organization ID.
 - `SIGNPATH_PROJECT_SLUG`: actual configured project slug (planned: `inlaut`).
