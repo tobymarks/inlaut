@@ -1,0 +1,155 @@
+using System.Diagnostics;
+using System.Text.Json;
+using SherpaOnnx;
+
+namespace Inlaut.Platform.Windows;
+
+public class SherpaEngine : IDisposable
+{
+    private readonly OfflineRecognizer _recognizer;
+    public object DiagnosticConfiguration { get; }
+
+    public SherpaEngine(string modelDir, string provider = "cpu", int? threads = null, string? modelFamily = null)
+    {
+        if (!Directory.Exists(modelDir))
+        {
+            throw new DirectoryNotFoundException($"Model directory not found: {modelDir}");
+        }
+
+        // An explicit local profile lets portable test distributions select the
+        // correct decoder without guessing from directory names or file sizes.
+        string profile = Path.Combine(modelDir, "inlaut-model.json");
+        if (modelFamily == null && File.Exists(profile))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(profile));
+            modelFamily = document.RootElement.GetProperty("family").GetString();
+        }
+        modelFamily ??= "nemo";
+
+        string tokensPath = Path.Combine(modelDir, "tokens.txt");
+        if (modelFamily == "whisper")
+            tokensPath = Directory.GetFiles(modelDir, "*-tokens.txt").Single();
+        if (modelFamily is not ("nemo" or "nemo-tdt" or "whisper"))
+            throw new ArgumentException("Unsupported model family.", nameof(modelFamily));
+        if (!File.Exists(tokensPath))
+        {
+            throw new FileNotFoundException($"Tokens file not found at: {tokensPath}");
+        }
+
+        var config = new OfflineRecognizerConfig();
+        config.ModelConfig.Tokens = tokensPath;
+        config.ModelConfig.NumThreads = threads ?? Math.Max(2, Environment.ProcessorCount / 2);
+        config.ModelConfig.Debug = 0;
+        config.ModelConfig.Provider = provider;
+
+        // 1. Check for NeMo Transducer model (Encoder, Decoder, Joiner) - Preferred for German STT
+        string encoder = Path.Combine(modelDir, "encoder.int8.onnx");
+        if (!File.Exists(encoder)) encoder = Path.Combine(modelDir, "encoder.onnx");
+
+        string decoder = Path.Combine(modelDir, "decoder.int8.onnx");
+        if (!File.Exists(decoder)) decoder = Path.Combine(modelDir, "decoder.onnx");
+
+        string joiner = Path.Combine(modelDir, "joiner.int8.onnx");
+        if (!File.Exists(joiner)) joiner = Path.Combine(modelDir, "joiner.onnx");
+
+        if (modelFamily == "whisper")
+        {
+            string FindWhisper(string part)
+            {
+                var quantized = Directory.GetFiles(modelDir, $"*-{part}.int8.onnx");
+                return quantized.Length > 0 ? quantized.Single() : Directory.GetFiles(modelDir, $"*-{part}.onnx").Single();
+            }
+            config.ModelConfig.Whisper.Encoder = FindWhisper("encoder");
+            config.ModelConfig.Whisper.Decoder = FindWhisper("decoder");
+            config.ModelConfig.Whisper.Language = "de";
+            config.ModelConfig.Whisper.Task = "transcribe";
+            config.DecodingMethod = "greedy_search";
+        }
+        else if (File.Exists(encoder) && File.Exists(decoder) && File.Exists(joiner))
+        {
+            config.ModelConfig.Transducer.Encoder = encoder;
+            config.ModelConfig.Transducer.Decoder = decoder;
+            config.ModelConfig.Transducer.Joiner = joiner;
+            config.ModelConfig.ModelType = "nemo_transducer";
+            
+            // Use modified_beam_search to prevent repetition loops during silence/pauses
+            config.DecodingMethod = modelFamily == "nemo-tdt" ? "greedy_search" : "modified_beam_search";
+            config.MaxActivePaths = 4;
+        }
+        else
+        {
+            // 2. Fallback: Check for NeMo CTC model (single onnx or int8)
+            string ctcModel = Path.Combine(modelDir, "model.int8.onnx");
+            if (!File.Exists(ctcModel)) ctcModel = Path.Combine(modelDir, "model.onnx");
+
+            if (File.Exists(ctcModel))
+            {
+                config.ModelConfig.NeMoCtc.Model = ctcModel;
+                config.ModelConfig.ModelType = "nemo_ctc";
+                config.DecodingMethod = "greedy_search";
+            }
+            else
+            {
+                throw new FileNotFoundException($"No valid NeMo Transducer or CTC ONNX model files found in {modelDir}");
+            }
+        }
+
+        config.FeatConfig.SampleRate = 16000;
+        config.FeatConfig.FeatureDim = 80;
+
+        DiagnosticConfiguration = new
+        {
+            modelFamily,
+            modelType = config.ModelConfig.ModelType, decodingMethod = config.DecodingMethod,
+            threads = config.ModelConfig.NumThreads, provider, sampleRate = 16000,
+            trimThreshold = 0.006f, trimPaddingMs = 180,
+            files = Directory.GetFiles(modelDir).Where(p => p.EndsWith(".onnx") || p.EndsWith("tokens.txt"))
+                .Select(p => new { name = Path.GetFileName(p), bytes = new FileInfo(p).Length }).ToArray()
+        };
+        _recognizer = new OfflineRecognizer(config);
+    }
+
+    public (string Text, double DurationSec, double DecodeSec, double Rtf) TranscribeFile(string wavPath)
+    {
+        var reader = new WaveReader(wavPath);
+        return TranscribeSamples(reader.Samples, reader.SampleRate);
+    }
+
+    public (string Text, double DurationSec, double DecodeSec, double Rtf) TranscribeSamples(float[] samples, int sampleRate = 16000, Action<float[]>? preparedSamples = null)
+    {
+        if (samples == null || samples.Length == 0)
+        {
+            return ("", 0, 0, 0);
+        }
+
+        // Trim leading and trailing silence so joiner does not get stuck in silence emission loops
+        float[] trimmed = AudioTrimmer.TrimSilence(samples, sampleRate);
+        preparedSamples?.Invoke(trimmed);
+        if (trimmed.Length == 0)
+        {
+            // Pure silence or background noise only
+            return ("", 0, 0, 0);
+        }
+
+        double audioSec = (double)trimmed.Length / sampleRate;
+
+        using var stream = _recognizer.CreateStream();
+        stream.AcceptWaveform(sampleRate, trimmed);
+
+        var sw = Stopwatch.StartNew();
+        _recognizer.Decode(stream);
+        sw.Stop();
+
+        double decodeSec = sw.Elapsed.TotalSeconds;
+        double rtf = audioSec > 0 ? decodeSec / audioSec : 0;
+        string text = stream.Result.Text?.Trim() ?? "";
+
+        return (text, audioSec, decodeSec, rtf);
+    }
+
+    public void Dispose()
+    {
+        _recognizer.Dispose();
+        GC.SuppressFinalize(this);
+    }
+}

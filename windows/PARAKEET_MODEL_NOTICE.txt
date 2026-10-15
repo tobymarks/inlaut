@@ -1,0 +1,15 @@
+The optional Parakeet quality-preview package contains an INT8 ONNX conversion
+of NVIDIA Parakeet TDT 0.6B v3.
+
+Original model: NVIDIA, https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+License text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+ONNX conversion and INT8 quantization: k2-fsa/sherpa-onnx contributors.
+https://huggingface.co/csukuangfj/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8
+https://github.com/k2-fsa/sherpa-onnx/tree/master/scripts/nemo/parakeet-tdt-0.6b-v3
+
+Changes relative to the original model: conversion to ONNX and INT8 quantization
+by the exporter. inlaut adds a local decoder profile and does not fine-tune weights.
+No endorsement by NVIDIA or the conversion authors is implied.

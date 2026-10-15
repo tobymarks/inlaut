@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <RootNamespace>Inlaut.App</RootNamespace>
+    <AssemblyName>Inlaut</AssemblyName>
+    <Version>0.7.0-beta.7</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Inlaut.UiSmoke" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\inlaut-32.png" />
+    <EmbeddedResource Include="Resources\inlaut-128.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="org.k2fsa.sherpa.onnx" Version="1.13.8" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Inlaut.Core\Inlaut.Core.csproj" />
+    <ProjectReference Include="..\Inlaut.Platform.Windows\Inlaut.Platform.Windows.csproj" />
+  </ItemGroup>
+</Project>

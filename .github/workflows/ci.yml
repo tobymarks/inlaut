@@ -2,7 +2,15 @@ name: Build and test
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'windows/**'
+      - '.github/workflows/windows.yml'
+      - 'design/**'
   pull_request:
+    paths-ignore:
+      - 'windows/**'
+      - '.github/workflows/windows.yml'
+      - 'design/**'
 permissions:
   contents: read
 jobs:

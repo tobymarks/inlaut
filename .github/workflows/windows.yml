@@ -1,0 +1,62 @@
+name: Windows Build
+
+on:
+  push:
+    paths:
+      - 'windows/**'
+      - '.github/workflows/windows.yml'
+  pull_request:
+    paths:
+      - 'windows/**'
+      - '.github/workflows/windows.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build inlaut Windows App & Models
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore windows/Inlaut.sln
+
+      - name: Build Solution
+        run: dotnet build windows/Inlaut.sln -c Release --no-restore
+
+      - name: Text preservation regression
+        run: dotnet run --project windows/tests/Inlaut.CoreSmoke -c Release
+
+      - name: Settings layout regression
+        timeout-minutes: 2
+        run: dotnet run --project windows/tests/Inlaut.UiSmoke -c Release
+
+      - name: Install pinned Inno Setup compiler
+        shell: pwsh
+        run: |
+          $installer = Join-Path $env:RUNNER_TEMP 'innosetup.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $installer
+          if ((Get-FileHash $installer -Algorithm SHA256).Hash -ne '9C73C3BAE7ED48D44112A0F48E66742C00090BDB5BEF71D9D3C056C66E97B732') { throw 'Compiler checksum mismatch' }
+          $compilerDir = Join-Path $env:RUNNER_TEMP 'inno'
+          $process = Start-Process $installer -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/CURRENTUSER', '/NOICONS', "/DIR=`"$compilerDir`"") -Wait -PassThru -WindowStyle Hidden
+          if ($process.ExitCode -ne 0) { throw "Compiler installation failed: $($process.ExitCode)" }
+
+      - name: Build verified app and per-user beta installer
+        shell: pwsh
+        run: ./windows/installer/Build-Beta.ps1 -OutputDirectory ./publish/beta -CompilerPath "$env:RUNNER_TEMP/inno/ISCC.exe"
+
+      - name: Upload app and installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: inlaut-windows-beta
+          path: publish/beta/
+          retention-days: 14

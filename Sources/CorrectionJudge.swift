@@ -80,8 +80,13 @@ enum CorrectionJudge {
         let prompt = "Spoken: \(correction.spoken.trimmingCharacters(in: .whitespacesAndNewlines))\nShorter: \(correction.shorter.trimmingCharacters(in: .whitespacesAndNewlines))"
         let verdict: Bool? = await withTaskGroup(of: Bool?.self) { group in
             group.addTask {
-                try? await session.respond(to: prompt, generating: Verdict.self,
-                                           options: GenerationOptions(samplingMode: .greedy)).content.corrected
+                #if compiler(>=6.4)
+                let options = GenerationOptions(samplingMode: .greedy)
+                #else
+                let options = GenerationOptions(sampling: .greedy)
+                #endif
+                return try? await session.respond(to: prompt, generating: Verdict.self,
+                                                  options: options).content.corrected
             }
             group.addTask {
                 try? await Task.sleep(for: patience)
