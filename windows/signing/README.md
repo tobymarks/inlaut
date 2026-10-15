@@ -22,8 +22,10 @@ code signing policy/attribution. Keep marketing consent optional and off.
 After acceptance, use the Foundation-provisioned organization/project/certificate;
 the trial organization ID may not be the final one. A local application draft is
 kept in the worktree's gitignored `build/signing-tools/foundation-application.txt`.
-The browser application form is also prefilled, but has not been submitted.
-Contact email, discovery channel and required consent remain for the maintainer.
+The Foundation application was submitted on 2026-10-15 with maintainer approval
+of the required terms and data processing; marketing consent was left off.
+The form confirmed: "Form submitted — Thank you, we'll be in touch soon."
+Acceptance and certificate provisioning are still pending.
 
 The downloaded CI installer has ASCII-space-padded PE product/version strings
 from Inno Setup; local verification trims only those trailing spaces. Confirm
