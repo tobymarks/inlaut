@@ -1,8 +1,10 @@
 # Windows release signing
 
 Status (2026-10-15): prepared, not activated. The existing SignPath organization
-`f511eba1-0577-4bb3-927b-da77f62e623d` is a free trial with no certificates or
-projects. Foundation acceptance, a production certificate, GitHub integration,
+`f511eba1-0577-4bb3-927b-da77f62e623d` is a free trial with no certificates. Project `inlaut` exists
+with the repository URL recorded and only the default PE artifact configuration;
+this is not yet a GitHub Trusted Build System connection. The trial rejected the
+parameterized artifact configurations because that feature is unavailable. Foundation acceptance, a production certificate, GitHub integration,
 CI credentials and a successful signed upgrade are still pending. Do not publish
 an unsigned build as a signed release or install a test root on users' devices.
 
@@ -20,7 +22,13 @@ code signing policy/attribution. Keep marketing consent optional and off.
 After acceptance, use the Foundation-provisioned organization/project/certificate;
 the trial organization ID may not be the final one. A local application draft is
 kept in the worktree's gitignored `build/signing-tools/foundation-application.txt`.
-It has not been submitted.
+The browser application form is also prefilled, but has not been submitted.
+Contact email, discovery channel and required consent remain for the maintainer.
+
+The downloaded CI installer has ASCII-space-padded PE product/version strings
+from Inno Setup; local verification trims only those trailing spaces. Confirm
+that SignPath accepts the exact metadata restrictions with a real signing request
+after onboarding; this has not been exercised in the trial account.
 
 ## SignPath configuration
 

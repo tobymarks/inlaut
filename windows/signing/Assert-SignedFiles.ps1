@@ -15,5 +15,6 @@ foreach ($name in $Names) {
     $fingerprint = $signature.SignerCertificate.GetCertHashString([Security.Cryptography.HashAlgorithmName]::SHA256)
     if ($fingerprint -ne $CertificateSha256) { throw "Unexpected signing certificate: $name" }
     $info = [Diagnostics.FileVersionInfo]::GetVersionInfo((Get-Item -LiteralPath $path).FullName)
-    if ($info.ProductName -cne 'inlaut' -or $info.ProductVersion -cne $Version) { throw "Product/version mismatch: $name" }
+    # Inno Setup pads version-resource strings with ASCII spaces.
+    if ($info.ProductName.TrimEnd([char]' ') -cne 'inlaut' -or $info.ProductVersion.TrimEnd([char]' ') -cne $Version) { throw "Product/version mismatch: $name" }
 }

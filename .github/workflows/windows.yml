@@ -66,7 +66,8 @@ jobs:
           }
           $installer = (Resolve-Path "publish/beta/inlaut-$version-windows-x64-setup.exe").Path
           $info = [Diagnostics.FileVersionInfo]::GetVersionInfo($installer)
-          if ($info.ProductName -cne 'inlaut' -or $info.ProductVersion -cne $version) { throw 'Installer signing metadata mismatch' }
+          # Inno Setup pads version-resource strings with ASCII spaces.
+          if ($info.ProductName.TrimEnd([char]' ') -cne 'inlaut' -or $info.ProductVersion.TrimEnd([char]' ') -cne $version) { throw 'Installer signing metadata mismatch' }
           $rejected = $false
           try {
             ./windows/signing/Assert-SignedFiles.ps1 -Directory publish/beta/app -Names @('Inlaut.exe') -Version $version -CertificateSha256 ('0' * 64)
