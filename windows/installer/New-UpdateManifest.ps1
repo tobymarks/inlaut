@@ -19,7 +19,8 @@ if (($signatures | Select-Object -Unique).Count -ne 1) { throw 'Application, hel
 $file = Get-Item -LiteralPath $Installer
 if ($file.Name -cne "inlaut-$Version-windows-x64-setup.exe" -or $file.Length -le 0 -or $file.Length -gt 600MB) { throw 'Invalid installer name/size' }
 $info = [Diagnostics.FileVersionInfo]::GetVersionInfo($file.FullName)
-if ($info.ProductVersion -cne $Version -or $info.ProductName -notin @('inlaut','inlaut Beta')) { throw 'Installer version/product mismatch' }
+# Inno Setup pads PE string resources with ASCII spaces.
+if ($info.ProductVersion.TrimEnd([char]' ') -cne $Version -or $info.ProductName.TrimEnd([char]' ') -cnotin @('inlaut','inlaut Beta')) { throw 'Installer version/product mismatch' }
 $appInfo = [Diagnostics.FileVersionInfo]::GetVersionInfo((Get-Item -LiteralPath $Application).FullName)
 if ($appInfo.ProductVersion.Split('+')[0] -cne $Version) { throw 'Application version mismatch' }
 $manifest = [ordered]@{ schema=1; version=$Version; url="https://github.com/tobymarks/inlaut/releases/download/$ReleaseTag/$($file.Name)"; sha256=(Get-FileHash -LiteralPath $Installer -Algorithm SHA256).Hash.ToLowerInvariant(); size=$file.Length }
