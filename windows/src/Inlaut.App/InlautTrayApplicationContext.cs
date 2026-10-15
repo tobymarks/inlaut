@@ -30,7 +30,7 @@ public class InlautTrayApplicationContext : ApplicationContext
     private Icon _recordingIcon = null!;
     private readonly System.Windows.Forms.Timer _updateTimer = new() { Interval = 60_000 };
     private UpdateForm? _updateForm;
-    private bool _checkingUpdates;
+    private readonly UpdateCheckGate _updateCheckGate = new();
     private UpdateManifest? _availableUpdate;
     private DateTimeOffset _lastUpdateAttempt;
 
@@ -462,9 +462,11 @@ public class InlautTrayApplicationContext : ApplicationContext
             _availableUpdate?.IsNewer(LocalDiagnostics.Version.Split('+')[0], _settings.BetaUpdates) == true ? _availableUpdate : null);
         _updateForm.Show();
     }
-    private async Task CheckUpdatesAutomatically()
+    private Task CheckUpdatesAutomatically() => _updateCheckGate.RunAsync(CheckUpdatesCore);
+
+    private async Task CheckUpdatesCore()
     {
-        if (_checkingUpdates || !CanUpdate() || !_isModelReady || _updateForm is { IsDisposed: false }) return;
+        if (!CanUpdate() || !_isModelReady || _updateForm is { IsDisposed: false }) return;
         if (!_settings.UpdateConsentAsked)
         {
             _keyTrigger.IsSuspended = true;
@@ -477,7 +479,7 @@ public class InlautTrayApplicationContext : ApplicationContext
             finally { _keyTrigger.IsSuspended = false; }
         }
         if (!_settings.AutomaticUpdates || DateTimeOffset.UtcNow - _lastUpdateAttempt < TimeSpan.FromHours(24)) return;
-        _checkingUpdates = true; _lastUpdateAttempt = DateTimeOffset.UtcNow;
+        _lastUpdateAttempt = DateTimeOffset.UtcNow;
         try
         {
             Directory.CreateDirectory(UpdateForm.CacheRoot);
@@ -491,6 +493,5 @@ public class InlautTrayApplicationContext : ApplicationContext
             }
         }
         catch { /* Offline/background failures stay quiet. Manual checks explain errors. */ }
-        finally { _checkingUpdates = false; }
     }
 }

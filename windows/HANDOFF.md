@@ -493,3 +493,13 @@ last-dictation memory, stored rules, optional local test captures, local crash r
 explicit GitHub handoff/public posting, update-check/download connection metadata,
 and Windows certificate validation. This is a source change, not a live deployment
 or a claim of completed legal review.
+
+## Modal update-consent fix — beta.7 (2026-10-15)
+User reported roughly thirty repeated update-consent dialogs. Root cause: the timer
+reentered its handler through MessageBox's nested message loop before the old
+checking flag was set. A UI-thread gate now covers the entire consent/save/network
+operation, including early returns and exceptions. Regression exercises a real
+modal Form with repeated 20 ms WinForms timer ticks, then an async continuation;
+only one operation enters and the gate releases after completion/failure. UiSmoke
+passed. The affected installed process was stopped to close the dialog stack;
+no update preference was silently enabled or changed.

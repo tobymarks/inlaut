@@ -12,6 +12,7 @@ internal static class UpdateChecks
 {
     public static async Task Run()
     {
+        await CheckModalReentrancy();
         var versions = new[] { "0.7.0-beta.2", "0.7.0-beta.9", "0.7.0-beta.10", "0.7.0-rc.1", "0.7.0", "0.7.1", "0.8.0-beta.1", "1.0.0" };
         for (int i = 1; i < versions.Length; i++) Assert(ReleaseVersion.Parse(versions[i]).CompareTo(ReleaseVersion.Parse(versions[i - 1])) > 0, "Version order");
         byte[] payload = [1, 2, 3, 4, 5];
@@ -66,6 +67,28 @@ internal static class UpdateChecks
             Console.WriteLine("PASS: update version/channel/beta-to-stable rules, malformed feed, offline/404, bounded download, cancellation, redirect restriction, checksum/signature rejection and busy UI gate; no live update traffic");
         }
         finally { Directory.Delete(folder, true); }
+    }
+    private static async Task CheckModalReentrancy()
+    {
+        var gate = new UpdateCheckGate(); int entered = 0, ticks = 0;
+        using var dialog = new Form { Text = "inlaut — isolated update consent regression", Width = 420, Height = 150 };
+        using var repeat = new System.Windows.Forms.Timer { Interval = 20 };
+        using var dismiss = new System.Windows.Forms.Timer { Interval = 700 };
+        repeat.Tick += async (_, _) => { ticks++; await gate.RunAsync(() => { entered++; return Task.CompletedTask; }); };
+        dismiss.Tick += (_, _) => { dismiss.Stop(); dialog.Close(); };
+        await gate.RunAsync(async () =>
+        {
+            entered++; repeat.Start(); dismiss.Start(); dialog.ShowDialog();
+            // Also protect the asynchronous network phase after the prompt closes.
+            await Task.Delay(100); repeat.Stop();
+        });
+        Assert(ticks >= 3 && entered == 1, "Update timer reentered the modal consent flow");
+        await gate.RunAsync(() => { entered++; return Task.CompletedTask; });
+        Assert(entered == 2, "Gate remained locked after completion");
+        await RejectAsync(() => gate.RunAsync(() => throw new IOException("test")), "Gate swallowed failure");
+        await gate.RunAsync(() => { entered++; return Task.CompletedTask; });
+        Assert(entered == 3, "Gate remained locked after failure");
+        Console.WriteLine("PASS: repeated real UI timer ticks cannot reenter modal update consent or its async continuation; gate recovers after completion/failure");
     }
     private static IEnumerable<Control> Descendants(Control parent) => parent.Controls.Cast<Control>().SelectMany(c => new[] { c }.Concat(Descendants(c)));
     private static void Assert(bool condition, string message) { if (!condition) throw new Exception(message); }
