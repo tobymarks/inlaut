@@ -87,4 +87,48 @@
     <image:image><image:loc>https://inlaut.de/unternehmen/it-sicherheit.webp</image:loc></image:image>
     <image:image><image:loc>https://inlaut.de/unternehmen/kanzlei.webp</image:loc></image:image>
   </url>
+  <url>
+    <loc>https://inlaut.de/whisper-mac</loc>
+    <lastmod>2026-10-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/whisper-mac"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/whisper-mac"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/whisper-mac"/>
+  </url>
+  <url>
+    <loc>https://inlaut.de/en/whisper-mac</loc>
+    <lastmod>2026-10-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/whisper-mac"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/whisper-mac"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/whisper-mac"/>
+  </url>
+  <url>
+    <loc>https://inlaut.de/superwhisper-alternative</loc>
+    <lastmod>2026-10-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/superwhisper-alternative"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/superwhisper-alternative"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/superwhisper-alternative"/>
+  </url>
+  <url>
+    <loc>https://inlaut.de/en/superwhisper-alternative</loc>
+    <lastmod>2026-10-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/superwhisper-alternative"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/superwhisper-alternative"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/superwhisper-alternative"/>
+  </url>
+  <url>
+    <loc>https://inlaut.de/kanzleien-praxen</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/kanzleien-praxen" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/legal-healthcare" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/kanzleien-praxen" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inlaut.de/en/legal-healthcare</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/kanzleien-praxen" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/legal-healthcare" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/kanzleien-praxen" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

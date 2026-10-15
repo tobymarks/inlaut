@@ -28,10 +28,14 @@
 - [Dictation apps for the Mac compared](https://inlaut.de/en/compare): the same comparison in English
 - [inlaut als Alternative zu Wispr Flow](https://inlaut.de/wispr-flow-alternative): lokal statt Cloud, kostenlos, Open Source; was Wispr Flow kann und inlaut nicht
 - [inlaut as a Wispr Flow alternative](https://inlaut.de/en/wispr-flow-alternative): the same page in English
+- [inlaut als Alternative zu Superwhisper](https://inlaut.de/superwhisper-alternative): Parakeet Ultra kostenlos statt im Pro-Abo, kein Speichern von Audiodaten, Open Source
+- [inlaut as a Superwhisper alternative](https://inlaut.de/en/superwhisper-alternative): the same page in English
 - [Diktierfunktion am Mac einrichten und Fehler beheben](https://inlaut.de/diktierfunktion-mac): Anleitung zum Diktat von macOS mit Checkliste und Apple-Quellen
 - [Mac dictation: how to set it up and fix it](https://inlaut.de/en/mac-dictation): the same guide in English
 - [inlaut im Unternehmen](https://inlaut.de/unternehmen): Datenflüsse, Netzwerkverbindungen, DSGVO, IT-Sicherheit, Verteilung und was inlaut nicht bietet
 - [inlaut at work](https://inlaut.de/en/business): the same page in English
+- [inlaut für Kanzleien und Praxen](https://inlaut.de/kanzleien-praxen): Lokale Spracherkennung für Rechtsanwälte, Notare, Steuerberater und Ärzte ohne Cloud (§ 203 StGB, Art. 9 DSGVO, Open-Source-Zukunftssicherheit)
+- [inlaut for legal and healthcare](https://inlaut.de/en/legal-healthcare): the same page in English
 - [Quellcode auf GitHub](https://github.com/tobymarks/inlaut): README, Releases, Roadmap (Issues)
 - [Aktuelle Version herunterladen (DMG)](https://github.com/tobymarks/inlaut/releases/latest)
 

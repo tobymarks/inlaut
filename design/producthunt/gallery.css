@@ -1,0 +1,16 @@
+/* Product Hunt gallery, 1270x760 (rendered at 2x). Same look as design/x/banner-en.html. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1270px; height: 760px; overflow: hidden; }
+body { background: radial-gradient(ellipse 1100px 700px at 30% 40%, #174B48 0%, #103D3B 60%, #0C201F 130%);
+  font-family: -apple-system, "SF Pro Display", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased; color: #F6F7F4; display: flex; align-items: center; gap: 56px; padding: 0 72px; }
+.text { flex: 0 0 440px; }
+.logo { height: 44px; margin-bottom: 40px; display: block; }
+h1 { font-size: 50px; line-height: 1.08; font-weight: 600; letter-spacing: -0.035em; }
+h1 em { font-style: normal; color: #BCEBD9; }
+p { margin-top: 22px; font-size: 24px; line-height: 1.4; font-weight: 500; color: #A5BCB6; letter-spacing: -0.01em; }
+ul { margin-top: 26px; list-style: none; }
+li { font-size: 23px; line-height: 1.35; font-weight: 500; color: #F6F7F4; padding: 9px 0 9px 30px; position: relative; }
+li::before { content: ""; position: absolute; left: 0; top: 19px; width: 12px; height: 12px; border-radius: 50%; background: #BCEBD9; }
+.shot { flex: 1; min-width: 0; display: flex; justify-content: center; }
+.shot img { max-width: 100%; max-height: 640px; border-radius: 18px; box-shadow: 0 30px 80px rgba(0,0,0,.45); display: block; }

@@ -1,12 +1,19 @@
 # inlaut
 
+[![Latest Release](https://img.shields.io/github/v/release/tobymarks/inlaut?logo=github&label=release)](https://github.com/tobymarks/inlaut/releases/latest)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
+[![Platform: macOS Apple Silicon](https://img.shields.io/badge/Platform-macOS%20%7C%20Apple%20Silicon-lightgrey?logo=apple)](https://inlaut.de)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/15409/badge)](https://www.bestpractices.dev/projects/15409)
 
-A tiny macOS menu bar app for dictation that never leaves your Mac. Hold a key combination, speak, let go — the text appears in whatever text field has the cursor.
+A lightweight macOS menu bar app for private, on-device dictation (voice typing) that never leaves your Mac. Hold a hotkey, speak, let go — text appears instantly in whichever text field has the cursor.
 
 <p align="center"><img src="site/public/screens/diktat-en.webp" width="720" alt="Illustration: a note in the Notes app is being dictated, with inlaut's “Listening” indicator below the text"></p>
 
-inlaut is free and open source (GPL-3.0). It is a local alternative to cloud dictation apps such as Wispr Flow, and to Superwhisper or MacWhisper if dictation into any app is all you need: no account, no subscription, no AI rewriting. Website: [inlaut.de](https://inlaut.de) (German) and [inlaut.de/en](https://inlaut.de/en); a sourced [comparison of Mac dictation apps](https://inlaut.de/en/compare) lists where each one recognises speech and what it costs.
+**inlaut** is free and open source (GPL-3.0). It is a 100% offline, privacy-first alternative to cloud dictation apps like **Wispr Flow**, and a zero-subscription alternative to **Superwhisper** and **MacWhisper**: no account, no cloud telemetry, no subscription fees, and no AI rewriting/hallucinations.
+
+- **Website:** [inlaut.de](https://inlaut.de) (German) & [inlaut.de/en](https://inlaut.de/en) (English)
+- **Comparisons:** [Sourced comparison of Mac dictation apps](https://inlaut.de/en/compare) | [Superwhisper alternative](https://inlaut.de/en/superwhisper-alternative) | [Wispr Flow alternative](https://inlaut.de/en/wispr-flow-alternative)
+- **Compliance & Privacy:** [inlaut for Legal & Healthcare](https://inlaut.de/en/legal-healthcare) (professional secrecy & GDPR compliance)
 
 - **Local only.** Speech is recognised on this Mac. No account, no cloud, nothing stored.
 - **German and English, also mixed.** Uses [Parakeet Ultra](https://huggingface.co/moondream/parakeet-ultra), a post-training of NVIDIA Parakeet TDT 0.6B v3, as Core ML on the Neural Engine through [FluidAudio](https://github.com/FluidInference/FluidAudio). It handles technical terms and anglicisms far better than the recogniser built into macOS and writes ß. A 10-second dictation is text in well under 0.1 s on an M3; two minutes take about one second.
@@ -35,6 +42,9 @@ brew install --cask tobymarks/tap/inlaut
 ```
 
 Setup downloads the speech model (around 630 MB) and guides you through microphone and Accessibility permissions. [Release notes and checksums](https://github.com/tobymarks/inlaut/releases/latest).
+
+> [!NOTE]
+> **Windows Support:** A native Windows port with the same local-first, zero-cloud architecture is in active development (see pull request [#19](https://github.com/tobymarks/inlaut/pull/19)).
 
 ## Build
 
