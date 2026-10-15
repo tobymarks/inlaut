@@ -1,11 +1,13 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)][string]$OutputDirectory,
-    [Parameter(Mandatory)][string]$CompilerPath,
+    [string]$CompilerPath,
     [string]$DotnetPath = 'dotnet',
-    [string]$ModelDirectory
+    [string]$ModelDirectory,
+    [switch]$SkipInstaller
 )
 $ErrorActionPreference = 'Stop'
+if (-not $SkipInstaller -and -not $CompilerPath) { throw 'CompilerPath is required unless SkipInstaller is set.' }
 $windowsRoot = Split-Path $PSScriptRoot -Parent
 $repoRoot = Split-Path $windowsRoot -Parent
 $project = Join-Path $windowsRoot 'src/Inlaut.App/Inlaut.App.csproj'
@@ -15,10 +17,10 @@ $payload = Join-Path $destination 'app'
 # Refuse stale payloads: mixing old and new models/native DLLs is unsafe.
 if (Test-Path -LiteralPath $payload) { throw "Use a fresh output directory: $payload already exists." }
 New-Item -ItemType Directory -Path $payload -Force | Out-Null
-& $DotnetPath publish $project -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=false -o $payload
+& $DotnetPath publish $project -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=false "-p:Version=$version" -p:Product=inlaut "-p:InformationalVersion=$version" -p:IncludeSourceRevisionInInformationalVersion=false -o $payload
 if ($LASTEXITCODE -ne 0) { throw 'Application publish failed.' }
 $helper = Join-Path $destination 'update-host'
-& $DotnetPath publish (Join-Path $windowsRoot 'src/Inlaut.UpdateHost/Inlaut.UpdateHost.csproj') -c Release -r win-x64 --self-contained true -o $helper
+& $DotnetPath publish (Join-Path $windowsRoot 'src/Inlaut.UpdateHost/Inlaut.UpdateHost.csproj') -c Release -r win-x64 --self-contained true "-p:Version=$version" -p:Product=inlaut "-p:InformationalVersion=$version" -p:IncludeSourceRevisionInInformationalVersion=false -o $helper
 if ($LASTEXITCODE -ne 0) { throw 'Update helper publish failed.' }
 Copy-Item -LiteralPath (Join-Path $helper 'Inlaut.UpdateHost.exe') -Destination $payload
 $modelTarget = Join-Path $payload 'models'
@@ -41,6 +43,7 @@ foreach ($name in @('README.md', 'HANDOFF.md', 'MODEL_EVALUATION.md', 'UX_REVIEW
 }
 Copy-Item -LiteralPath (Join-Path $repoRoot 'LICENSE') -Destination $payload
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'BETA.md') -Destination $payload
+if ($SkipInstaller) { Write-Output $payload; return }
 & $CompilerPath "/DPayloadDir=$payload" "/DArtifactDir=$destination" "/DAppVersion=$version" (Join-Path $PSScriptRoot 'inlaut.iss')
 if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed.' }
 $installer = Join-Path $destination "inlaut-$version-windows-x64-setup.exe"

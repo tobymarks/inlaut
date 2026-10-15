@@ -36,7 +36,8 @@ public static class UpdateSecurity
         if (stream.Length != manifest.Size || !Convert.ToHexString(SHA256.HashData(stream)).Equals(manifest.Sha256, StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException("Die Update-Prüfsumme stimmt nicht. Bitte erneut laden.");
         if (TrustedCertificate(path) != TrustedCertificate(trustedApplication)) throw new InvalidOperationException("Das Update wurde nicht mit dem vertrauten inlaut-Zertifikat signiert.");
         var version = System.Diagnostics.FileVersionInfo.GetVersionInfo(path);
-        if (version.ProductName is not ("inlaut" or "inlaut Beta") || version.ProductVersion != manifest.Version) throw new InvalidOperationException("Das signierte Paket passt nicht zur angebotenen Version.");
+        // Inno Setup pads PE string resources with ASCII spaces.
+        if (version.ProductName?.TrimEnd(' ') is not ("inlaut" or "inlaut Beta") || version.ProductVersion?.TrimEnd(' ') != manifest.Version) throw new InvalidOperationException("Das signierte Paket passt nicht zur angebotenen Version.");
     }
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     private struct TrustFile { public uint Size; [MarshalAs(UnmanagedType.LPWStr)] public string Path; public IntPtr Handle, Subject; }

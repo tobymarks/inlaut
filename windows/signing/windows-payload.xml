@@ -1,0 +1,22 @@
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+  <zip-file>
+    <pe-file path="Inlaut.exe" product-name="inlaut" product-version="${version}">
+      <authenticode-sign />
+    </pe-file>
+    <pe-file path="Inlaut.dll" product-name="inlaut" product-version="${version}">
+      <authenticode-sign />
+    </pe-file>
+    <pe-file path="Inlaut.Core.dll" product-name="inlaut" product-version="${version}">
+      <authenticode-sign />
+    </pe-file>
+    <pe-file path="Inlaut.Platform.Windows.dll" product-name="inlaut" product-version="${version}">
+      <authenticode-sign />
+    </pe-file>
+    <pe-file path="Inlaut.UpdateHost.exe" product-name="inlaut" product-version="${version}">
+      <authenticode-sign />
+    </pe-file>
+  </zip-file>
+</artifact-configuration>

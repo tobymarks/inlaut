@@ -73,3 +73,11 @@ No feed or signed production artifact has been published by this implementation.
 
 References: [SignPath Authenticode](https://docs.signpath.io/artifact-configuration/reference),
 [WinVerifyTrust](https://learn.microsoft.com/en-us/windows/win32/api/wintrust/nf-wintrust-winverifytrust).
+
+## GitHub workflow preparation
+
+`Windows signed release candidate` (`.github/workflows/windows-sign.yml`) implements
+payload signing, packaging, installer signing and post-signing validation. See
+[signing/README.md](signing/README.md) for the exact Foundation, SignPath and GitHub
+environment setup. It remains inactive until a production certificate and scoped
+CI identity are available. A trial account alone does not provide trusted signing.

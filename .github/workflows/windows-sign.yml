@@ -1,0 +1,151 @@
+name: Windows signed release candidate
+
+# Kept separate from pull-request builds: only maintainers request signatures.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: windows-signing
+  cancel-in-progress: false
+
+jobs:
+  sign:
+    runs-on: windows-latest
+    environment: windows-signing
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      SIGNPATH_ORGANIZATION_ID: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+      SIGNPATH_PROJECT_SLUG: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+      SIGNPATH_CERTIFICATE_SHA256: ${{ vars.SIGNPATH_CERTIFICATE_SHA256 }}
+    steps:
+      - name: Check release configuration
+        env:
+          SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:GITHUB_REPOSITORY -ne 'tobymarks/inlaut' -or $env:GITHUB_REF -ne 'refs/heads/feature/windows-prototype' -and $env:GITHUB_REF -ne 'refs/heads/main') { throw 'Signing is restricted to the maintained release branches.' }
+          foreach ($name in @('SIGNPATH_ORGANIZATION_ID', 'SIGNPATH_PROJECT_SLUG', 'SIGNPATH_API_TOKEN')) {
+            if (-not [Environment]::GetEnvironmentVariable($name)) { throw "Missing configuration: $name" }
+          }
+          if ($env:SIGNPATH_CERTIFICATE_SHA256 -notmatch '^[a-fA-F0-9]{64}$') { throw 'Missing approved release certificate fingerprint.' }
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build and test
+        run: |
+          dotnet build windows/Inlaut.sln -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
+          dotnet run --project windows/tests/Inlaut.CoreSmoke -c Release --no-build
+          if ($LASTEXITCODE -ne 0) { throw 'Core tests failed' }
+          dotnet run --project windows/tests/Inlaut.UiSmoke -c Release --no-build
+          if ($LASTEXITCODE -ne 0) { throw 'UI tests failed' }
+
+      - name: Build payload with consistent product metadata
+        id: version
+        run: |
+          ./windows/installer/Build-Beta.ps1 -OutputDirectory ./publish/beta -SkipInstaller
+          $version = ([xml](Get-Content windows/src/Inlaut.App/Inlaut.App.csproj -Raw)).Project.PropertyGroup.Version
+          if ($version -notmatch '^\d+\.\d+\.\d+(?:-(?:beta|rc)\.\d+)?$') { throw 'Invalid version' }
+          "version=$version" >> $env:GITHUB_OUTPUT
+          New-Item -ItemType Directory publish/unsigned-payload | Out-Null
+          foreach ($name in @('Inlaut.exe','Inlaut.dll','Inlaut.Core.dll','Inlaut.Platform.Windows.dll','Inlaut.UpdateHost.exe')) {
+            Copy-Item "publish/beta/app/$name" publish/unsigned-payload/
+          }
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        id: payload
+        with:
+          name: windows-unsigned-first-party
+          path: publish/unsigned-payload/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Sign first-party payload
+        uses: signpath/github-action-submit-signing-request@f6d04783b4569d051e0c80105fe66e82819d0092 # v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: release-signing
+          artifact-configuration-slug: windows-payload
+          github-artifact-id: ${{ steps.payload.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 1800
+          output-artifact-directory: publish/signed-payload
+          parameters: |
+            version: "${{ steps.version.outputs.version }}"
+
+      - name: Verify signed payload and replace exact files
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $names = @('Inlaut.exe','Inlaut.dll','Inlaut.Core.dll','Inlaut.Platform.Windows.dll','Inlaut.UpdateHost.exe')
+          ./windows/signing/Assert-SignedFiles.ps1 -Directory publish/signed-payload -Names $names -Version $env:RELEASE_VERSION -CertificateSha256 $env:SIGNPATH_CERTIFICATE_SHA256
+          foreach ($name in $names) { Copy-Item "publish/signed-payload/$name" "publish/beta/app/$name" -Force }
+
+      - name: Install pinned Inno Setup and package signed payload
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $installer = Join-Path $env:RUNNER_TEMP 'innosetup.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $installer
+          if ((Get-FileHash $installer -Algorithm SHA256).Hash -ne '9C73C3BAE7ED48D44112A0F48E66742C00090BDB5BEF71D9D3C056C66E97B732') { throw 'Compiler checksum mismatch' }
+          $compilerDir = Join-Path $env:RUNNER_TEMP 'inno'
+          $process = Start-Process $installer -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/CURRENTUSER', '/NOICONS', "/DIR=`"$compilerDir`"") -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw 'Compiler installation failed' }
+          $payload = (Resolve-Path publish/beta/app).Path
+          $output = Join-Path $env:GITHUB_WORKSPACE 'publish/unsigned-installer'
+          & "$compilerDir/ISCC.exe" "/DPayloadDir=$payload" "/DArtifactDir=$output" "/DAppVersion=$env:RELEASE_VERSION" windows/installer/inlaut.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        id: installer
+        with:
+          name: windows-unsigned-installer
+          path: publish/unsigned-installer/*.exe
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Sign installer
+        uses: signpath/github-action-submit-signing-request@f6d04783b4569d051e0c80105fe66e82819d0092 # v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: release-signing
+          artifact-configuration-slug: windows-installer
+          github-artifact-id: ${{ steps.installer.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 1800
+          output-artifact-directory: publish/signed-release
+          parameters: |
+            version: "${{ steps.version.outputs.version }}"
+
+      - name: Verify installer and generate final checksums and update manifest
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $name = "inlaut-$env:RELEASE_VERSION-windows-x64-setup.exe"
+          ./windows/signing/Assert-SignedFiles.ps1 -Directory publish/signed-release -Names @($name) -Version $env:RELEASE_VERSION -CertificateSha256 $env:SIGNPATH_CERTIFICATE_SHA256
+          $installer = "publish/signed-release/$name"
+          ./windows/installer/New-UpdateManifest.ps1 -Installer $installer -Application publish/beta/app/Inlaut.exe -UpdateHost publish/beta/app/Inlaut.UpdateHost.exe -Version $env:RELEASE_VERSION -ReleaseTag "windows-v$env:RELEASE_VERSION" -OutputFile publish/signed-release/windows-beta.json
+          "$((Get-FileHash $installer -Algorithm SHA256).Hash.ToLowerInvariant())  $name" | Set-Content publish/signed-release/SHA256SUMS.txt -Encoding utf8NoBOM
+          "Source: $env:GITHUB_SHA`nRun: https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID`nCertificate SHA256: $env:SIGNPATH_CERTIFICATE_SHA256" | Set-Content publish/signed-release/BUILD.txt -Encoding utf8NoBOM
+
+      # This is a release candidate. Publication and signed-update qualification are separate.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-signed-release-candidate
+          path: publish/signed-release/
+          if-no-files-found: error
+          retention-days: 30

@@ -54,6 +54,29 @@ jobs:
         shell: pwsh
         run: ./windows/installer/Build-Beta.ps1 -OutputDirectory ./publish/beta -CompilerPath "$env:RUNNER_TEMP/inno/ISCC.exe"
 
+      - name: Verify signing metadata and unsigned-package rejection
+        shell: pwsh
+        run: |
+          $version = ([xml](Get-Content windows/src/Inlaut.App/Inlaut.App.csproj -Raw)).Project.PropertyGroup.Version
+          $names = @('Inlaut.exe', 'Inlaut.dll', 'Inlaut.Core.dll', 'Inlaut.Platform.Windows.dll', 'Inlaut.UpdateHost.exe')
+          foreach ($name in $names) {
+            $path = (Resolve-Path "publish/beta/app/$name").Path
+            $info = [Diagnostics.FileVersionInfo]::GetVersionInfo($path)
+            if ($info.ProductName -cne 'inlaut' -or $info.ProductVersion -cne $version) { throw "Signing metadata mismatch: $name" }
+          }
+          $installer = (Resolve-Path "publish/beta/inlaut-$version-windows-x64-setup.exe").Path
+          $info = [Diagnostics.FileVersionInfo]::GetVersionInfo($installer)
+          # Inno Setup pads version-resource strings with ASCII spaces.
+          if ($info.ProductName.TrimEnd([char]' ') -cne 'inlaut' -or $info.ProductVersion.TrimEnd([char]' ') -cne $version) { throw 'Installer signing metadata mismatch' }
+          $rejected = $false
+          try {
+            ./windows/signing/Assert-SignedFiles.ps1 -Directory publish/beta/app -Names @('Inlaut.exe') -Version $version -CertificateSha256 ('0' * 64)
+          } catch {
+            if ($_.Exception.Message -notlike 'Invalid Authenticode signature:*') { throw }
+            $rejected = $true
+          }
+          if (-not $rejected) { throw 'Unsigned application was accepted by release verification' }
+
       - name: Upload app and installer
         uses: actions/upload-artifact@v4
         with:
