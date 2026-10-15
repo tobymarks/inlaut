@@ -35,10 +35,11 @@ RestartApplications=no
 SetupLogging=yes
 
 [Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "Desktop-Verknüpfung erstellen"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; Flags: unchecked
 
 [Files]
 Source: "{#PayloadDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -48,7 +49,7 @@ Name: "{group}\inlaut Beta"; Filename: "{app}\Inlaut.exe"
 Name: "{autodesktop}\inlaut Beta"; Filename: "{app}\Inlaut.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\Inlaut.exe"; Description: "inlaut Beta starten"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\Inlaut.exe"; Description: "{cm:LaunchProgram,inlaut Beta}"; Flags: nowait postinstall skipifsilent
 
 [Registry]
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueName: "inlaut"; Flags: dontcreatekey uninsdeletevalue

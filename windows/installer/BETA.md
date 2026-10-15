@@ -6,14 +6,28 @@ installing, reinstalling or uninstalling. Portable and installed copies share
 the application's single-instance lock and user settings. Installation does not
 enable autostart or start microphone recording.
 
-The bundled German FastConformer INT8 model runs locally. Its four files are
-SHA-256 verified by Build-Beta.ps1; a changed upstream download fails the build.
+The bundled German and English FastConformer INT8 models run locally. All files are
+SHA-256 verified against windows/models.json by Build-Beta.ps1 and before loading; a changed upstream download fails the build.
 Source: https://huggingface.co/csukuangfj/sherpa-onnx-nemo-transducer-stt_de_fastconformer_hybrid_large_pc-int8
 Upstream model: https://huggingface.co/nvidia/stt_de_fastconformer_hybrid_large_pc
 Model attribution: NVIDIA, FastConformer-Hybrid Large (de), licensed under
 CC BY 4.0: https://creativecommons.org/licenses/by/4.0/ . The bundled derivative
 is the ONNX-exported, INT8-quantized version distributed by csukuangfj;
 inlaut makes no further changes to these model files.
+English model: NVIDIA FastConformer-Hybrid Large (en), CC BY 4.0.
+Upstream: https://huggingface.co/nvidia/stt_en_fastconformer_hybrid_large_pc
+ONNX INT8 export: https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-nemo-fast-conformer-transducer-en-24500-int8.tar.bz2
+Export provenance: https://github.com/k2-fsa/sherpa-onnx/blob/master/scripts/nemo/fast-conformer-hybrid-transducer-ctc/run-transducer-non-streaming.sh
+inlaut redistributes the exported files without further modification.
+
+Choose dictation language and interface language separately in Settings.
+Language changes require restarting inlaut. Both models ship in the installer;
+only the selected one is loaded. Mixed-language dictation is not supported.
+Existing settings retain German. New installations default to English unless
+Windows uses German. The installer supports both languages.
+English is beta functionality covered by automated checks, without a new
+physical Windows-device acceptance test.
+
 See MODEL_EVALUATION.md for measured alternatives and limitations.
 
 Uninstall through Windows Apps & Features. User settings and diagnostic files

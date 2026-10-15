@@ -21,7 +21,7 @@ public static class ClipboardTextInserter
         while (ModifiersDown())
         {
             if (timer.ElapsedMilliseconds > 2000)
-                throw new InvalidOperationException("Bitte Strg, Alt, Umschalt und Windows-Taste loslassen.");
+                throw new InvalidOperationException(UiText.Get("Bitte Strg, Alt, Umschalt und Windows-Taste loslassen."));
             await Task.Delay(20);
         }
         await Task.Delay(50);
@@ -37,7 +37,7 @@ public static class ClipboardTextInserter
             {
                 object? value = original.GetData(format, false);
                 if (value == null)
-                    throw new InvalidOperationException("Die Zwischenablage konnte nicht vollständig gesichert werden.");
+                    throw new InvalidOperationException(UiText.Get("Die Zwischenablage konnte nicht vollständig gesichert werden."));
                 if (value is MemoryStream stream) value = new MemoryStream(stream.ToArray());
                 if (value is Image image) value = image.Clone();
                 previous.SetData(format, false, value);
@@ -56,7 +56,7 @@ public static class ClipboardTextInserter
         {
             DirectTextInserter.RequireTarget(target);
             if (ModifiersDown())
-                throw new InvalidOperationException("Fenster oder gedrückte Tasten haben sich geändert. Bitte erneut diktieren.");
+                throw new InvalidOperationException(UiText.Get("Fenster oder gedrückte Tasten haben sich geändert. Bitte erneut diktieren."));
             var keys = new[] { Key(0x11), Key(0x56), Key(0x56, true), Key(0x11, true) };
             uint sent = NativeMethods.SendInput((uint)keys.Length, keys, Marshal.SizeOf<NativeMethods.INPUT>());
             if (sent != keys.Length)
@@ -65,7 +65,7 @@ public static class ClipboardTextInserter
                 // Release any keys left down after a partially accepted shortcut.
                 var releases = new[] { Key(0x56, true), Key(0x11, true) };
                 NativeMethods.SendInput(2, releases, Marshal.SizeOf<NativeMethods.INPUT>());
-                throw new Win32Exception(error, "Windows hat das Einfügen blockiert. Läuft das Zielprogramm als Administrator?");
+                throw new Win32Exception(error, UiText.Get("Windows hat das Einfügen blockiert. Läuft das Zielprogramm als Administrator?"));
             }
             // SendInput acknowledges queuing, not consumption. Keep the payload
             // available while the target processes Ctrl+V; do not block our UI.

@@ -1,9 +1,9 @@
 # inlaut
 
 > inlaut ist eine kostenlose Open-Source-Diktier-App für macOS und Windows (Beta in Vorbereitung). Die veröffentlichte Mac-Version benötigt Apple Silicon und macOS 26 oder neuer. Taste halten, sprechen, loslassen: Die Spracherkennung läuft lokal auf dem Mac und fügt den Text in das aktive Textfeld jeder App ein. Auf Deutsch und Englisch, auch gemischt im selben Satz, ohne Konto, ohne Cloud, auch offline.
-> English summary: inlaut is a free, open-source (GPL-3.0) dictation app for macOS and Windows (beta in preparation, German only). The released Mac version supports German and English. Speech recognition runs fully on-device (no cloud, no account, works offline) and supports German, English and both mixed in one sentence. English page: https://inlaut.de/en
+> English summary: inlaut is a free, open-source (GPL-3.0) dictation app for macOS and Windows (beta in preparation, German or English). The released Mac version supports German and English. Speech recognition runs fully on-device (no cloud, no account, works offline) and supports German, English and both mixed in one sentence. English page: https://inlaut.de/en
 
-Windows: Native Beta für x64-PCs mit Windows 10/11, lokale deutsche Spracherkennung und deutsche Oberfläche, Modell im Installer. Der Download ist noch nicht freigeschaltet. Keine Apple Intelligence, Apple-Spracherkennung oder Datei-Transkription. Optionale Diagnose-Testaufnahmen können Audio/Text lokal speichern; kein automatischer Upload. Details: https://inlaut.de/windows und https://inlaut.de/en/windows
+Windows: Native Beta für x64-PCs mit Windows 10/11, lokale Spracherkennung und Oberfläche wahlweise auf Deutsch oder Englisch, beide Modelle im Installer, Sprachwechsel nach Neustart, keine gemischten Diktate. Der Download ist noch nicht freigeschaltet. Keine Apple Intelligence, Apple-Spracherkennung oder Datei-Transkription. Optionale Diagnose-Testaufnahmen können Audio/Text lokal speichern; kein automatischer Upload. Details: https://inlaut.de/windows und https://inlaut.de/en/windows
 
 ## Fakten zur veröffentlichten macOS-Version
 

@@ -1,140 +1,83 @@
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace Inlaut.App;
 
-public class ModelManager
+public static class ModelManager
 {
-    private static readonly string ModelDirName = "models";
-
-    private const string TransducerBaseUrl = "https://huggingface.co/csukuangfj/sherpa-onnx-nemo-transducer-stt_de_fastconformer_hybrid_large_pc-int8/resolve/main/";
-
-    private static readonly (string File, string Desc, long EstSize)[] ModelFiles = new[]
+    public sealed record ModelFile(string Name, long Size, string Sha256);
+    public sealed record Model(string Language, string Directory, string? BaseUrl, ModelFile[] Files);
+    private static readonly Model[] Models = LoadCatalog();
+    private static Model[] LoadCatalog()
     {
-        ("tokens.txt", "Sprach-Tokens", 11_000L),
-        ("encoder.int8.onnx", "Akustik-Encoder (131 MB)", 131_114_014L),
-        ("decoder.int8.onnx", "Prädiktor-Decoder (4 MB)", 3_955_863L),
-        ("joiner.int8.onnx", "Joiner-Netzwerk (1.4 MB)", 1_408_183L)
-    };
+        using var stream = typeof(ModelManager).Assembly.GetManifestResourceStream("Inlaut.App.models.json")!;
+        return JsonSerializer.Deserialize<Model[]>(stream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+    }
+    public static Model ForLanguage(string language) => Models.Single(m => m.Language == language);
 
-    public static string GetModelDirectory()
+    public static string GetModelDirectory(string language = "de") => ResolveDirectory(language,
+        Path.Combine(AppContext.BaseDirectory, "models"),
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "inlaut", "models"));
+
+    internal static string ResolveDirectory(string language, string bundledRoot, string userRoot)
     {
-        // 1. Check next to executable (portable mode)
-        string appDir = AppDomain.CurrentDomain.BaseDirectory;
-        string localModels = Path.Combine(appDir, ModelDirName);
-        if (Directory.Exists(localModels) && HasValidModel(localModels))
-        {
-            return localModels;
-        }
-
-        // Check subdirectories in appDir/models
-        if (Directory.Exists(localModels))
-        {
-            foreach (var sub in Directory.GetDirectories(localModels))
-            {
-                if (HasValidModel(sub)) return sub;
-            }
-        }
-
-        // 2. Check %LocalAppData%/inlaut/models
-        string appData = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "inlaut",
-            ModelDirName
-        );
-
-        if (Directory.Exists(appData) && HasValidModel(appData))
-        {
-            return appData;
-        }
-
-        if (Directory.Exists(appData))
-        {
-            foreach (var sub in Directory.GetDirectories(appData))
-            {
-                if (HasValidModel(sub)) return sub;
-            }
-        }
-
-        return localModels; // Default target
+        var model = ForLanguage(language);
+        // Never select an arbitrary directory: a different language has the same filenames.
+        var candidates = new List<string> { Path.Combine(bundledRoot, model.Directory), Path.Combine(userRoot, model.Directory) };
+        if (language == "de") candidates.AddRange([bundledRoot, Path.Combine(userRoot, "fastconformer-de-transducer"), userRoot]);
+        return candidates.FirstOrDefault(p => HasValidModel(p, language)) ?? candidates[0];
     }
 
-    public static bool HasValidModel(string directory)
+    public static bool HasValidModel(string directory, string language = "de") => ForLanguage(language).Files.All(f =>
+        File.Exists(Path.Combine(directory, f.Name)) && new FileInfo(Path.Combine(directory, f.Name)).Length == f.Size);
+
+    public static void VerifyModel(string directory, string language)
     {
-        if (!Directory.Exists(directory)) return false;
-
-        bool hasTokens = File.Exists(Path.Combine(directory, "tokens.txt"));
-        
-        bool hasTransducer = (File.Exists(Path.Combine(directory, "encoder.int8.onnx")) || File.Exists(Path.Combine(directory, "encoder.onnx")))
-                          && (File.Exists(Path.Combine(directory, "decoder.int8.onnx")) || File.Exists(Path.Combine(directory, "decoder.onnx")))
-                          && (File.Exists(Path.Combine(directory, "joiner.int8.onnx")) || File.Exists(Path.Combine(directory, "joiner.onnx")));
-
-        bool hasCtc = File.Exists(Path.Combine(directory, "model.int8.onnx")) || File.Exists(Path.Combine(directory, "model.onnx"));
-
-        return hasTokens && (hasTransducer || hasCtc);
+        foreach (var file in ForLanguage(language).Files)
+        {
+            using var stream = File.OpenRead(Path.Combine(directory, file.Name));
+            if (stream.Length != file.Size || !Convert.ToHexString(SHA256.HashData(stream)).Equals(file.Sha256, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidDataException(UiText.Get("Sprachmodell beschädigt. Bitte inlaut erneut installieren."));
+        }
     }
 
-    public static async Task<string> EnsureModelAvailableAsync(Action<string, int>? progressCallback = null)
+    public static async Task<string> EnsureModelAvailableAsync(Action<string, int>? progressCallback = null, string language = "de")
     {
-        string existing = GetModelDirectory();
-        if (HasValidModel(existing))
+        var model = ForLanguage(language);
+        string existing = GetModelDirectory(language);
+        if (HasValidModel(existing, language)) return existing;
+        // Both languages ship in the installer. English has no unverified download fallback.
+        if (model.BaseUrl == null) throw new FileNotFoundException(UiText.Get("Englisches Sprachmodell fehlt. Bitte den aktuellen zweisprachigen Installer verwenden."));
+        string target = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "inlaut", "models", model.Directory);
+        Directory.CreateDirectory(target);
+        using var client = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
+        long total = model.Files.Sum(f => f.Size), done = 0;
+        foreach (var file in model.Files)
         {
-            return existing;
-        }
-
-        // Fallback target: %LocalAppData%/inlaut/models/fastconformer-de-transducer
-        string targetDir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "inlaut",
-            ModelDirName,
-            "fastconformer-de-transducer"
-        );
-
-        Directory.CreateDirectory(targetDir);
-
-        using var client = new HttpClient();
-        client.Timeout = TimeSpan.FromMinutes(10);
-
-        long grandTotal = 0;
-        foreach (var item in ModelFiles) grandTotal += item.EstSize;
-
-        long downloadedBytes = 0;
-
-        foreach (var (file, desc, estSize) in ModelFiles)
-        {
-            string dest = Path.Combine(targetDir, file);
-            if (File.Exists(dest) && new FileInfo(dest).Length > 0)
+            string destination = Path.Combine(target, file.Name), temporary = destination + ".tmp";
+            try
             {
-                downloadedBytes += estSize;
-                continue;
+                using var response = await client.GetAsync(model.BaseUrl + file.Name, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
+                await using (var input = await response.Content.ReadAsStreamAsync())
+                await using (var output = File.Create(temporary))
+                {
+                    var buffer = new byte[81920]; long received = 0; int count;
+                    while ((count = await input.ReadAsync(buffer)) > 0)
+                    {
+                        received += count;
+                        if (received > file.Size) throw new InvalidDataException("Unexpected model size");
+                        await output.WriteAsync(buffer.AsMemory(0, count));
+                        progressCallback?.Invoke(UiText.Get("Sprachmodell wird geladen…"), (int)((done + received) * 100 / total));
+                    }
+                }
+                using (var stream = File.OpenRead(temporary))
+                    if (stream.Length != file.Size || !Convert.ToHexString(SHA256.HashData(stream)).Equals(file.Sha256, StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Model checksum mismatch");
+                File.Move(temporary, destination, true); done += file.Size;
             }
-
-            int percent = (int)(downloadedBytes * 100 / grandTotal);
-            progressCallback?.Invoke($"Lade {desc} herunter...", percent);
-
-            string url = TransducerBaseUrl + file;
-            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-
-            using var contentStream = await response.Content.ReadAsStreamAsync();
-            using var fileStream = new FileStream(dest + ".tmp", FileMode.Create, FileAccess.Write, FileShare.None);
-
-            var buffer = new byte[81920];
-            int read;
-            long itemRead = 0;
-            while ((read = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-            {
-                await fileStream.WriteAsync(buffer, 0, read);
-                itemRead += read;
-                int currentPercent = (int)((downloadedBytes + itemRead) * 100 / grandTotal);
-                progressCallback?.Invoke($"Lade {desc} herunter...", Math.Min(99, currentPercent));
-            }
-
-            fileStream.Close();
-            File.Move(dest + ".tmp", dest, true);
-            downloadedBytes += estSize;
+            finally { if (File.Exists(temporary)) File.Delete(temporary); }
         }
-
-        progressCallback?.Invoke("Sprachmodell bereit!", 100);
-        return targetDir;
+        return target;
     }
 }

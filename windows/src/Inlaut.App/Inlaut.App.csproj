@@ -8,7 +8,7 @@
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <RootNamespace>Inlaut.App</RootNamespace>
     <AssemblyName>Inlaut</AssemblyName>
-    <Version>0.7.0-beta.7</Version>
+    <Version>0.7.0-beta.8</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\inlaut-32.png" />
+    <EmbeddedResource Include="Resources/English.json" LogicalName="Inlaut.App.English.json" />
+    <EmbeddedResource Include="../../models.json" LogicalName="Inlaut.App.models.json" />
     <EmbeddedResource Include="Resources\inlaut-128.png" />
   </ItemGroup>
 

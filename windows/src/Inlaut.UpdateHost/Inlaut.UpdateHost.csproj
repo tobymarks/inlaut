@@ -10,6 +10,8 @@
     <AssemblyName>Inlaut.UpdateHost</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../Inlaut.App/UiText.cs" Link="UiText.cs" />
+    <EmbeddedResource Include="../Inlaut.App/Resources/English.json" LogicalName="Inlaut.App.English.json" />
     <ProjectReference Include="../Inlaut.Core/Inlaut.Core.csproj" />
     <Compile Include="../Inlaut.Platform.Windows/UpdateSecurity.cs" Link="UpdateSecurity.cs" />
   </ItemGroup>

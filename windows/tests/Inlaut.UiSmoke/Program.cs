@@ -7,6 +7,16 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        if (args.Length == 3 && args[0] == "--english-model")
+        {
+            ModelManager.VerifyModel(args[1], "en");
+            using var engine = new Inlaut.Platform.Windows.SherpaEngine(args[1], provider: "cpu", threads: 2);
+            var (text, _, _, _) = engine.TranscribeFile(args[2]);
+            if (!text.StartsWith("Well, I don't wish to see it any more", StringComparison.OrdinalIgnoreCase) || !text.Contains("old portrait", StringComparison.OrdinalIgnoreCase))
+                throw new Exception("English reference transcription differs: " + text);
+            Console.WriteLine("PASS: packaged English model recognises the reference recording with the Windows engine");
+            return 0;
+        }
         if (args.Length == 3 && args[0] == "--crash-child")
         {
             var journal = new CrashJournal(args[1]); journal.Begin();
@@ -32,6 +42,7 @@ internal static class Program
             try
             {
                 await SettingsChecks.Run(host, trigger, args.Contains("--hardware"));
+                await LanguageChecks.Run(trigger);
                 await CrashChecks.Run();
                 await UpdateChecks.Run();
                 if (args.Contains("--transitions")) await TransitionChecks.Run(host);

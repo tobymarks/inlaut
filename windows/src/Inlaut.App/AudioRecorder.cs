@@ -26,7 +26,7 @@ public class AudioRecorder : IDisposable
     public static List<MicrophoneOption> Devices()
     {
         using var enumerator = new MMDeviceEnumerator();
-        var result = new List<MicrophoneOption> { new("", "Windows-Standardmikrofon") };
+        var result = new List<MicrophoneOption> { new("", UiText.Get("Windows-Standardmikrofon")) };
         foreach (var device in enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active))
             using (device) result.Add(new(device.ID, device.FriendlyName));
         return result;
@@ -43,7 +43,7 @@ public class AudioRecorder : IDisposable
             _device = string.IsNullOrEmpty(deviceId)
                 ? enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console)
                 : enumerator.GetDevice(deviceId);
-            if (_device.State != DeviceState.Active) throw new InvalidOperationException("Das gewählte Mikrofon ist nicht verbunden. Bitte in den Einstellungen ein anderes wählen.");
+            if (_device.State != DeviceState.Active) throw new InvalidOperationException(UiText.Get("Das gewählte Mikrofon ist nicht verbunden. Bitte in den Einstellungen ein anderes wählen."));
             ActiveDeviceName = _device.FriendlyName;
             _capture = new WasapiCapture(_device);
             _format = _capture.WaveFormat;
@@ -93,7 +93,7 @@ public class AudioRecorder : IDisposable
             _buffer?.Dispose(); _buffer = null;
         }
         _device?.Dispose(); _device = null;
-        if (Failure != null) throw new InvalidOperationException("Die Mikrofonaufnahme wurde unterbrochen. Bitte das Gerät prüfen und erneut diktieren.", Failure);
+        if (Failure != null) throw new InvalidOperationException(UiText.Get("Die Mikrofonaufnahme wurde unterbrochen. Bitte das Gerät prüfen und erneut diktieren."), Failure);
         return bytes.Length == 0 ? [] : ConvertTo16kMono(bytes, _format!);
     }
 

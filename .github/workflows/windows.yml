@@ -54,6 +54,15 @@ jobs:
         shell: pwsh
         run: ./windows/installer/Build-Beta.ps1 -OutputDirectory ./publish/beta -CompilerPath "$env:RUNNER_TEMP/inno/ISCC.exe"
 
+      - name: English model inference regression
+        run: dotnet run --project windows/tests/Inlaut.UiSmoke -c Release -- --english-model publish/beta/app/models/fastconformer-en publish/beta/sherpa-onnx-nemo-fast-conformer-transducer-en-24500-int8/test_wavs/0.wav
+
+      - name: Upload UI regression screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-ui-localizations
+          path: windows/tests/Inlaut.UiSmoke/bin/Release/net8.0-windows/*.png
+
       - name: Verify signing metadata and unsigned-package rejection
         shell: pwsh
         run: |
