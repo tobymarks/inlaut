@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenAI Whisper auf dem Mac: Offline-Diktat, Core ML & Alternativen – inlaut</title>
+  <meta name="description" content="Wie du OpenAI Whisper auf dem Mac lokal und ohne Cloud nutzt: Möglichkeiten über whisper.cpp, Python und moderne Core-ML-Alternativen für verzögerungsfreies Diktieren.">
+  <link rel="canonical" href="https://inlaut.de/whisper-mac">
+  <link rel="alternate" hreflang="de" href="https://inlaut.de/whisper-mac">
+  <link rel="alternate" hreflang="en" href="https://inlaut.de/en/whisper-mac">
+  <link rel="alternate" hreflang="x-default" href="https://inlaut.de/whisper-mac">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/icon-180.png">
+  <meta name="theme-color" content="#F6F7F4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0C201F" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="/style.css?v=cmp1">
+  <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
+  <script src="/lang-switch.js" defer></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "https://inlaut.de/whisper-mac#article",
+      "url": "https://inlaut.de/whisper-mac",
+      "mainEntityOfPage": "https://inlaut.de/whisper-mac",
+      "headline": "OpenAI Whisper auf dem Mac: Offline-Diktat, Core ML und Alternativen",
+      "description": "Wie du OpenAI Whisper auf dem Mac lokal und ohne Cloud nutzt: Möglichkeiten über whisper.cpp, Python und moderne Core-ML-Alternativen für verzögerungsfreies Diktieren.",
+      "inLanguage": "de",
+      "datePublished": "2026-10-14",
+      "dateModified": "2026-10-14",
+      "image": "https://inlaut.de/og-image.png",
+      "author": {
+        "@type": "Person",
+        "@id": "https://inlaut.de/#tobias-marks",
+        "name": "Tobias Marks",
+        "url": "https://github.com/tobymarks"
+      },
+      "publisher": {
+        "@id": "https://inlaut.de/#tobias-marks"
+      },
+      "isPartOf": {
+        "@id": "https://inlaut.de/#website"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://inlaut.de/whisper-mac#faq",
+      "inLanguage": "de",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Läuft OpenAI Whisper komplett offline auf dem Mac?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ja. Sobald das Modell (z. B. über whisper.cpp, Python oder eine lokale Mac-App) einmal auf die Festplatte geladen wurde, benötigt die Transkription keinerlei Internetverbindung. Sämtliche Sprachdaten verbleiben auf dem Mac."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Warum ist Whisper für Live-Diktate oft zu langsam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Whisper ist eine autoregressive Encoder-Decoder-Architektur, die für ganze Audioblöcke von bis zu 30 Sekunden konzipiert wurde. Beim Live-Diktieren entsteht dadurch eine spürbare Latenz von 1 bis 3 Sekunden nach dem Sprechen. Neuere Streaming-Modelle wie Transducer (z. B. Parakeet TDT) transkribieren Sprache dagegen in unter 0,1 Sekunden."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Warum halluziniert Whisper bei Stille?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Der Decoder von Whisper versucht stets, Tokens zu generieren. Wenn in der Audioaufnahme Stille, Atmer oder Hintergrundgeräusche vorkommen, neigt das Modell dazu, Sätze zu erfinden oder sich in Wiederholungsschleifen zu verfangen. Transducer-Architekturen kennen dieses Problem nicht, da sie bei Stille leere Tokens ausgeben."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Braucht man für Whisper einen Apple Silicon Mac (M1/M2/M3/M4)?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Whisper läuft grundsätzlich auch auf älteren Intel-Macs über die CPU, arbeitet dort aber sehr langsam und erzeugt viel Hitze. Auf Apple Silicon profitiert Whisper von der Neural Engine und Metal über Core ML, was die Berechnung deutlich beschleunigt."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Was ist der Unterschied zwischen Whisper und inlaut?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Whisper ist ein vielseitiges Grundlagenmodell für Transkriptionen in über 90 Sprachen. inlaut ist eine spezialisierte Diktier-App für macOS, die auf Parakeet TDT mit Core ML auf der Apple Neural Engine aufbaut. inlaut transkribiert zehnmal schneller, belegt im Leerlauf nur 50 MB RAM, tippt den Text direkt an die Cursor-Position und verhindert Halluzinationen bei Stille."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#inhalt">Zum Inhalt</a>
+  <header class="wrap top">
+    <a class="wordmark" href="/" aria-label="inlaut – Startseite"><picture><source srcset="/brand/inlaut-logo-mint.svg" media="(prefers-color-scheme: dark)"><img src="/brand/inlaut-logo-petrol.svg" width="168" height="40" alt="inlaut"></picture></a>
+    <nav aria-label="Hauptnavigation"><a href="/">Zur Startseite</a><a class="lang-switch" data-umami-event="lang-switch" data-current="de" href="/en/whisper-mac" hreflang="en" lang="en" aria-label="Switch to English" title="Switch to English"><span class="lang-code lang-now" aria-hidden="true">DE</span><span class="lang-code lang-next" aria-hidden="true">EN</span><span class="lang-knob" aria-hidden="true"><span class="lang-now"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" focusable="false"><g transform="translate(3 10.6)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(7 10.6)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(9.4 5.4) rotate(180)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(13.4 5.4) rotate(180)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g></svg></span><span class="lang-next"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" focusable="false"><g transform="translate(2.4 9.4) rotate(180) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(5.6 9.4) rotate(180) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(10.6 6) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(13.8 6) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g></svg></span></span></a></nav>
+  </header>
+
+  <main class="wrap prose prose-wide" id="inhalt">
+    <h1>OpenAI Whisper auf dem Mac: Offline-Diktat, Core ML & Alternativen</h1>
+    <p class="lead">OpenAI Whisper hat gezeigt, wie präzise moderne Spracherkennung sein kann. Auf dem Mac lässt sich Whisper vollständig offline betreiben. Doch wer Whisper zum täglichen Diktieren in E-Mails, Slack oder Notizen nutzen möchte, stößt schnell auf spürbare Grenzen: Latenz, hoher Speicherbedarf und Halluzinationen.</p>
+    <p class="note">Stand: 14. Oktober 2026. Ein technischer Leitfaden über Möglichkeiten mit whisper.cpp, Python und modernen Neural-Engine-Alternativen für macOS.</p>
+
+    <h2>Was ist Whisper und warum ist es so beliebt?</h2>
+    <p>Whisper ist ein von OpenAI entwickeltes Open-Source-Modell für Automatic Speech Recognition (ASR). Es wurde mit über 680.000 Stunden mehrsprachigen Audiodaten trainiert und zeichnet sich durch eine beachtliche Robustheit gegenüber Dialekten, Akzenten und Fachvokabular aus.</p>
+    <p>Der entscheidende Vorteil für Datenschutz und Produktivität: <strong>Die Modellgewichte sind frei verfügbar.</strong> Whisper kann ohne Cloud-Abo, ohne API-Schlüssel und ohne Übertragung sensibler Audiodaten direkt auf dem eigenen Rechner ausgeführt werden.</p>
+
+    <h2>Die drei Wege, Whisper auf dem Mac zu nutzen</h2>
+
+    <h3>1. Über Python (openai-whisper)</h3>
+    <p>Der von OpenAI bereitgestellte Standardweg. Mit <code>pip install openai-whisper</code> lässt sich das Modell über PyTorch ansprechen:</p>
+    <pre><code>whisper audio.mp3 --model medium --language de</code></pre>
+    <p><strong>Fazit:</strong> Gut geeignet für Entwickler und Batch-Verarbeitung von Audio-Dateien im Hintergrund. Für den Alltag als Diktierfunktion ungeeignet: PyTorch benötigt mehrere Gigabyte RAM, startet langsam und fügt keinen Text direkt an der Cursor-Position ein.</p>
+
+    <h3>2. Über whisper.cpp (Metal & Core ML)</h3>
+    <p>Georgi Gerganov hat Whisper in reinem C/C++ neu implementiert. Über <strong>whisper.cpp</strong> wird Apples Metal-Grafikschnittstelle sowie die Apple Neural Engine (ANE) über Core ML angesprochen. Durch Quantisierung (z. B. q5_0 oder q8_0) sinkt der Speicherbedarf drastisch:</p>
+    <pre><code># whisper.cpp kompilieren und mit Core ML beschleunigen
+git clone https://github.com/ggerganov/whisper.cpp
+cd whisper.cpp
+make -j
+./main -m models/ggml-base.bin -f aufnahme.wav</code></pre>
+    <p><strong>Fazit:</strong> Technisch exzellent und auf Apple Silicon (M1 bis M4) deutlich schneller als Python. Dennoch bleibt whisper.cpp ein Kommandozeilenwerkzeug ohne systemweites Diktat-Interface.</p>
+
+    <h3>3. Über spezialisierte Transkriptions-Apps</h3>
+    <p>macOS-Apps wie MacWhisper binden whisper.cpp in eine grafische Oberfläche ein. Man zieht eine Audiodatei oder ein Video ins Fenster und erhält das Transkript.</p>
+    <p><strong>Fazit:</strong> Ideal für Interviews, Podcasts und Meetings. Für das flüssige <em>Live-Diktieren</em> beim Verfassen einer E-Mail sind diese Apps jedoch oft sperrig.</p>
+
+    <h2>Die typischen Hürden von Whisper beim Live-Diktieren</h2>
+    <p>Wer versucht, Whisper als Ersatz für die Tastatur im Alltag einzusetzen, begegnet drei systembedingten Hürden der Modellarchitektur:</p>
+    <ul>
+      <li><strong>Spürbare Latenz (1 bis 3 Sekunden Bedenkzeit):</strong> Whisper basiert auf einer autoregressiven Encoder-Decoder-Struktur. Das Modell benötigt längere Audioabschnitte (typisch 30-Sekunden-Fenster), um Kontext zu erfassen. Nach dem Loslassen der Diktier-Taste muss der Nutzer warten, bis der Satz verarbeitet ist.</li>
+      <li><strong>Halluzinationen bei Stille und Rauschen:</strong> Weil der Decoder trainiert wurde, immer Textsequenzen vorherzusagen, neigt Whisper bei Sprechpausen, Atmern oder Mikrofonrauschen dazu, Phantomsätze zu erfinden – etwa Untertitel-Floskeln wie „Vielen Dank fürs Zuschauen!“ oder endlose Wortwiederholungen.</li>
+      <li><strong>Speicher- und Akkubelastung:</strong> Selbst das neuere <em>Whisper-turbo</em>-Modell belegt rund 2 GB Arbeitsspeicher und beansprucht die GPU kontinuierlich. Auf dem MacBook führt das bei häufigem Diktieren zu warmen Gehäusen und kürzerer Akkulaufzeit.</li>
+    </ul>
+
+    <h2>Die moderne Alternative: Streaming mit Parakeet TDT auf Apple Silicon</h2>
+    <p>In den letzten Jahren hat sich im Bereich der Spracherkennung für Desktop-Betriebssysteme ein Architekturwechsel vollzogen. Anstelle schwerfälliger Encoder-Decoder-Netze setzen moderne Diktierwerkzeuge auf <strong>Fast Conformer Transducer</strong> (wie NVIDIA Parakeet TDT).</p>
+    <p>In unserer App <strong>inlaut</strong> kommt ein optimiertes Parakeet-Ultra-Modell zum Einsatz, das über die Open-Source-Bibliothek <em>FluidAudio</em> nativ auf der Apple Neural Engine läuft:</p>
+    <ul>
+      <li><strong>Echtzeit-Geschwindigkeit:</strong> 10 Sekunden Sprache werden auf einem Apple-Silicon-Mac in weniger als 0,1 Sekunden transkribiert. Der Text erscheint unmittelbar nach dem Loslassen der Taste.</li>
+      <li><strong>Leichtgewicht im Leerlauf:</strong> Die App benötigt im Leerlauf lediglich 50 bis 60 MB RAM (gegenüber 1,5 bis 2,5 GB bei Whisper-Apps).</li>
+      <li><strong>Keine Halluzinationen bei Stille:</strong> Die Transducer-Architektur gibt bei Stille oder Rauschen schlicht leere Tokens aus. Ein versehentliches Erfinden von Sätzen ist strukturell ausgeschlossen.</li>
+      <li><strong>Deutsch und Englisch gemischt:</strong> Fachbegriffe wie „Pull Request“, „Deployment Pipeline“ oder englische E-Mail-Begriffe werden mitten im deutschen Satz fehlerfrei erkannt, ohne dass eine Spracheinstellung gewechselt werden muss.</li>
+    </ul>
+
+    <h2>Übersicht: Whisper vs. inlaut vs. macOS-Bordmittel</h2>
+
+    <div class="compare-scroll" tabindex="0" role="region" aria-label="Vergleich von Spracherkennungslösungen am Mac">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th scope="col">Kriterium</th>
+            <th scope="col">OpenAI Whisper (Standard)</th>
+            <th scope="col">whisper.cpp (Core ML)</th>
+            <th scope="col">inlaut (Parakeet Ultra)</th>
+            <th scope="col">macOS Diktierfunktion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Latenz (10s Diktat)</th>
+            <td>1,5 – 3,0 s</td>
+            <td>0,8 – 1,5 s</td>
+            <td><strong>&lt; 0,1 s</strong></td>
+            <td>Direktes Streaming</td>
+          </tr>
+          <tr>
+            <th scope="row">RAM-Bedarf</th>
+            <td>~2,5 GB</td>
+            <td>~1,2 GB</td>
+            <td><strong>~50 – 60 MB</strong></td>
+            <td>Im System integriert</td>
+          </tr>
+          <tr>
+            <th scope="row">Verhalten bei Stille</th>
+            <td>Neigt zu Halluzinationen</td>
+            <td>Filterung nötig</td>
+            <td><strong>Keine Halluzinationen</strong></td>
+            <td>Bricht nach 30s ab</td>
+          </tr>
+          <tr>
+            <th scope="row">Deutsch + Englisch gemischt</th>
+            <td>Hängt vom Prompt ab</td>
+            <td>Begrenzt</td>
+            <td><strong>Nahtlos in einem Satz</strong></td>
+            <td>Manuelle Umschaltung nötig</td>
+          </tr>
+          <tr>
+            <th scope="row">Direktes Einfügen per Taste</th>
+            <td>Nein (CLI)</td>
+            <td>Nein (Script nötig)</td>
+            <td><strong>Ja (in jedes Textfeld)</strong></td>
+            <td>Ja</td>
+          </tr>
+          <tr>
+            <th scope="row">Cloud-Abhängigkeit</th>
+            <td>Keine (offline)</td>
+            <td>Keine (offline)</td>
+            <td><strong>Keine (100% offline)</strong></td>
+            <td>Teils Server-abhängig</td>
+          </tr>
+          <tr>
+            <th scope="row">Lizenz & Kosten</th>
+            <td>MIT (kostenlos)</td>
+            <td>MIT (kostenlos)</td>
+            <td><strong>GPL-3.0 (kostenlos)</strong></td>
+            <td>Teil von macOS</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Wie du inlaut auf deinem Mac startest</h2>
+    <p>Wenn du die Präzision moderner KI-Spracherkennung mit der Geschwindigkeit einer echten Mac-App kombinieren möchtest:</p>
+    <ol>
+      <li>Lade das DMG-Paket von inlaut herunter und ziehe die App in deinen Programme-Ordner.</li>
+      <li>Beim ersten Start lädt inlaut einmalig das optimierte Sprachmodell (~630 MB) herunter. Danach arbeitet die App dauerhaft komplett offline.</li>
+      <li>Halte deine gewählte Taste (z. B. <kbd>🌐 fn</kbd> oder eine Tastenkombination) gedrückt, sprich deinen Text und lass die Taste los – dein Text wird sofort eingefügt.</li>
+    </ol>
+    <p><a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" data-umami-event-position="guide-whisper" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>inlaut für macOS laden <span aria-hidden="true">↓</span></a></p>
+
+    <h2>Häufige Fragen zu Whisper am Mac</h2>
+    <h3>Läuft OpenAI Whisper komplett offline auf dem Mac?</h3>
+    <p>Ja. Sobald das Modell (z. B. über whisper.cpp, Python oder eine lokale Mac-App) einmal auf die Festplatte geladen wurde, benötigt die Transkription keinerlei Internetverbindung. Sämtliche Sprachdaten verbleiben auf dem Mac.</p>
+
+    <h3>Warum ist Whisper für Live-Diktate oft zu langsam?</h3>
+    <p>Whisper ist eine autoregressive Encoder-Decoder-Architektur, die für ganze Audioblöcke von bis zu 30 Sekunden konzipiert wurde. Beim Live-Diktieren entsteht dadurch eine spürbare Latenz von 1 bis 3 Sekunden nach dem Sprechen. Neuere Streaming-Modelle wie Transducer (z. B. Parakeet TDT) transkribieren Sprache dagegen in unter 0,1 Sekunden.</p>
+
+    <h3>Warum halluziniert Whisper bei Stille?</h3>
+    <p>Der Decoder von Whisper versucht stets, Tokens zu generieren. Wenn in der Audioaufnahme Stille, Atmer oder Hintergrundgeräusche vorkommen, neigt das Modell dazu, Sätze zu erfinden oder sich in Wiederholungsschleifen zu verfangen. Transducer-Architekturen kennen dieses Problem nicht, da sie bei Stille leere Tokens ausgeben.</p>
+
+    <h3>Braucht man für Whisper einen Apple Silicon Mac (M1/M2/M3/M4)?</h3>
+    <p>Whisper läuft grundsätzlich auch auf älteren Intel-Macs über die CPU, arbeitet dort aber sehr langsam und erzeugt viel Hitze. Auf Apple Silicon profitiert Whisper von der Neural Engine und Metal über Core ML, was die Berechnung deutlich beschleunigt.</p>
+
+    <h3>Was ist der Unterschied zwischen Whisper und inlaut?</h3>
+    <p>Whisper ist ein vielseitiges Grundlagenmodell für Transkriptionen in über 90 Sprachen. inlaut ist eine spezialisierte Diktier-App für macOS, die auf Parakeet TDT mit Core ML auf der Apple Neural Engine aufbaut. inlaut transkribiert zehnmal schneller, belegt im Leerlauf nur 50 MB RAM, tippt den Text direkt an die Cursor-Position und verhindert Halluzinationen bei Stille.</p>
+
+    <h2>Weiterführende Vergleiche und Anleitungen</h2>
+    <ul>
+      <li><a href="/diktierfunktion-mac">Anleitung: Diktierfunktion am Mac einrichten und Fehler beheben</a></li>
+      <li><a href="/vergleich">Übersicht: Alle Mac-Diktier-Apps im direkten Vergleich</a></li>
+      <li><a href="/wispr-flow-alternative">Wispr Flow Alternative: Diktieren ohne Cloud und ohne Abonnement</a></li>
+      <li><a href="/unternehmen">Datenschutz & DSGVO: Offline-Diktat für Kanzleien und Unternehmen</a></li>
+    </ul>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 Tobias Marks</span><span class="social"><a href="https://www.instagram.com/inlaut.de/" target="_blank" rel="noopener" aria-label="inlaut auf Instagram (öffnet in neuem Tab)" title="inlaut auf Instagram"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></a><a href="https://www.facebook.com/inlaut.de" target="_blank" rel="noopener" aria-label="inlaut auf Facebook (öffnet in neuem Tab)" title="inlaut auf Facebook"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg></a><a data-umami-event="github-click" data-umami-event-position="footer" href="https://github.com/tobymarks/inlaut" target="_blank" rel="noopener" aria-label="inlaut auf GitHub (öffnet in neuem Tab)" title="inlaut auf GitHub"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></span>
+      <nav aria-label="Weitere Links"><a href="/diktierfunktion-mac">Mac-Diktat</a><a href="/whisper-mac" aria-current="page">Whisper</a><a href="/vergleich">Vergleich</a><a href="/unternehmen">Für Unternehmen</a><a href="/impressum">Impressum</a><a href="/datenschutz">Datenschutz</a></nav>
+    </div>
+  </footer>
+</body>
+</html>
