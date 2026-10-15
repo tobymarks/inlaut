@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>inlaut – Dictation app for the Mac: speech to text, local and offline</title>
-  <meta name="description" content="Dictate on your Mac: hold a key, speak, let go, and inlaut types the text into any app. Speech recognition runs locally, even without internet. No account, no cloud. Free and open source.">
+  <title>inlaut – Dictation on Mac and Windows: local and offline</title>
+  <meta name="description" content="Dictate on macOS, with a Windows beta coming soon: hold a key, speak, let go, and inlaut types the text into any app. Speech recognition runs locally, even without internet. No account, no cloud. Free and open source.">
   <link rel="canonical" href="https://inlaut.de/en">
   <link rel="alternate" hreflang="de" href="https://inlaut.de/">
   <link rel="alternate" hreflang="en" href="https://inlaut.de/en">
@@ -40,7 +40,7 @@
       {
         "@type": "SoftwareApplication",
         "@id": "https://inlaut.de/#app",
-        "name": "inlaut",
+        "name": "inlaut for macOS",
         "alternateName": "Inlaut",
         "description": "Dictation app for the Mac menu bar. Hold a key, speak, let go: speech recognition runs locally on the Mac and inserts the text into the active text field of any app. English and German, also mixed, with no account and no cloud.",
         "url": "https://inlaut.de/en",
@@ -84,13 +84,13 @@
   <meta property="og:locale:alternate" content="de_DE">
   <meta property="og:url" content="https://inlaut.de/en">
   <meta property="og:title" content="inlaut – Your voice. Straight to text.">
-  <meta property="og:description" content="Dictation for your Mac. Local, no account and no cloud. Free and open source.">
+  <meta property="og:description" content="Dictation for macOS, with a Windows beta coming soon. Local, no account and no cloud. Free and open source.">
   <meta property="og:image" content="https://inlaut.de/og-image-en.png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="672">
   <meta property="og:image:alt" content="inlaut: Your voice. Straight to text. Dictation, locally on your Mac.">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="/style.css?v=human1">
+  <link rel="stylesheet" href="/style.css?v=windows-beta1">
   <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
   <script src="/lang-switch.js" defer></script>
   <script type="application/ld+json" id="faq-schema">
@@ -112,7 +112,7 @@
       "name": "Does dictation work without internet?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. Speech recognition runs entirely on your Mac. inlaut only needs internet to download the speech model once on first launch (around 630 MB) and to check for updates."
+        "text": "Yes. Speech recognition runs on your computer. On Mac, inlaut downloads the speech model on first launch (around 630 MB); the Windows beta includes its German model in the installer. Downloads and update checks need internet; dictation does not."
       }
     },
     {
@@ -120,7 +120,7 @@
       "name": "Are my recordings sent to a cloud?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No. Your voice is turned into text on your Mac. Recordings and dictations are neither sent anywhere nor kept as a history. The microphone is only on while you dictate."
+        "text": "No. Your voice is turned into text on your computer. Normal dictation neither sends recordings or text anywhere nor keeps a history. Optional Windows test captures are only saved locally when explicitly enabled. The microphone is active during dictation or an explicitly started microphone test."
       }
     },
     {
@@ -128,7 +128,7 @@
       "name": "Which apps can I dictate into?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Any app with a text field: Mail, Notes, Pages, Word, Outlook, Teams, Slack, your browser or the chat window of an AI assistant. inlaut inserts the text where your cursor is. This needs a one-time permission under Accessibility. Without it, the text stays on the clipboard."
+        "text": "Any app with a text field: Mail, Notes, Pages, Word, Outlook, Teams, Slack, your browser or the chat window of an AI assistant. inlaut inserts the text where your cursor is. On Mac, this needs a one-time permission under Accessibility. Without it, the text stays on the clipboard."
       }
     },
     {
@@ -136,7 +136,7 @@
       "name": "How do I start dictating?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Hold your key combination or the 🌐 fn key, speak and let go. For longer texts, double-tap fn and dictate hands-free. Another key press ends the recording."
+        "text": "On Mac: Hold your key combination or the 🌐 fn key, speak and let go. For longer texts, double-tap fn and dictate hands-free. Another key press ends the recording. On Windows, choose your shortcut and recording mode in the settings."
       }
     },
     {
@@ -144,7 +144,7 @@
       "name": "Which languages does inlaut support?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "English and German. In the settings you choose English, Deutsch or Deutsch + English. With Deutsch + English you can dictate both languages, even mixed in one sentence."
+        "text": "On Mac: English and German, including both mixed in one sentence. The Windows beta currently recognises German and has a German interface. The two versions do not yet have identical features."
       }
     },
     {
@@ -152,7 +152,7 @@
       "name": "How well does inlaut understand English and technical terms?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "inlaut uses the Parakeet Ultra speech model, which handles technical terms well, also with an accent. If a word still comes out wrong, add your own replacement, and the spelling is right every time."
+        "text": "On Mac: inlaut uses the Parakeet Ultra speech model, which handles technical terms well, also with an accent. If a word still comes out wrong, add your own replacement, and the spelling is right every time."
       }
     },
     {
@@ -168,15 +168,15 @@
       "name": "How is this different from macOS dictation?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "macOS has its own dictation. inlaut is an alternative with its own speech model, custom replacements, commands for lines and paragraphs and a key of your choice. To set up the built-in feature, see our guide to Mac dictation, or compare them directly in our dictation app comparison."
+        "text": "macOS has its own dictation. inlaut is an alternative with its own speech model, custom replacements, commands for lines and paragraphs and a key of your choice. To set up the built-in feature, see our guide to Windows betaMac dictation, or compare them directly in our dictation app comparison."
       }
     },
     {
       "@type": "Question",
-      "name": "Which Mac do I need?",
+      "name": "Which computers does inlaut support?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A Mac with Apple silicon (M1 or later) and macOS 26 or later. The speech model takes up around 630 MB of storage. If you are short on space, choose the local Apple speech recognition in the settings."
+        "text": "Mac: Apple silicon (M1 or later), macOS 26 or later. Windows beta: Windows 10 or 11 on an Intel or AMD x64 PC. The Windows download will be enabled after signing. There is no native Windows ARM, Linux, iPhone or iPad version."
       }
     },
     {
@@ -184,7 +184,7 @@
       "name": "Can inlaut transcribe recordings too?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. “Transcribe File …” in the menu turns an audio or video file into text, for example the recording of a meeting or a voice message. The result appears in its own window, with time stamps if you like, and can be copied or saved. This, too, happens only on your Mac. inlaut does not tell speakers apart."
+        "text": "On Mac: Yes. “Transcribe File …” in the menu turns an audio or video file into text, for example the recording of a meeting or a voice message. The result appears in its own window, with time stamps if you like, and can be copied or saved. This, too, happens only on your Mac. inlaut does not tell speakers apart."
       }
     },
     {
@@ -192,7 +192,7 @@
       "name": "Which microphone does inlaut use?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "You choose it in the setting “Record with”. With “Automatic”, inlaut uses the Mac’s own microphone while a Bluetooth headset is connected, because headsets take over a second to start recording. You can also follow the macOS setting or pick one microphone."
+        "text": "On Mac: You choose it in the setting “Record with”. With “Automatic”, inlaut uses the Mac’s own microphone while a Bluetooth headset is connected, because headsets take over a second to start recording. You can also follow the macOS setting or pick one microphone."
       }
     },
     {
@@ -200,7 +200,7 @@
       "name": "Does inlaut remove “um” and slips of the tongue?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "If you want it to. With the setting “Tidy up dictations”, inlaut leaves out filler sounds such as “uh” and words you said twice by accident. With “Resolve self-corrections (beta)”, “on Monday, no, on Tuesday” simply becomes “on Tuesday”. For that, Apple Intelligence on your Mac checks whether you really corrected yourself; nothing is sent. In both cases inlaut only deletes words and does not rephrase anything. Both settings are off at first."
+        "text": "On Mac: If you want it to. With the setting “Tidy up dictations”, inlaut leaves out filler sounds such as “uh” and words you said twice by accident. With “Resolve self-corrections (beta)”, “on Monday, no, on Tuesday” simply becomes “on Tuesday”. For that, Apple Intelligence on your Mac checks whether you really corrected yourself; nothing is sent. In both cases inlaut only deletes words and does not rephrase anything. Both settings are off at first."
       }
     },
     {
@@ -208,7 +208,7 @@
       "name": "Can I insert snippets?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. Under “Snippets” you store longer texts you need again and again, such as a signature or bank details. Say the phrase on its own and inlaut writes the text. Replacements and snippets can be exported together and imported on another Mac."
+        "text": "Yes. Under “Snippets” you store longer texts you need again and again, such as a signature or bank details. Say the phrase on its own and inlaut writes the text. Replacements and snippets can be exported together and imported on another computer running inlaut."
       }
     },
     {
@@ -216,7 +216,7 @@
       "name": "Is inlaut available for Windows, iPhone or iPad?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No. inlaut is an app for the Mac menu bar."
+        "text": "The native Windows beta is being prepared for release. Its download will be enabled after signing; see the Windows beta page for status and requirements. inlaut is not available for iPhone or iPad."
       }
     },
     {
@@ -224,7 +224,7 @@
       "name": "How do I install inlaut?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Download the DMG file, open it and drag the inlaut icon onto the Applications folder. On first launch, inlaut walks you through downloading the speech model and the permissions for the microphone and pasting. Once a day, inlaut checks for updates and asks before installing one."
+        "text": "On Mac, open the DMG and drag inlaut to Applications. First launch guides you through the model download and permissions. The Windows beta uses an EXE installer for your user account. Its download remains disabled until signing is complete."
       }
     }
   ]
@@ -242,23 +242,24 @@
       <a href="#who-its-for">Who it’s for</a>
       <a href="#faq">FAQ</a>
       <a href="https://github.com/tobymarks/inlaut" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
-      <a class="lang-switch" data-current="en" href="/" hreflang="de" lang="de" aria-label="Auf Deutsch wechseln" title="Auf Deutsch wechseln"><span class="lang-code lang-now" aria-hidden="true">EN</span><span class="lang-code lang-next" aria-hidden="true">DE</span><span class="lang-knob" aria-hidden="true"><span class="lang-now"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" focusable="false"><g transform="translate(2.4 9.4) rotate(180) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(5.6 9.4) rotate(180) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(10.6 6) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(13.8 6) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g></svg></span><span class="lang-next"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" focusable="false"><g transform="translate(3 10.6)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(7 10.6)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(9.4 5.4) rotate(180)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(13.4 5.4) rotate(180)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g></svg></span></span></a>
+      <a class="lang-switch" data-umami-event="lang-switch" data-current="en" href="/" hreflang="de" lang="de" aria-label="Auf Deutsch wechseln" title="Auf Deutsch wechseln"><span class="lang-code lang-now" aria-hidden="true">EN</span><span class="lang-code lang-next" aria-hidden="true">DE</span><span class="lang-knob" aria-hidden="true"><span class="lang-now"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" focusable="false"><g transform="translate(2.4 9.4) rotate(180) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(5.6 9.4) rotate(180) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(10.6 6) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(13.8 6) scale(.85)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g></svg></span><span class="lang-next"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" focusable="false"><g transform="translate(3 10.6)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(7 10.6)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(9.4 5.4) rotate(180)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g><g transform="translate(13.4 5.4) rotate(180)"><circle r="1.55"/><path d="M1.5 .2C1.6 2.1.8 3.4-.9 4.1" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></g></svg></span></span></a>
     </nav>
   </header>
 
   <main id="content">
     <section class="wrap hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow">Dictation. Locally on your Mac.</p>
+        <p class="eyebrow">Dictation. Locally on your computer.</p>
         <h1 id="hero-title">Your voice.<br><span>Straight to text.</span></h1>
       </div>
       <div class="hero-side">
         <p class="lead">A thought, a message, a whole page. Hold a key, speak, let go. inlaut writes wherever your cursor is.</p>
         <div class="actions">
-          <a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0-en.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Download for macOS <span aria-hidden="true">↓</span></a>
+          <a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" data-umami-event-position="hero" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0-en.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Download for macOS <span aria-hidden="true">↓</span></a>
+          <a class="button button-secondary" href="/en/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Windows <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a>
           <a class="text-link" href="#how-it-works">How it works <span aria-hidden="true">↓</span></a>
         </div>
-        <p class="availability">Free <span aria-hidden="true">·</span> Version 0.5.0 for Apple silicon, macOS 26 or later</p>
+        <p class="availability">Free <span aria-hidden="true">·</span> macOS 0.5.0 · Apple silicon, macOS 26 or later<br>Windows beta for Windows 10/11 (x64) · Download after signing</p>
       </div>
       <figure class="interview-film hero-film">
         <div class="film-frame">
@@ -280,15 +281,15 @@
     <section class="wrap features-section" aria-labelledby="features-title">
       <div class="section-heading"><h2 id="features-title">Room for your thoughts.</h2><p>inlaut stays in the background. And it’s there when you have something to say.</p></div>
       <div class="features">
-        <article class="feature"><h3>Your Mac listens. Nobody else.</h3><p>Speech recognition runs on your Mac. Recordings and dictations are neither kept as a history nor sent anywhere. The microphone is only on while you dictate.</p></article>
-        <article class="feature"><h3>English, German, or both.</h3><p>One speech model understands English and German, even mixed in one sentence. It runs on your Mac’s Neural Engine: fast and light. Alternatively, use the local Apple speech recognition.</p></article>
+        <article class="feature"><h3>Your computer listens. Nobody else.</h3><p>Speech recognition runs on your computer. Recordings and dictations are neither kept as a history nor sent anywhere. The microphone is active during dictation or an explicitly started microphone test.</p></article>
+        <article class="feature"><h3>English, German, or both.</h3><p>On Mac, inlaut understands English and German, even mixed, using Parakeet Ultra or local Apple speech recognition. The Windows beta uses a local German speech model. Your speech stays on your device.</p></article>
         <article class="feature"><h3>Right where you’re writing.</h3><p>Email, note or document: your dictation lands straight in the active text field. You stay in the app you’re working in.</p></article>
         <article class="feature"><h3>Your words. Your spelling.</h3><p>Custom replacements fix recurring mistakes. Say “new line” and “new paragraph” to structure your text as you speak.</p></article>
       </div>
     </section>
 
     <section class="wrap shots" aria-labelledby="shots-title">
-      <div class="section-heading"><h2 id="shots-title">Quietly in the background.</h2><p>A small indicator while you speak. A menu in the menu bar. And a window for your settings.</p></div>
+      <div class="section-heading"><h2 id="shots-title">Quietly in the background.</h2><p>A small indicator while you speak. A menu in the menu bar on Mac or the system tray on Windows. These images show the Mac version.</p></div>
       <div class="shot-grid">
         <figure class="shot shot-wide"><img src="/screens/diktat-en.webp" width="1536" height="1024" alt="Notes window with dictated text, below it the inlaut indicator “Listening” with level bars" loading="lazy"><figcaption>Dictating into Notes (illustration)</figcaption></figure>
         <figure class="shot"><img src="/screens/menue-en.webp?v=3" width="836" height="620" alt="Open inlaut menu in the menu bar with status, settings and quit" loading="lazy"><figcaption>The menu in the menu bar (illustration)</figcaption></figure>
@@ -297,7 +298,7 @@
     </section>
 
     <section class="wrap how" id="how-it-works" aria-labelledby="how-title">
-      <div class="section-heading"><h2 id="how-title">Hold. Speak.<br>Let go.</h2><p>One key is all it takes. inlaut does the rest on your Mac.</p>
+      <div class="section-heading"><h2 id="how-title">Hold. Speak.<br>Let go.</h2><p>One key is all it takes. inlaut does the rest on your computer.</p>
       <figure class="dictation-demo" aria-label="Example: spoken words become a note">
         <div class="demo-topline"><span>Just say it.</span><img src="/brand/app-icon.png" width="88" height="88" alt="inlaut app icon"></div>
         <div class="note-window">
@@ -309,14 +310,14 @@
           </div>
         </div>
         <div class="demo-bottomline">
-          <span class="key-hint"><kbd>fn</kbd> hold &amp; speak</span>
+          <span class="key-hint">Mac: <kbd>fn</kbd> hold &amp; speak</span>
           <div class="recording-pill"><span class="recording-dot" aria-hidden="true"></span><span>Listening</span><span class="level-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
         </div>
         <figcaption>What your dictation might look like. Example view.</figcaption>
       </figure>
       </div>
       <ol class="steps">
-        <li><span class="step-number" aria-hidden="true">1</span><div><h3>Download and set up once.</h3><p>Open the DMG file and drag the inlaut icon onto the Applications folder. Then start inlaut from Applications. The app downloads the speech model (around 630 MB) and walks you through the permissions for the microphone and pasting.</p></div></li>
+        <li><span class="step-number" aria-hidden="true">1</span><div><h3>Set up on Mac.</h3><p>Open the DMG file and drag the inlaut icon onto the Applications folder. Then start inlaut from Applications. The app downloads the speech model (around 630 MB) and walks you through the permissions for the microphone and pasting.</p></div></li>
         <li><span class="step-number" aria-hidden="true">2</span><div><h3>Hold your key and speak.</h3><p>Use your key combination or set up the <kbd>🌐 fn</kbd> key. Double-tap fn to start hands-free dictation.</p></div></li>
         <li><span class="step-number" aria-hidden="true">3</span><div><h3>Let go. The text is there.</h3><p>inlaut turns your words into text and inserts it at the cursor. In hands-free mode, another key press ends the recording.</p></div></li>
       </ol>
@@ -390,30 +391,31 @@
       <div class="section-heading"><h2 id="faq-title">Frequently asked questions</h2><p>What inlaut can do, what it needs and where your data stays.</p></div>
       <div class="faq-list">
         <details><summary>Is inlaut free?</summary><p>Yes. inlaut is free, with no subscription, no account and no ads. The source code is open source under the GPL-3.0 license and lives on GitHub.</p></details>
-        <details><summary>Does dictation work without internet?</summary><p>Yes. Speech recognition runs entirely on your Mac. inlaut only needs internet to download the speech model once on first launch (around 630 MB) and to check for updates.</p></details>
-        <details><summary>Are my recordings sent to a cloud?</summary><p>No. Your voice is turned into text on your Mac. Recordings and dictations are neither sent anywhere nor kept as a history. The microphone is only on while you dictate.</p></details>
-        <details><summary>Which apps can I dictate into?</summary><p>Any app with a text field: Mail, Notes, Pages, Word, Outlook, Teams, Slack, your browser or the chat window of an AI assistant. inlaut inserts the text where your cursor is. This needs a one-time permission under Accessibility. Without it, the text stays on the clipboard.</p></details>
-        <details><summary>How do I start dictating?</summary><p>Hold your key combination or the <kbd>🌐 fn</kbd> key, speak and let go. For longer texts, double-tap fn and dictate hands-free. Another key press ends the recording.</p></details>
-        <details><summary>Which languages does inlaut support?</summary><p>English and German. In the settings you choose English, Deutsch or Deutsch + English. With Deutsch + English you can dictate both languages, even mixed in one sentence.</p></details>
-        <details><summary>How well does inlaut understand English and technical terms?</summary><p>inlaut uses the Parakeet Ultra speech model, which handles technical terms well, also with an accent. If a word still comes out wrong, add your own replacement, and the spelling is right every time.</p></details>
+        <details><summary>Does dictation work without internet?</summary><p>Yes. Speech recognition runs on your computer. On Mac, inlaut downloads the speech model on first launch (around 630 MB); the Windows beta includes its German model in the installer. Downloads and update checks need internet; dictation does not.</p></details>
+        <details><summary>Are my recordings sent to a cloud?</summary><p>No. Your voice is turned into text on your computer. Normal dictation neither sends recordings or text anywhere nor keeps a history. Optional Windows test captures are only saved locally when explicitly enabled. The microphone is active during dictation or an explicitly started microphone test.</p></details>
+        <details><summary>Which apps can I dictate into?</summary><p>Any app with a text field: Mail, Notes, Pages, Word, Outlook, Teams, Slack, your browser or the chat window of an AI assistant. inlaut inserts the text where your cursor is. On Mac, this needs a one-time permission under Accessibility. Without it, the text stays on the clipboard.</p></details>
+        <details><summary>How do I start dictating?</summary><p>On Mac: Hold your key combination or the <kbd>🌐 fn</kbd> key, speak and let go. For longer texts, double-tap fn and dictate hands-free. Another key press ends the recording. On Windows, choose your shortcut and recording mode in the settings.</p></details>
+        <details><summary>Which languages does inlaut support?</summary><p>On Mac: English and German, including both mixed in one sentence. The Windows beta currently recognises German and has a German interface. The two versions do not yet have identical features.</p></details>
+        <details><summary>How well does inlaut understand English and technical terms?</summary><p>On Mac: inlaut uses the Parakeet Ultra speech model, which handles technical terms well, also with an accent. If a word still comes out wrong, add your own replacement, and the spelling is right every time.</p></details>
         <details><summary>Can I dictate line breaks and paragraphs?</summary><p>Yes. Say “new line” or “new paragraph”, and inlaut inserts the break right there.</p></details>
-        <details><summary>How is this different from macOS dictation?</summary><p>macOS has its own dictation. inlaut is an alternative with its own speech model, custom replacements, commands for lines and paragraphs and a key of your choice. To set up the built-in feature, see our guide to <a href="/en/mac-dictation">Mac dictation</a>, or compare them directly in our <a href="/en/compare">dictation app comparison</a>.</p></details>
-        <details><summary>Which Mac do I need?</summary><p>A Mac with Apple silicon (M1 or later) and macOS 26 or later. The speech model takes up around 630 MB of storage. If you are short on space, choose the local Apple speech recognition in the settings.</p></details>
-        <details><summary>Can inlaut transcribe recordings too?</summary><p>Yes. “Transcribe File …” in the menu turns an audio or video file into text, for example the recording of a meeting or a voice message. The result appears in its own window, with time stamps if you like, and can be copied or saved. This, too, happens only on your Mac. inlaut does not tell speakers apart.</p></details>
-        <details><summary>Which microphone does inlaut use?</summary><p>You choose it in the setting “Record with”. With “Automatic”, inlaut uses the Mac’s own microphone while a Bluetooth headset is connected, because headsets take over a second to start recording. You can also follow the macOS setting or pick one microphone.</p></details>
-        <details><summary>Does inlaut remove “um” and slips of the tongue?</summary><p>If you want it to. With the setting “Tidy up dictations”, inlaut leaves out filler sounds such as “uh” and words you said twice by accident. With “Resolve self-corrections (beta)”, “on Monday, no, on Tuesday” simply becomes “on Tuesday”. For that, Apple Intelligence on your Mac checks whether you really corrected yourself; nothing is sent. In both cases inlaut only deletes words and does not rephrase anything. Both settings are off at first.</p></details>
-        <details><summary>Can I insert snippets?</summary><p>Yes. Under “Snippets” you store longer texts you need again and again, such as a signature or bank details. Say the phrase on its own and inlaut writes the text. Replacements and snippets can be exported together and imported on another Mac.</p></details>
-        <details><summary>Is inlaut available for Windows, iPhone or iPad?</summary><p>No. inlaut is an app for the Mac menu bar.</p></details>
-        <details><summary>How do I install inlaut?</summary><p>Download the DMG file, open it and drag the inlaut icon onto the Applications folder. On first launch, inlaut walks you through downloading the speech model and the permissions for the microphone and pasting. Once a day, inlaut checks for updates and asks before installing one.</p></details>
+        <details><summary>How is this different from macOS dictation?</summary><p>macOS has its own dictation. inlaut is an alternative with its own speech model, custom replacements, commands for lines and paragraphs and a key of your choice. To set up the built-in feature, see our guide to <a href="/en/windows">Windows beta</a><a href="/en/mac-dictation">Mac dictation</a>, or compare them directly in our <a href="/en/compare">dictation app comparison</a>.</p></details>
+        <details><summary>Which computers does inlaut support?</summary><p>Mac: Apple silicon (M1 or later), macOS 26 or later. Windows beta: Windows 10 or 11 on an Intel or AMD x64 PC. The Windows download will be enabled after signing. There is no native Windows ARM, Linux, iPhone or iPad version.</p></details>
+        <details><summary>Can inlaut transcribe recordings too?</summary><p>On Mac: Yes. “Transcribe File …” in the menu turns an audio or video file into text, for example the recording of a meeting or a voice message. The result appears in its own window, with time stamps if you like, and can be copied or saved. This, too, happens only on your Mac. inlaut does not tell speakers apart.</p></details>
+        <details><summary>Which microphone does inlaut use?</summary><p>On Mac: You choose it in the setting “Record with”. With “Automatic”, inlaut uses the Mac’s own microphone while a Bluetooth headset is connected, because headsets take over a second to start recording. You can also follow the macOS setting or pick one microphone.</p></details>
+        <details><summary>Does inlaut remove “um” and slips of the tongue?</summary><p>On Mac: If you want it to. With the setting “Tidy up dictations”, inlaut leaves out filler sounds such as “uh” and words you said twice by accident. With “Resolve self-corrections (beta)”, “on Monday, no, on Tuesday” simply becomes “on Tuesday”. For that, Apple Intelligence on your Mac checks whether you really corrected yourself; nothing is sent. In both cases inlaut only deletes words and does not rephrase anything. Both settings are off at first.</p></details>
+        <details><summary>Can I insert snippets?</summary><p>Yes. Under “Snippets” you store longer texts you need again and again, such as a signature or bank details. Say the phrase on its own and inlaut writes the text. Replacements and snippets can be exported together and imported on another computer running inlaut.</p></details>
+        <details><summary>Is inlaut available for Windows, iPhone or iPad?</summary><p>The native Windows beta is being prepared for release. Its download will be enabled after signing; see the <a href="/en/windows">Windows beta page</a> for status and requirements. inlaut is not available for iPhone or iPad.</p></details>
+        <details><summary>How do I install inlaut?</summary><p>On Mac, open the DMG and drag inlaut to Applications. First launch guides you through the model download and permissions. The Windows beta uses an EXE installer for your user account. Its download remains disabled until signing is complete.</p></details>
       </div>
     </section>
 
     <section class="wrap project" aria-labelledby="project-title">
-      <div class="project-inner maker"><div class="maker-mark" aria-hidden="true"><img src="/brand/app-icon.png" width="80" height="80" alt="" loading="lazy"></div><div><p class="eyebrow">From one person to another</p><h2 id="project-title">Hi, I’m Tobias.</h2><p>There’s no company behind inlaut, just me. inlaut is my private project: free and open source, with no ads and no account.</p><p>Praise, a bug or a wish: just write to me. Ideally at <a href="mailto:hallo@inlaut.de">hallo@inlaut.de</a> or on GitHub.</p><p class="maker-sig">Tobias Marks, makes inlaut</p><div class="actions"><a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0-en.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Download for macOS <span aria-hidden="true">↓</span></a><a class="text-link" href="https://github.com/tobymarks/inlaut" target="_blank" rel="noopener">inlaut on GitHub <span aria-hidden="true">↗</span></a></div></div></div>
+      <div class="project-inner maker"><div class="maker-mark" aria-hidden="true"><img src="/brand/app-icon.png" width="80" height="80" alt="" loading="lazy"></div><div><p class="eyebrow">From one person to another</p><h2 id="project-title">Hi, I’m Tobias.</h2><p>There’s no company behind inlaut, just me. inlaut is my private project: free and open source, with no ads and no account.</p><p>Praise, a bug or a wish: just write to me. Ideally at <a href="mailto:hallo@inlaut.de">hallo@inlaut.de</a> or on GitHub.</p><p class="maker-sig">Tobias Marks, makes inlaut</p><div class="actions"><a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" data-umami-event-position="maker" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0-en.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Download for macOS <span aria-hidden="true">↓</span></a>
+          <a class="button button-secondary" href="/en/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Windows <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a><a class="text-link" data-umami-event="github-click" data-umami-event-position="maker" href="https://github.com/tobymarks/inlaut" target="_blank" rel="noopener">inlaut on GitHub <span aria-hidden="true">↗</span></a></div></div></div>
     </section>
   </main>
 
-  <footer><div class="wrap"><span>© 2026 Tobias Marks</span><span class="social"><a href="https://www.instagram.com/inlaut.de/" target="_blank" rel="noopener" aria-label="inlaut on Instagram (opens in a new tab)" title="inlaut on Instagram"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></a><a href="https://www.facebook.com/inlaut.de" target="_blank" rel="noopener" aria-label="inlaut on Facebook (opens in a new tab)" title="inlaut on Facebook"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg></a><a href="https://github.com/tobymarks/inlaut" target="_blank" rel="noopener" aria-label="inlaut on GitHub (opens in a new tab)" title="inlaut on GitHub"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></span><nav aria-label="More links"><a href="/en/mac-dictation">Mac Dictation</a><a href="/en/whisper-mac">Whisper</a><a href="/en/compare">Comparison</a><a href="/en/business">For business</a><a href="/en/legal-notice">Legal notice</a><a href="/en/privacy">Privacy</a></nav></div></footer>
+  <footer><div class="wrap"><span>© 2026 Tobias Marks</span><span class="social"><a href="https://www.instagram.com/inlaut.de/" target="_blank" rel="noopener" aria-label="inlaut on Instagram (opens in a new tab)" title="inlaut on Instagram"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></a><a href="https://www.facebook.com/inlaut.de" target="_blank" rel="noopener" aria-label="inlaut on Facebook (opens in a new tab)" title="inlaut on Facebook"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg></a><a data-umami-event="github-click" data-umami-event-position="footer" href="https://github.com/tobymarks/inlaut" target="_blank" rel="noopener" aria-label="inlaut on GitHub (opens in a new tab)" title="inlaut on GitHub"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></span><nav aria-label="More links"><a href="/en/windows">Windows beta</a><a href="/en/mac-dictation">Mac Dictation</a><a href="/en/whisper-mac">Whisper</a><a href="/en/compare">Comparison</a><a href="/en/business">For business</a><a href="/en/legal-notice">Legal notice</a><a href="/en/privacy">Privacy</a></nav></div></footer>
   <script>
     // Prev/next buttons for the persona rail; without JS the rail still scrolls.
     (() => {
