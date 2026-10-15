@@ -1,12 +1,14 @@
 # inlaut
 
-> inlaut ist eine kostenlose Open-Source-Diktier-App für die Menüleiste des Mac (Apple Silicon, macOS 26 oder neuer). Taste halten, sprechen, loslassen: Die Spracherkennung läuft lokal auf dem Mac und fügt den Text in das aktive Textfeld jeder App ein. Auf Deutsch und Englisch, auch gemischt im selben Satz, ohne Konto, ohne Cloud, auch offline.
-> English summary: inlaut is a free, open-source (GPL-3.0) push-to-talk dictation app for the macOS menu bar. Speech recognition runs fully on-device (no cloud, no account, works offline) and supports German, English and both mixed in one sentence. English page: https://inlaut.de/en
+> inlaut ist eine kostenlose Open-Source-Diktier-App für macOS und Windows (Beta in Vorbereitung). Die veröffentlichte Mac-Version benötigt Apple Silicon und macOS 26 oder neuer. Taste halten, sprechen, loslassen: Die Spracherkennung läuft lokal auf dem Mac und fügt den Text in das aktive Textfeld jeder App ein. Auf Deutsch und Englisch, auch gemischt im selben Satz, ohne Konto, ohne Cloud, auch offline.
+> English summary: inlaut is a free, open-source (GPL-3.0) dictation app for macOS and Windows (beta in preparation, German only). The released Mac version supports German and English. Speech recognition runs fully on-device (no cloud, no account, works offline) and supports German, English and both mixed in one sentence. English page: https://inlaut.de/en
 
-## Fakten
+Windows: Native Beta für x64-PCs mit Windows 10/11, lokale deutsche Spracherkennung und deutsche Oberfläche, Modell im Installer. Der Download ist noch nicht freigeschaltet. Keine Apple Intelligence, Apple-Spracherkennung oder Datei-Transkription. Optionale Diagnose-Testaufnahmen können Audio/Text lokal speichern; kein automatischer Upload. Details: https://inlaut.de/windows und https://inlaut.de/en/windows
+
+## Fakten zur veröffentlichten macOS-Version
 
 - Preis: kostenlos, kein Abo, kein Konto. Lizenz GPL-3.0-or-later.
-- Plattform: Mac mit Apple Silicon, macOS 26 oder neuer. Kein Windows, kein iPhone/iPad.
+- Plattform: Mac mit Apple Silicon, macOS 26 oder neuer. Windows-Beta für Windows 10/11 (x64) in Vorbereitung, Download erst nach Signierung. Kein iPhone/iPad.
 - Sprachen: Deutsch, Englisch und beide gemischt (Einstellung Deutsch / English / Deutsch + English). Die Oberfläche gibt es auf Deutsch und Englisch.
 - Spracherkennung: Parakeet Ultra (ein Modell für Deutsch, Englisch und gemischte Sätze, rund 630 MB), läuft lokal als Core ML auf der Neural Engine des Mac. Alternativ die lokale Apple-Spracherkennung.
 - Datenschutz: Aufnahmen und Diktate werden weder übertragen noch als Verlauf gespeichert. Das Mikrofon ist nur beim Diktieren aktiv. Internet nur für den einmaligen Modell-Download und die Update-Suche.
@@ -21,6 +23,9 @@
 
 ## Links
 
+- [Windows-Beta: Status und Voraussetzungen](https://inlaut.de/windows)
+- [Windows beta: status and requirements](https://inlaut.de/en/windows)
+
 - [Website und Download](https://inlaut.de/): Funktionen, Anwendungsbeispiele, häufige Fragen
 - [English website](https://inlaut.de/en): features, examples, FAQ
 - [Häufige Fragen](https://inlaut.de/#fragen)
@@ -28,10 +33,14 @@
 - [Dictation apps for the Mac compared](https://inlaut.de/en/compare): the same comparison in English
 - [inlaut als Alternative zu Wispr Flow](https://inlaut.de/wispr-flow-alternative): lokal statt Cloud, kostenlos, Open Source; was Wispr Flow kann und inlaut nicht
 - [inlaut as a Wispr Flow alternative](https://inlaut.de/en/wispr-flow-alternative): the same page in English
+- [inlaut als Alternative zu Superwhisper](https://inlaut.de/superwhisper-alternative): Parakeet Ultra kostenlos statt im Pro-Abo, kein Speichern von Audiodaten, Open Source
+- [inlaut as a Superwhisper alternative](https://inlaut.de/en/superwhisper-alternative): the same page in English
 - [Diktierfunktion am Mac einrichten und Fehler beheben](https://inlaut.de/diktierfunktion-mac): Anleitung zum Diktat von macOS mit Checkliste und Apple-Quellen
 - [Mac dictation: how to set it up and fix it](https://inlaut.de/en/mac-dictation): the same guide in English
 - [inlaut im Unternehmen](https://inlaut.de/unternehmen): Datenflüsse, Netzwerkverbindungen, DSGVO, IT-Sicherheit, Verteilung und was inlaut nicht bietet
 - [inlaut at work](https://inlaut.de/en/business): the same page in English
+- [inlaut für Kanzleien und Praxen](https://inlaut.de/kanzleien-praxen): Lokale Spracherkennung für Rechtsanwälte, Notare, Steuerberater und Ärzte ohne Cloud (§ 203 StGB, Art. 9 DSGVO, Open-Source-Zukunftssicherheit)
+- [inlaut for legal and healthcare](https://inlaut.de/en/legal-healthcare): the same page in English
 - [Quellcode auf GitHub](https://github.com/tobymarks/inlaut): README, Releases, Roadmap (Issues)
 - [Aktuelle Version herunterladen (DMG)](https://github.com/tobymarks/inlaut/releases/latest)
 
