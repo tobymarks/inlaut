@@ -57,6 +57,39 @@ jobs:
       - name: English model inference regression
         run: dotnet run --project windows/tests/Inlaut.UiSmoke -c Release -- --english-model publish/beta/app/models/fastconformer-en publish/beta/sherpa-onnx-nemo-fast-conformer-transducer-en-24500-int8/test_wavs/0.wav
 
+      - name: Verify clean beta installation and uninstall
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = ([xml](Get-Content windows/src/Inlaut.App/Inlaut.App.csproj -Raw)).Project.PropertyGroup.Version
+          $installer = (Resolve-Path "publish/beta/inlaut-$version-windows-x64-setup.exe").Path
+          $payload = (Resolve-Path 'publish/beta/app').Path
+          $installDirectory = Join-Path $env:RUNNER_TEMP ('inlaut beta install ' + [Guid]::NewGuid().ToString('N'))
+          $installLog = Join-Path $env:RUNNER_TEMP 'inlaut-beta-install.log'
+          $uninstallLog = Join-Path $env:RUNNER_TEMP 'inlaut-beta-uninstall.log'
+          try {
+            $process = Start-Process $installer -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=`"$installDirectory`"", "/LOG=`"$installLog`"") -Wait -PassThru
+            if ($process.ExitCode -ne 0) { throw "Beta installation failed: $($process.ExitCode)" }
+            $files = @('Inlaut.exe', 'Inlaut.UpdateHost.exe', 'LICENSE', 'BETA.md')
+            foreach ($directory in @('models', 'licenses')) {
+              $files += Get-ChildItem -LiteralPath (Join-Path $payload $directory) -Recurse -File | ForEach-Object { [IO.Path]::GetRelativePath($payload, $_.FullName) }
+            }
+            if (-not (Test-Path -LiteralPath (Join-Path $installDirectory 'licenses/nuget-packages.json'))) { throw 'Dependency notices were not installed.' }
+            foreach ($relative in $files) {
+              $expected = (Get-FileHash -LiteralPath (Join-Path $payload $relative) -Algorithm SHA256).Hash
+              $actual = (Get-FileHash -LiteralPath (Join-Path $installDirectory $relative) -Algorithm SHA256).Hash
+              if ($actual -ne $expected) { throw "Installed file differs from payload: $relative" }
+            }
+            Write-Output "Clean installer verified $($files.Count) executables, models and license/document files."
+          } finally {
+            $uninstaller = Join-Path $installDirectory 'unins000.exe'
+            if (Test-Path -LiteralPath $uninstaller) {
+              $process = Start-Process $uninstaller -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=`"$uninstallLog`"") -Wait -PassThru
+              if ($process.ExitCode -ne 0) { throw "Beta uninstall failed: $($process.ExitCode)" }
+            }
+          }
+          if (Test-Path -LiteralPath (Join-Path $installDirectory 'Inlaut.exe')) { throw 'Uninstall left the installed application behind.' }
+
       - name: Upload UI regression screenshots
         uses: actions/upload-artifact@v4
         with:
@@ -85,6 +118,26 @@ jobs:
             $rejected = $true
           }
           if (-not $rejected) { throw 'Unsigned application was accepted by release verification' }
+
+      - name: Record release build provenance
+        shell: pwsh
+        run: |
+          @(
+            'inlaut Windows — unsigned beta, manual installation only'
+            "Source commit: $env:GITHUB_SHA"
+            "Workflow run: $env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
+          ) | Set-Content -LiteralPath publish/beta/BUILD.txt -Encoding utf8
+
+      - name: Upload release installer and checksums
+        uses: actions/upload-artifact@v4
+        with:
+          name: inlaut-windows-release
+          path: |
+            publish/beta/inlaut-*-windows-x64-setup.exe
+            publish/beta/SHA256SUMS.txt
+            publish/beta/BUILD.txt
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload app and installer
         uses: actions/upload-artifact@v4

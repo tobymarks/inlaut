@@ -462,7 +462,8 @@ for the protocol, signing order, feed generation and certificate-rotation caveat
 New-UpdateManifest.ps1 refuses unsigned or mismatched packages. No production feed,
 website deployment, signed artifact or public release has been published.
 
-The updater's complete successful signed upgrade remains a release gate: this
+The updater's complete successful signed upgrade remains a gate for signed updates
+(superseded for the public unsigned beta by the 2026-10-17 decision below): this
 machine currently has unsigned development builds. Sign app and helper, package,
 then sign installer with the same SignPath certificate; test two signed versions
 before website rollout. Signature rejection is intentional, not bypassed for tests.
@@ -503,3 +504,21 @@ modal Form with repeated 20 ms WinForms timer ticks, then an async continuation;
 only one operation enters and the gate releases after completion/failure. UiSmoke
 passed. The affected installed process was stopped to close the dialog stack;
 no update preference was silently enabled or changed.
+
+## Public unsigned beta decision — beta.8 (2026-10-17)
+
+The maintainer reported the SignPath application was declined and explicitly
+authorized a public unsigned beta. This supersedes the earlier requirement to
+complete signed A→B qualification before any website rollout. The requirement
+continues to apply before enabling the signed in-app update path.
+
+Publish version 0.7.0-beta.8 as GitHub prerelease `windows-v0.7.0-beta.8`, preserving
+the latest stable macOS release. Use the installer and SHA256SUMS.txt from a
+successful Windows CI build of the exact tagged source. Both website languages
+must explain the missing signature, possible Windows warnings, installation
+limits and manual updates. No unsigned update feed is deployed; the signature
+checks remain unchanged. No new physical Windows acceptance test is claimed.
+
+The known macOS CI failure #22 is independent: its TextPolish implementation and
+test are unchanged from main. Windows beta qualification uses the Windows build,
+CoreSmoke, UI/model tests and installer metadata/signature-rejection checks.

@@ -1,16 +1,28 @@
-# Windows beta website preparation
+# Windows public beta website
 
-Status: staged only, not deployed. The maintainer chose to wait for signing before enabling a Windows download.
+The maintainer approved an unsigned public Windows beta on 2026-10-17 after the SignPath application was declined. Signing is not a release prerequisite for this beta. The existing macOS release and signed updater remain unchanged.
 
-The German and English sites link to `/windows` and `/en/windows`. Their Windows-logo buttons lead to release information; the installer buttons are disabled and there is no EXE URL or Windows download event. Existing macOS downloads remain active.
+## Release configuration
 
-Before publishing the signed beta:
+- Version: `0.7.0-beta.8`
+- GitHub prerelease tag: `windows-v0.7.0-beta.8`; do not mark it latest or replace the stable macOS release.
+- Installer: `https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.8/inlaut-0.7.0-beta.8-windows-x64-setup.exe`
+- Landing pages: `/windows` and `/en/windows`, linked throughout both language sites. Only these pages link directly to the EXE, so visitors see the unsigned-beta notice before downloading.
+- Download event: `download-windows`, with version `0.7.0-beta.8` and position `windows-download`.
 
-1. Complete SignPath onboarding and the signing workflow in `windows/signing/README.md`.
-2. Verify the signed installer and a signed upgrade on a Windows device. Confirm the supported systems and known limitations against the actual release.
-3. Publish an explicitly marked GitHub prerelease (do not replace the latest stable macOS release). Upload the signed EXE and checksums, then verify the public asset URLs.
-4. Replace the disabled installer buttons on both Windows pages with links to that exact signed release asset, add `data-umami-event="download-windows"` and the released version, and show version/requirements. Keep the Beta label.
-5. Update the pending-release wording across both languages, including home-page availability/FAQ, comparison pages, business and privacy information, `llms.txt`, and this status. Keep Mac-only features scoped to macOS; Windows supports German or English via separate bundled models and independently selectable UI language; switching requires a restart. Mixed-language dictation remains Mac-only. Regenerate home-page FAQ JSON-LD with `python3 scripts/sync-faq-schema.py`.
-6. Recheck links and desktop/mobile layouts, then deploy with `cd site && npx wrangler deploy`. Verify both live languages and the downloads. Publish any update feed only after its signed assets are available.
+## Published guidance
 
-This preparation also preserves the existing local website additions (analytics event positions and the legal/healthcare and Superwhisper pages). The source checkout remains untouched; this branch is an isolated integration snapshot.
+The warning is immediately above the download and referenced by its accessible description. It explains that the beta is unsigned and Windows SmartScreen may warn or show an unknown publisher. Installation steps offer “More info” → “Run anyway” only if those options are offered, after deliberately downloading the official installer. Smart App Control or organisation policies can block installation; users are not told to disable security protections.
+
+Windows 10/11 x64, German or English dictation and independently selectable UI language are listed. The page states that Windows 11 acceptance testing is incomplete and names quiet speech, recording boundaries, spacing/capitalisation between dictations and application-specific insertion as beta limitations. Mixed-language dictation, Apple speech recognition, Apple Intelligence corrections and file transcription remain scoped to macOS.
+
+Updates are manual through the website; quit inlaut before installing. The signed in-app updater cannot install this unsigned beta. Do not deploy a Windows update manifest or weaken signature verification. The app can still make manual or opted-in update checks, so the privacy page retains this network disclosure.
+
+## Publication sequence
+
+1. Build and validate the release installer and accompanying checksums from the release commit.
+2. Publish the GitHub prerelease and verify the exact installer URL and checksum before deploying the site.
+3. Validate the German and English download notices, local links, JSON-LD, FAQ content and desktop/mobile layouts. Regenerate home-page FAQ JSON-LD with `python3 scripts/sync-faq-schema.py` after FAQ edits.
+4. Deploy with `cd site && npx wrangler deploy`, then verify the live landing pages and download URL. Do not publish a Windows update feed for unsigned assets.
+
+The website source includes the active links; deployment and GitHub publication must be verified separately. macOS download links, release assets and signed release notes are preserved.

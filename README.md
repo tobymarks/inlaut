@@ -2,7 +2,7 @@
 
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/15409/badge)](https://www.bestpractices.dev/projects/15409)
 
-A tiny macOS menu bar app for dictation that never leaves your Mac. Hold a key combination, speak, let go — the text appears in whatever text field has the cursor.
+A local dictation app for macOS, with a native Windows beta. Hold a key combination, speak, let go — the text appears in whatever text field has the cursor. The macOS features below use Apple's on-device models; the Windows beta uses its own bundled recognition models.
 
 <p align="center"><img src="site/public/screens/diktat-en.webp" width="720" alt="Illustration: a note in the Notes app is being dictated, with inlaut's “Listening” indicator below the text"></p>
 
@@ -24,7 +24,7 @@ inlaut is free and open source (GPL-3.0). It is a local alternative to cloud dic
 
 The app and website use the **Sprachimpuls / Petrol & Mint** brand kit, with native system typography and light/dark appearances. See [design/README.md](design/README.md) for the source assets and reproducible integration.
 
-## Download
+## Download for macOS
 
 [Download inlaut 0.5.0](https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0-en.dmg) ([German disk image](https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0.dmg)) for Apple Silicon and macOS 26 or later. Open the DMG, drag inlaut onto the Applications folder, then open inlaut from Applications. You can eject the disk image after copying. Both the app and the DMG are Developer ID signed and notarized by Apple.
 
@@ -35,6 +35,12 @@ brew install --cask tobymarks/tap/inlaut
 ```
 
 Setup downloads the speech model (around 630 MB) and guides you through microphone and Accessibility permissions. [Release notes and checksums](https://github.com/tobymarks/inlaut/releases/latest).
+
+## Windows beta
+
+[Download inlaut 0.7.0-beta.8 for Windows x64](https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.8/inlaut-0.7.0-beta.8-windows-x64-setup.exe). This is an **unsigned beta** for Windows 10/11, with German and English dictation and independently selectable interface language. Windows may show SmartScreen or an unknown-publisher warning. Read the [installation guidance and limitations](https://inlaut.de/en/windows) before installing; some device policies can block unsigned apps entirely.
+
+Close inlaut before installing. Updates are **manual downloads from the website**: this beta cannot install updates through the signed in-app update mechanism. Both speech models are bundled and run locally. Windows 11/device compatibility and recognition quality still need broader testing; mixed-language dictation is Mac-only. [Release notes and SHA-256 checksum](https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.8) · [Windows source and build instructions](windows/README.md).
 
 ## Build
 

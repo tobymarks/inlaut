@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>inlaut für Windows — lokal diktieren · Beta</title>
-  <meta name="description" content="Lokal auf Deutsch oder Englisch diktieren unter Windows 10 und 11 (x64). Die inlaut-Beta ist in Vorbereitung. Der Download folgt nach der Signierung.">
+  <meta name="description" content="inlaut für Windows 10/11 (x64): kostenlose Beta für lokales Diktat auf Deutsch oder Englisch. Unsignierter Download mit Hinweisen zur Windows-Warnung.">
   <link rel="canonical" href="https://inlaut.de/windows">
   <link rel="alternate" hreflang="de" href="https://inlaut.de/windows">
   <link rel="alternate" hreflang="en" href="https://inlaut.de/en/windows">
@@ -15,10 +15,37 @@
   <meta name="theme-color" content="#F6F7F4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0C201F" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/style.css?v=biz1">
+  <link rel="stylesheet" href="/style.css?v=windows-beta8">
   <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
   <script src="/lang-switch.js" defer></script>
   
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": "https://inlaut.de/windows#app",
+  "name": "inlaut für Windows (Beta)",
+  "description": "inlaut für Windows 10/11 (x64): kostenlose Beta für lokales Diktat auf Deutsch oder Englisch. Unsignierter Download mit Hinweisen zur Windows-Warnung.",
+  "url": "https://inlaut.de/windows",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Windows 10 / Windows 11 (x64)",
+  "softwareVersion": "0.7.0-beta.8",
+  "inLanguage": [
+    "de",
+    "en"
+  ],
+  "isAccessibleForFree": true,
+  "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+  "downloadUrl": "https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.8/inlaut-0.7.0-beta.8-windows-x64-setup.exe",
+  "installUrl": "https://inlaut.de/windows#installation",
+  "releaseNotes": "https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.8",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  }
+}
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#content">Zum Inhalt</a>
@@ -28,21 +55,29 @@
   </header>
 
   <main id="content" class="wrap prose windows-page">
-    <p class="eyebrow">Windows · Öffentliche Beta in Vorbereitung</p>
-    <h1>Deine Stimme.<br>Bald auch für Windows.</h1>
+    <p class="eyebrow">Windows · Öffentliche Beta</p>
+    <h1>Deine Stimme.<br>Jetzt auf Windows.</h1>
     <p class="lead">Sprechen statt tippen. inlaut erkennt Deutsch oder Englisch lokal auf deinem PC und fügt deine Worte ins aktive Textfeld ein. Kostenlos, Open Source und ohne Cloud-Konto.</p>
     <div class="release-card" aria-labelledby="download-title">
-      <p class="eyebrow">Download-Status</p><h2 id="download-title">Noch ein Schritt bis zum Start.</h2>
-      <p>Die Beta wurde auf einem Windows-Gerät getestet. Vor dem öffentlichen Download bereiten wir den signierten Installer vor.</p>
-      <button class="button" type="button" disabled><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Windows-Beta · Bald verfügbar</button>
-      <p class="availability">Windows 10 / 11 · Intel oder AMD mit x64 · Diktat und Oberfläche auf Deutsch oder Englisch</p>
-      <p class="release-note">Der Download ist noch nicht freigeschaltet. Sobald Signierung und abschließende Installations- und Update-Prüfungen abgeschlossen sind, findest du ihn hier.</p>
+      <p class="eyebrow">Version 0.7.0-beta.8 · Kostenlos</p><h2 id="download-title">Jetzt als Beta testen.</h2>
+      <p id="unsigned-warning" class="release-warning"><strong>Diese Beta ist noch nicht signiert.</strong> Windows SmartScreen kann deshalb eine Warnung anzeigen; als Herausgeber kann „Unbekannt“ erscheinen. Installiere sie nur, wenn du inlaut bewusst von dieser offiziellen Seite heruntergeladen hast. <a href="#installation">Hinweise zur Installation</a>.</p>
+      <a class="button" href="https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.8/inlaut-0.7.0-beta.8-windows-x64-setup.exe" aria-describedby="unsigned-warning windows-requirements" data-umami-event="download-windows" data-umami-event-version="0.7.0-beta.8" data-umami-event-position="windows-download"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Windows-Beta herunterladen</a>
+      <p id="windows-requirements" class="availability">Windows 10 / 11 · Intel oder AMD mit x64 · Diktat und Oberfläche auf Deutsch oder Englisch</p>
+      <p class="release-note">Frühe Testversion: Die Abnahme unter Windows 11 ist noch nicht abgeschlossen. Updates installierst du manuell über diese Seite. <a href="https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.8">Versionshinweise und Prüfsumme</a>.</p>
     </div>
     <h2>Für deinen Windows-Alltag.</h2>
-    <ul><li><strong>Lokale Erkennung:</strong> Beide Sprachmodelle sind im Installer enthalten. Zum Diktieren brauchst du kein Internet.</li><li><strong>Text, wo du arbeitest:</strong> Einfügen in die aktive Anwendung, eigene Ersetzungen, Sprachbefehle und Textbausteine.</li><li><strong>Deine Einstellungen:</strong> Mikrofon und Tastenkürzel wählen, zum Aufnehmen halten oder umschalten. inlaut sitzt im Infobereich der Taskleiste.</li><li><strong>Einfach installieren:</strong> Der vorgesehene EXE-Installer installiert in dein Benutzerkonto, ohne Administratorrechte.</li></ul>
+    <ul><li><strong>Lokale Erkennung:</strong> Beide Sprachmodelle sind im Installer enthalten. Zum Diktieren brauchst du kein Internet.</li><li><strong>Text, wo du arbeitest:</strong> Einfügen in die aktive Anwendung, eigene Ersetzungen, Sprachbefehle und Textbausteine.</li><li><strong>Deine Einstellungen:</strong> Mikrofon und Tastenkürzel wählen, zum Aufnehmen halten oder umschalten. inlaut sitzt im Infobereich der Taskleiste.</li><li><strong>Einfach installieren:</strong> Der EXE-Installer installiert in dein Benutzerkonto, ohne Administratorrechte.</li></ul>
+    <h2 id="installation">Installieren und aktualisieren.</h2>
+    <ol>
+      <li>Lade den Installer über den Download-Button auf dieser Seite. Er installiert in dein Benutzerkonto, ohne Administratorrechte. Beende eine bereits laufende inlaut-Version vor der Installation über das Symbol im Infobereich der Taskleiste.</li>
+      <li>Falls Windows SmartScreen „Der Computer wurde durch Windows geschützt“ meldet, prüfe zuerst, ob du genau diesen offiziellen inlaut-Download gestartet hast. Wenn du ihn installieren möchtest und Windows die Optionen anbietet, wähle „Weitere Informationen“ und anschließend „Trotzdem ausführen“.</li>
+      <li>Smart App Control oder die Richtlinien deiner Organisation können die Installation unsignierter Apps vollständig blockieren. Bietet Windows keine Fortsetzung an, brich die Installation ab; schalte Schutzfunktionen nicht aus. <a href="https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation">Mehr zu Windows-Sicherheitswarnungen bei Microsoft</a>.</li>
+      <li>Starte inlaut, wähle Mikrofon, Diktatsprache und Tastenkürzel und teste ein kurzes Diktat. Die Sprache der Oberfläche kannst du unabhängig auswählen. Nach einem Sprachwechsel ist ein Neustart nötig.</li>
+    </ol>
+    <p><strong>Updates erfolgen manuell:</strong> Lade eine neue Beta von dieser Seite, beende inlaut vollständig und starte den neuen Installer. Die Installation über die Update-Funktion in der App ist für diese unsignierte Beta nicht verfügbar.</p>
     <h2>Eine Beta mit klaren Grenzen.</h2>
     <p>Dies ist eine frühe Windows-Version. Ihr Funktionsumfang ist noch nicht identisch mit der Mac-App. Unter Windows wählst du Deutsch oder Englisch in den Einstellungen; ein Sprachwechsel erfordert einen Neustart. Gemischte Sprachen innerhalb eines Diktats werden nicht unterstützt. Apple-Spracherkennung, Selbstkorrekturen mit Apple Intelligence und die Datei-Transkription der Mac-Version sind nicht enthalten. Eine native ARM-Version gibt es nicht.</p>
-    <p>Das Einfügen kann sich je nach Zielprogramm unterscheiden, besonders bei mehrzeiligen Texten. Windows 11, Bildschirmskalierung, Standby und das erneute Anschließen von Mikrofonen brauchen noch breitere Tests. Probiere die Beta zunächst in deinen Anwendungen aus und prüfe diktierte Texte vor der Verwendung.</p>
+    <ul><li><strong>Erkennung:</strong> Leise Sprache und Wörter direkt am Anfang oder Ende einer Aufnahme können unzuverlässig erkannt werden. Prüfe diktierte Texte vor der Verwendung.</li><li><strong>Deine Anwendungen:</strong> Das Einfügen kann sich je nach Zielprogramm unterscheiden, besonders bei mehrzeiligen Texten. Zwischen getrennten Diktaten können Leerzeichen oder die Großschreibung am Satzanfang fehlen.</li><li><strong>Noch nicht vollständig geprüft:</strong> Die Windows-11-Abnahme ist offen. Bildschirmskalierung, Standby und das erneute Anschließen von Mikrofonen brauchen breitere Tests.</li></ul>
     <h2>Deine Sprache bleibt auf deinem PC.</h2>
     <p>Diktate werden nicht an einen Erkennungsserver gesendet. Beim normalen Diktieren entsteht kein Audio- oder Textverlauf. Optionale Diagnose-Testaufnahmen können Audio und Text lokal speichern, wenn du sie ausdrücklich aktivierst. Berichte werden nie automatisch hochgeladen. <a href="/datenschutz">Mehr zum Datenschutz.</a></p>
     <h2>Du nutzt inlaut schon auf dem Mac?</h2>

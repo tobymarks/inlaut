@@ -1,5 +1,18 @@
 # Windows updates
 
+## Public unsigned beta (2026-10-17)
+
+The maintainer reported that the SignPath application was declined and authorized
+publishing 0.7.0-beta.8 as an explicitly unsigned beta. Its installation and future
+updates are manual downloads from https://inlaut.de/windows or
+https://inlaut.de/en/windows. Close inlaut before running each installer.
+The existing signature checks remain in place; no Windows update manifest is
+published for unsigned packages. The first future signed version will also need
+a manual installation to establish a trusted update anchor.
+
+The following protocol describes the prepared signed updater, not an available
+automatic installation path for this unsigned beta.
+
 The Windows updater is independent of macOS Sparkle. It never uploads audio,
 dictation text, device identifiers, settings or crash reports. On first use the
 user is asked whether to enable daily checks; the default until that choice is no
@@ -38,7 +51,7 @@ Manual checks remain available. A download and installation require a user click
   not implemented; retain the prior signed installer for recovery. Partial Inno
   installation failure and power loss still require release qualification.
 
-## SignPath release sequence (required before publication)
+## Signed release sequence (required before enabling signed updates)
 
 1. Build/test the exact source. Build-Beta.ps1 produces an unsigned local test
    installer and a payload containing Inlaut.exe and Inlaut.UpdateHost.exe.

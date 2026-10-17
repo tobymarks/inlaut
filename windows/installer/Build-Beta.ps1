@@ -23,6 +23,59 @@ $helper = Join-Path $destination 'update-host'
 & $DotnetPath publish (Join-Path $windowsRoot 'src/Inlaut.UpdateHost/Inlaut.UpdateHost.csproj') -c Release -r win-x64 --self-contained true "-p:Version=$version" -p:Product=inlaut "-p:InformationalVersion=$version" -p:IncludeSourceRevisionInInformationalVersion=false -o $helper
 if ($LASTEXITCODE -ne 0) { throw 'Update helper publish failed.' }
 Copy-Item -LiteralPath (Join-Path $helper 'Inlaut.UpdateHost.exe') -Destination $payload
+# Keep redistribution notices with the installed binaries. NuGet package roots and
+# runtime versions come from this publish, not from whichever SDK is newest locally.
+$licenses = Join-Path $payload 'licenses'
+Copy-Item -LiteralPath (Join-Path $windowsRoot 'licenses') -Destination $licenses -Recurse
+$noticeSources = Get-Content -LiteralPath (Join-Path $licenses 'sources.json') -Raw | ConvertFrom-Json
+foreach ($notice in $noticeSources) {
+    if ((Get-FileHash -LiteralPath (Join-Path $licenses $notice.file) -Algorithm SHA256).Hash -ne $notice.sha256) {
+        throw "Bundled upstream notice checksum mismatch: $($notice.file)"
+    }
+}
+$assets = Get-Content -LiteralPath (Join-Path (Split-Path $project -Parent) 'obj/project.assets.json') -Raw | ConvertFrom-Json -AsHashtable
+$packageRoots = @($assets.packageFolders.Keys)
+$packagedNotices = [Collections.Generic.List[object]]::new()
+function Copy-PackageNotices([string]$Id, [string]$PackageVersion, [bool]$RequireThirdParty = $false) {
+    $package = $null
+    foreach ($root in $packageRoots) {
+        $candidate = Join-Path $root "$($Id.ToLowerInvariant())/$PackageVersion"
+        if (Test-Path -LiteralPath $candidate -PathType Container) { $package = $candidate; break }
+    }
+    if (-not $package) { throw "Restored package not found for notices: $Id/$PackageVersion" }
+    $files = @(Get-ChildItem -LiteralPath $package -File | Where-Object { $_.Name -match '^(LICENSE|LICENCE|COPYING|.*NOTICES?)(\..*)?$' })
+    if (-not ($files | Where-Object { $_.Name -match '^(LICENSE|LICENCE|COPYING)(\..*)?$' })) {
+        throw "Package license is missing: $Id/$PackageVersion"
+    }
+    if ($RequireThirdParty -and -not ($files | Where-Object { $_.Name -match 'NOTICE' })) {
+        throw "Package third-party notices are missing: $Id/$PackageVersion"
+    }
+    $target = Join-Path $licenses "$Id/$PackageVersion"
+    New-Item -ItemType Directory -Path $target -Force | Out-Null
+    foreach ($file in $files) { Copy-Item -LiteralPath $file.FullName -Destination $target }
+    $packagedNotices.Add([ordered]@{ package = $Id; version = $PackageVersion; source = "https://www.nuget.org/packages/$Id/$PackageVersion" })
+}
+foreach ($id in @('NAudio', 'Microsoft.Win32.Registry', 'System.Security.AccessControl', 'System.Security.Principal.Windows')) {
+    $keys = @($assets.libraries.Keys | Where-Object { $_ -like "$id/*" })
+    if ($keys.Count -ne 1) { throw "Expected one resolved $id package for license inclusion." }
+    Copy-PackageNotices $id ($keys[0].Split('/')[1]) ($id -ne 'NAudio')
+}
+# These upstream snapshots supplement the licenses absent from the sherpa NuGet
+# packages. A dependency upgrade must refresh the matching source notices too.
+if (-not $assets.libraries.ContainsKey('org.k2fsa.sherpa.onnx/1.13.8')) {
+    throw 'Refresh windows/licenses for the new sherpa-onnx/ONNX Runtime version.'
+}
+$runtime = Get-Content -LiteralPath (Join-Path $payload 'Inlaut.runtimeconfig.json') -Raw | ConvertFrom-Json
+$frameworks = @($runtime.runtimeOptions.includedFrameworks)
+foreach ($name in @('Microsoft.NETCore.App', 'Microsoft.WindowsDesktop.App')) {
+    $framework = @($frameworks | Where-Object name -eq $name)
+    if ($framework.Count -ne 1) { throw "Published runtime version missing: $name" }
+    if ($name -eq 'Microsoft.WindowsDesktop.App' -and $framework[0].version -ne '8.0.32') {
+        throw 'Refresh the pinned WPF/WinForms notices in windows/licenses for the new WindowsDesktop runtime.'
+    }
+    Copy-PackageNotices "$name.Runtime.win-x64" $framework[0].version ($name -eq 'Microsoft.NETCore.App')
+}
+$packagedNotices | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $licenses 'nuget-packages.json') -Encoding utf8
 $catalog = Get-Content -LiteralPath (Join-Path $windowsRoot 'models.json') -Raw | ConvertFrom-Json
 foreach ($model in $catalog) {
     $modelTarget = Join-Path $payload "models/$($model.directory)"

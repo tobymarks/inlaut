@@ -1,5 +1,16 @@
 # Windows release signing
 
+## Current decision (2026-10-17)
+
+The maintainer reported that the Foundation application was declined and chose
+to publish the Windows beta unsigned, with explicit website/installer notes and
+manual downloads for updates. The signing workflow remains inactive. Do not
+publish an unsigned installer through the signed update feeds or weaken signature
+verification. The setup below is retained for a future signing option and records
+the earlier application; its pending-acceptance status is superseded by this decision.
+
+## Historical preparation
+
 Status (2026-10-15): prepared, not activated. The existing SignPath organization
 `f511eba1-0577-4bb3-927b-da77f62e623d` is a free trial with no certificates. Project `inlaut` exists
 with the repository URL recorded and only the default PE artifact configuration;

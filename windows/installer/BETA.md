@@ -1,6 +1,22 @@
 # Windows beta
 
-This is an unsigned, limited-test beta, not a general production release.
+This is the public unsigned beta 0.7.0-beta.8, not a general production release.
+Download only from https://inlaut.de/windows (German) or
+https://inlaut.de/en/windows (English), which link to the project's GitHub release.
+Windows may display SmartScreen ("Windows protected your PC") or an unknown
+publisher warning because the installer and app are not digitally signed.
+If offered, "More info" → "Run anyway" lets you choose to install this specific
+download. Only do this if you intentionally obtained it from the official page.
+Smart App Control or organization policies may block installation entirely.
+Do not disable system-wide protection to install this beta.
+
+Updates are manual: download the next installer from the website and close
+inlaut before running it. The in-app updater requires trusted signatures and
+cannot update this unsigned beta. No Windows update feed is published for it.
+
+Known beta limitations: quiet speech can be cut off; spacing and capitalization
+between separate dictations may need correction. See issues #20 and #23.
+
 The per-user installer requires no administrator rights. Close inlaut before
 installing, reinstalling or uninstalling. Portable and installed copies share
 the application's single-instance lock and user settings. Installation does not
@@ -77,10 +93,10 @@ See CRASH_REPORTS.md for details. Normal diagnostics remain metadata-only.
 
 ### Beta.6 updates
 Windows can check for updates daily after you enable it, or manually through Help.
-Downloads/installations require a click. The first public build and its update helper
-must be signed with SignPath before secure in-app upgrades can work. Unsigned local
-test builds intentionally refuse update installation. See UPDATES.md for release
-qualification, signed feed generation and the beta-to-stable rollout procedure.
+Downloads/installations require a click. Secure in-app upgrades require a signed
+app, update helper and installer. This public unsigned beta intentionally refuses
+in-app update installation; download updates from the website instead. See
+UPDATES.md for future signed release qualification and the beta-to-stable procedure.
 Spoken line/paragraph commands now retain leading/trailing breaks and explicit
 punctuation. Automatic spacing/capitalization using preceding cursor text remains
 under investigation; a new native two-dictation test suite documents the limits.

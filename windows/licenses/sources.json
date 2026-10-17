@@ -1,0 +1,132 @@
+[
+  {
+    "file": "sherpa-onnx/LICENSE",
+    "url": "https://raw.githubusercontent.com/k2-fsa/sherpa-onnx/dc5583f49917e4c95f6e7d862bb378e4ed5e9076/LICENSE",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "file": "onnxruntime/LICENSE",
+    "url": "https://raw.githubusercontent.com/microsoft/onnxruntime/33ca9628233dc8f002435e868d4c2e9f82766ca1/LICENSE",
+    "sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c"
+  },
+  {
+    "file": "onnxruntime/ThirdPartyNotices.txt",
+    "url": "https://raw.githubusercontent.com/microsoft/onnxruntime/33ca9628233dc8f002435e868d4c2e9f82766ca1/ThirdPartyNotices.txt",
+    "sha256": "0e07b95f3a8d6230037707c5c4a2b554d12c4cb67369669ac255635528ffcee2"
+  },
+  {
+    "file": "windowsdesktop-wpf/THIRD-PARTY-NOTICES.TXT",
+    "url": "https://raw.githubusercontent.com/dotnet/wpf/d60df3c3ac9e49c0c0733d3948a9d3a22205f6f6/THIRD-PARTY-NOTICES.TXT",
+    "sha256": "d23dba2fee20c6b59d8f7088ee9ed372459c952a319b7ca90f3eec370cc76eb9"
+  },
+  {
+    "file": "windowsdesktop-winforms/THIRD-PARTY-NOTICES.TXT",
+    "url": "https://raw.githubusercontent.com/dotnet/winforms/6f3d394582b11915e1b057ea7816dab881ba2c44/THIRD-PARTY-NOTICES.TXT",
+    "sha256": "d68d386849444fab1012e84beb398aeca4aaa3d50e753e9f218242b3753aa28f"
+  },
+  {
+    "file": "kaldi-native-fbank/LICENSE",
+    "url": "https://raw.githubusercontent.com/csukuangfj/kaldi-native-fbank/b09e686fe2084732ddd30d1ef80acfc0f13eaf01/LICENSE",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "file": "kaldi-decoder/LICENSE",
+    "url": "https://raw.githubusercontent.com/k2-fsa/kaldi-decoder/62fda2d74246a90db9570e46fb16b012f813fae7/LICENSE",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "file": "kaldifst/LICENSE",
+    "url": "https://raw.githubusercontent.com/k2-fsa/kaldifst/ab5bdd013bdf13921e6aeee77db5722ebf9955fb/LICENSE",
+    "sha256": "a682d6efd1ee5dee08a8e405c233c2c198ea70ae0718129daa83ab58cfe31c5d"
+  },
+  {
+    "file": "openfst/COPYING",
+    "url": "https://raw.githubusercontent.com/csukuangfj/openfst/f702a6317d600ac953fdbb4978674c3a28b6115c/COPYING",
+    "sha256": "4300529197035fd3452350718a0b8cee984e9412c9932d7f35fcde849fc97a4b"
+  },
+  {
+    "file": "simple-sentencepiece/LICENSE",
+    "url": "https://raw.githubusercontent.com/pkufool/simple-sentencepiece/62dd423df1d51da5ea06f1c3a046fc04f01b4f39/LICENSE",
+    "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+  },
+  {
+    "file": "piper-phonemize/LICENSE.md",
+    "url": "https://raw.githubusercontent.com/csukuangfj/piper-phonemize/f3ff95afc03640bc1399e113e83361192a2fafb4/LICENSE.md",
+    "sha256": "13746d509d74e55ea2265fbef204bb7cdbf84a8315b0207e988326cb54387028"
+  },
+  {
+    "file": "piper-phonemize/licenses/uni-algo/LICENSE.md",
+    "url": "https://raw.githubusercontent.com/csukuangfj/piper-phonemize/f3ff95afc03640bc1399e113e83361192a2fafb4/licenses/uni-algo/LICENSE.md",
+    "sha256": "c55648b02873556d6ab2de14938998101fda3a0f293337542af9196435def318"
+  },
+  {
+    "file": "espeak-ng/COPYING",
+    "url": "https://raw.githubusercontent.com/csukuangfj/espeak-ng/ed530aa113046142eb5115cf2fc9157854d0ffe1/COPYING",
+    "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+  },
+  {
+    "file": "espeak-ng/COPYING.APACHE",
+    "url": "https://raw.githubusercontent.com/csukuangfj/espeak-ng/ed530aa113046142eb5115cf2fc9157854d0ffe1/COPYING.APACHE",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "file": "espeak-ng/COPYING.BSD2",
+    "url": "https://raw.githubusercontent.com/csukuangfj/espeak-ng/ed530aa113046142eb5115cf2fc9157854d0ffe1/COPYING.BSD2",
+    "sha256": "a8b0c1c7d7af6c0415c068be8cf373799d1a42b0707b79dc4ccfcaf593cd902d"
+  },
+  {
+    "file": "espeak-ng/COPYING.UCD",
+    "url": "https://raw.githubusercontent.com/csukuangfj/espeak-ng/ed530aa113046142eb5115cf2fc9157854d0ffe1/COPYING.UCD",
+    "sha256": "be029c50df83105a810e391778b6edcb522d6cb4b4e142332aca54437a499bf7"
+  },
+  {
+    "file": "espeak-ng/src/ucd-tools/COPYING",
+    "url": "https://raw.githubusercontent.com/csukuangfj/espeak-ng/ed530aa113046142eb5115cf2fc9157854d0ffe1/src/ucd-tools/COPYING",
+    "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+  },
+  {
+    "file": "espeak-ng/src/ucd-tools/COPYING.UCD",
+    "url": "https://raw.githubusercontent.com/csukuangfj/espeak-ng/ed530aa113046142eb5115cf2fc9157854d0ffe1/src/ucd-tools/COPYING.UCD",
+    "sha256": "be029c50df83105a810e391778b6edcb522d6cb4b4e142332aca54437a499bf7"
+  },
+  {
+    "file": "hclust-cpp/LICENSE",
+    "url": "https://raw.githubusercontent.com/csukuangfj/hclust-cpp/db76039198979ce8d03632ab6ef14fe6accb127c/LICENSE",
+    "sha256": "e361d842da1d290351860ad6dcce2673a1e42e4f873a3ae1ff4eb92c6adaa882"
+  },
+  {
+    "file": "json/LICENSE.MIT",
+    "url": "https://raw.githubusercontent.com/nlohmann/json/55f93686c01528224f448c19128836e7df245f72/LICENSE.MIT",
+    "sha256": "46a65cffd1ea955132d95a8dd921640714a8d6b537d2e4e482d31145ae95b603"
+  },
+  {
+    "file": "kissfft/COPYING",
+    "url": "https://raw.githubusercontent.com/mborgerding/kissfft/febd4caeed32e33ad8b2e0bb5ea77542c40f18ec/COPYING",
+    "sha256": "a2840585f8411be8e6826a31ef15ae65c950bd74a2437a73b013398a934ad0c6"
+  },
+  {
+    "file": "kissfft/LICENSES/BSD-3-Clause",
+    "url": "https://raw.githubusercontent.com/mborgerding/kissfft/febd4caeed32e33ad8b2e0bb5ea77542c40f18ec/LICENSES/BSD-3-Clause",
+    "sha256": "4d6bcab46f27d6d0c878e8305d4bdcfe040d52bf6656b9771f04c9fb9902c0ed"
+  },
+  {
+    "file": "asio/asio/LICENSE_1_0.txt",
+    "url": "https://raw.githubusercontent.com/chriskohlhoff/asio/147f7225a96d45a2807a64e443177f621844e51c/asio/LICENSE_1_0.txt",
+    "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+  },
+  {
+    "file": "websocketpp/COPYING",
+    "url": "https://raw.githubusercontent.com/zaphoyd/websocketpp/b9aeec6eaf3d5610503439b4fae3581d9aff08e8/COPYING",
+    "sha256": "5ba81a1ed402517dce2581fa2d4042baf6a9c8ca0fe94fa6a7043ce6ab23064f"
+  },
+  {
+    "file": "portaudio/LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/PortAudio/portaudio/147dd722548358763a8b649b3e4b41dfffbcfbb6/LICENSE.txt",
+    "sha256": "ec52a1952d701f94e5135719a47376da4ee0b4a0201f1cafb49f61db6480ac3d"
+  },
+  {
+    "file": "cargs/LICENSE.md",
+    "url": "https://raw.githubusercontent.com/likle/cargs/5bbcfca833eeb504996afb85ad5b8470c96dc752/LICENSE.md",
+    "sha256": "e144db54f3cbd2110ccdd99cda1eaef528eb89a2f97bbee46989a7ba6b5292a3"
+  }
+]

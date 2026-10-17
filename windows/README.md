@@ -4,6 +4,31 @@ Native, hochperformante On-Device-Diktier-App für Windows 10 & 11 ohne Cloud-Zw
 
 Für die Fortsetzung der Entwicklung direkt unter Windows: [HANDOFF.md](HANDOFF.md).
 
+## Öffentliche Beta 0.7.0-beta.8
+
+[Windows-Installer herunterladen](https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.8/inlaut-0.7.0-beta.8-windows-x64-setup.exe)
+für Windows 10/11 x64. Deutsch und Englisch sind mit getrennten lokalen Modellen
+enthalten; Diktat- und Oberflächensprache lassen sich unabhängig einstellen.
+Sprachwechsel benötigen einen Neustart. Gemischtsprachiges Diktieren ist Mac-only.
+
+**Diese Beta ist nicht digital signiert.** Windows kann „Der Computer wurde durch
+Windows geschützt“ oder einen unbekannten Herausgeber anzeigen. Die
+[Downloadseite](https://inlaut.de/windows) erklärt diese Warnung und die
+Installationsschritte. Geräte mit Smart App Control oder Unternehmensrichtlinien
+können die Installation vollständig blockieren.
+
+inlaut vor der Installation über das Tray-Menü beenden. Updates werden manuell
+von der Website heruntergeladen und installiert; der signierte In-App-Updater
+kann diese unsignierte Beta nicht aktualisieren. Einstellungen bleiben bei einer
+Neuinstallation erhalten. [Release und Prüfsumme](https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.8).
+
+Bekannte Grenzen: Leise Sprache kann abgeschnitten werden; Leerzeichen und
+Großschreibung zwischen getrennten Diktaten benötigen mitunter Korrekturen.
+Windows 11, Standby und Mikrofonwechsel sind noch nicht vollständig geprüft.
+Weitere Hinweise: [installer/BETA.md](installer/BETA.md).
+
+Die folgenden Vorschauversionen dokumentieren die Entwicklung vor dieser Beta.
+
 ## Qualitätstestversion 0.6.4-model-preview.1
 
 Separates portables Paket mit Parakeet TDT v3 INT8 und der beschleunigten Eingabe
@@ -86,11 +111,11 @@ von jeweils ungefähr 1 MB werden aufbewahrt und können jederzeit gelöscht wer
 
 ## 🚀 Schnelleinstieg für Nutzer
 
-1. Lade das fertige **`inlaut-windows-app.zip`** herunter (z. B. aus den GitHub Actions Artefakten oder dem Release).
-2. Entpacke das ZIP in einen beliebigen Ordner.
-3. Starte **`Inlaut.exe`** per Doppelklick:
+1. Lade den **Windows-Beta-Installer** von [inlaut.de/windows](https://inlaut.de/windows) herunter und beachte den Hinweis zur fehlenden Signatur.
+2. Beende eine laufende inlaut-Version und führe den Installer aus. Administratorrechte sind nicht erforderlich.
+3. Starte **inlaut Beta** über das Startmenü:
    * Die App startet direkt im Infobereich (System Tray) unten rechts in der Taskleiste.
-   * Das deutsche On-Device Sprachmodell ist bereits im Ordner `models/` enthalten und wird sofort geladen.
+   * Die deutschen und englischen Sprachmodelle sind bereits enthalten; das gewählte Modell wird lokal geladen.
    * Keine Konfiguration oder Terminal-Befehle notwendig!
 
 ---

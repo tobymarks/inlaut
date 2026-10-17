@@ -1,14 +1,14 @@
 # inlaut
 
-> inlaut ist eine kostenlose Open-Source-Diktier-App für macOS und Windows (Beta in Vorbereitung). Die veröffentlichte Mac-Version benötigt Apple Silicon und macOS 26 oder neuer. Taste halten, sprechen, loslassen: Die Spracherkennung läuft lokal auf dem Mac und fügt den Text in das aktive Textfeld jeder App ein. Auf Deutsch und Englisch, auch gemischt im selben Satz, ohne Konto, ohne Cloud, auch offline.
-> English summary: inlaut is a free, open-source (GPL-3.0) dictation app for macOS and Windows (beta in preparation, German or English). The released Mac version supports German and English. Speech recognition runs fully on-device (no cloud, no account, works offline) and supports German, English and both mixed in one sentence. English page: https://inlaut.de/en
+> inlaut ist eine kostenlose Open-Source-Diktier-App für macOS und Windows (unsignierte Beta). Die veröffentlichte Mac-Version benötigt Apple Silicon und macOS 26 oder neuer. Taste halten, sprechen, loslassen: Die Spracherkennung läuft lokal auf dem Mac und fügt den Text in das aktive Textfeld jeder App ein. Auf Deutsch und Englisch, auch gemischt im selben Satz, ohne Konto, ohne Cloud, auch offline.
+> English summary: inlaut is a free, open-source (GPL-3.0) dictation app for macOS and Windows (unsigned beta, German or English). The released Mac version supports German and English. Speech recognition runs fully on-device (no cloud, no account, works offline) and supports German, English and both mixed in one sentence. English page: https://inlaut.de/en
 
-Windows: Native Beta für x64-PCs mit Windows 10/11, lokale Spracherkennung und Oberfläche wahlweise auf Deutsch oder Englisch, beide Modelle im Installer, Sprachwechsel nach Neustart, keine gemischten Diktate. Der Download ist noch nicht freigeschaltet. Keine Apple Intelligence, Apple-Spracherkennung oder Datei-Transkription. Optionale Diagnose-Testaufnahmen können Audio/Text lokal speichern; kein automatischer Upload. Details: https://inlaut.de/windows und https://inlaut.de/en/windows
+Windows: Native Beta für x64-PCs mit Windows 10/11, lokale Spracherkennung und Oberfläche wahlweise auf Deutsch oder Englisch, beide Modelle im Installer, Sprachwechsel nach Neustart, keine gemischten Diktate. Version 0.7.0-beta.8 ist als unsignierter EXE-Installer verfügbar. Windows SmartScreen kann warnen und einen unbekannten Herausgeber melden; Installation nur nach bewusstem Download von der offiziellen Website. Smart App Control oder Organisationsrichtlinien können die Installation blockieren. Updates werden manuell über die Website installiert; inlaut vorher beenden. Die Windows-11-Abnahme steht noch aus. Leise Sprache und Wörter am Anfang oder Ende einer Aufnahme können unzuverlässig erkannt werden. Keine Apple Intelligence, Apple-Spracherkennung oder Datei-Transkription. Optionale Diagnose-Testaufnahmen können Audio/Text lokal speichern; kein automatischer Upload. Details: https://inlaut.de/windows und https://inlaut.de/en/windows
 
 ## Fakten zur veröffentlichten macOS-Version
 
 - Preis: kostenlos, kein Abo, kein Konto. Lizenz GPL-3.0-or-later.
-- Plattform: Mac mit Apple Silicon, macOS 26 oder neuer. Windows-Beta für Windows 10/11 (x64) in Vorbereitung, Download erst nach Signierung. Kein iPhone/iPad.
+- Plattform: Mac mit Apple Silicon, macOS 26 oder neuer. Unsignierte Windows-Beta für Windows 10/11 (x64) verfügbar; Windows-11-Abnahme noch offen. Kein iPhone/iPad.
 - Sprachen: Deutsch, Englisch und beide gemischt (Einstellung Deutsch / English / Deutsch + English). Die Oberfläche gibt es auf Deutsch und Englisch.
 - Spracherkennung: Parakeet Ultra (ein Modell für Deutsch, Englisch und gemischte Sätze, rund 630 MB), läuft lokal als Core ML auf der Neural Engine des Mac. Alternativ die lokale Apple-Spracherkennung.
 - Datenschutz: Aufnahmen und Diktate werden weder übertragen noch als Verlauf gespeichert. Das Mikrofon ist nur beim Diktieren aktiv. Internet nur für den einmaligen Modell-Download und die Update-Suche.
@@ -23,8 +23,8 @@ Windows: Native Beta für x64-PCs mit Windows 10/11, lokale Spracherkennung und 
 
 ## Links
 
-- [Windows-Beta: Status und Voraussetzungen](https://inlaut.de/windows)
-- [Windows beta: status and requirements](https://inlaut.de/en/windows)
+- [Windows-Beta: Download, Installationshinweise und Voraussetzungen](https://inlaut.de/windows)
+- [Windows beta: download, installation guidance and requirements](https://inlaut.de/en/windows)
 
 - [Website und Download](https://inlaut.de/): Funktionen, Anwendungsbeispiele, häufige Fragen
 - [English website](https://inlaut.de/en): features, examples, FAQ
