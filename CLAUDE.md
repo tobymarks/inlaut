@@ -22,18 +22,18 @@ pkill -x Inlaut; open build/Build/Products/Debug/Inlaut.app
 
 ## Website
 
-`site/` is the static site for https://inlaut.de (German at `/`, English at `/en` with legal notice and privacy translations; no cookies, no tracking, no third-party requests). Keep both languages in step and linked via `hreflang`. Served by Cloudflare Workers static assets in the private Cloudflare account (tobias@familiemarks.com). The domain is registered at INWX, and its nameservers point to Cloudflare. Deploy with `cd site && npx wrangler deploy` (wrangler is logged in via OAuth). The Impressum uses the apollon address with c/o, agreed with the maintainer. hallo@inlaut.de is forwarded by Cloudflare Email Routing to the maintainer's private address. After editing the FAQ (`#fragen`, `/en#faq`), run `python3 scripts/sync-faq-schema.py` so the FAQPage JSON-LD of both pages matches the visible text. AI-generated images (personas) carry the `.ki-badge` ("KI" / "AI"), an alt text starting with "KI-generiertes Bild:" (English: "AI-generated image:") and IPTC `trainedAlgorithmicMedia` XMP.
+`site/` is the static site for https://inlaut.de (German at `/`, English at `/en` with legal notice and privacy translations; no cookies, no tracking, no third-party requests). Keep both languages in step and linked via `hreflang`. Served by Cloudflare Workers static assets in the maintainer's private Cloudflare account (see `CLAUDE.local.md`). The domain is registered at INWX, and its nameservers point to Cloudflare. Deploy with `cd site && npx wrangler deploy` (wrangler is logged in via OAuth). The Impressum uses the apollon address with c/o, agreed with the maintainer. hallo@inlaut.de is forwarded by Cloudflare Email Routing to the maintainer's private address. After editing the FAQ (`#fragen`, `/en#faq`), run `python3 scripts/sync-faq-schema.py` so the FAQPage JSON-LD of both pages matches the visible text. AI-generated images (personas) carry the `.ki-badge` ("KI" / "AI"), an alt text starting with "KI-generiertes Bild:" (English: "AI-generated image:") and IPTC `trainedAlgorithmicMedia` XMP.
 
 ## Git and GitHub
 
-The active `gh` account on this machine is the work account (`tmarks-apollon`); this repo belongs to the private account. Push and use `gh` with that token, without switching the global account:
+The machine's active `gh` account may not be the one that owns this repo (details in `CLAUDE.local.md`). Push and use `gh` with the owner's token, without switching the global account:
 
 ```bash
 GH_TOKEN=$(gh auth token -u tobymarks) git -c credential.helper= -c credential.helper='!gh auth git-credential' push
 GH_TOKEN=$(gh auth token -u tobymarks) gh issue list -R tobymarks/inlaut
 ```
 
-Commits use the private noreply address (already set). Commit messages explain the why.
+Commits use the private noreply address (already set). Contact lists, outreach replies and account details stay out of the repo: `design/outreach/` and `CLAUDE.local.md` are gitignored. Commit messages explain the why.
 
 ## Testing without the hotkey
 
