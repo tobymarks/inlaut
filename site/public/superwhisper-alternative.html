@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Superwhisper Alternative: lokal, blitzschnell, Open Source – inlaut</title>
-  <meta name="description" content="inlaut ist eine kostenlose Open-Source-Alternative zu Superwhisper für den Mac: Parakeet-Transducer statt schwerfälligem Whisper, kein Abo, kein Tonverlauf. Ehrlicher Vergleich mit Quellen.">
+  <title>Superwhisper Alternative für Mac und Windows – inlaut</title>
+  <meta name="description" content="inlaut als kostenlose Open-Source-Alternative zu Superwhisper: lokale Erkennung auf Mac und Windows (unsignierte Beta). Vergleich von Modellen, Datenschutz, Preisen und Plattformgrenzen.">
   <link rel="canonical" href="https://inlaut.de/superwhisper-alternative">
   <link rel="alternate" hreflang="de" href="https://inlaut.de/superwhisper-alternative">
   <link rel="alternate" hreflang="en" href="https://inlaut.de/en/superwhisper-alternative">
@@ -15,7 +15,7 @@
   <meta name="theme-color" content="#F6F7F4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0C201F" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/style.css?v=cmp1">
+  <link rel="stylesheet" href="/style.css?v=windows-platforms2">
   <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
   <script src="/lang-switch.js" defer></script>
   <script type="application/ld+json">
@@ -27,11 +27,11 @@
       "@id": "https://inlaut.de/superwhisper-alternative#article",
       "url": "https://inlaut.de/superwhisper-alternative",
       "mainEntityOfPage": "https://inlaut.de/superwhisper-alternative",
-      "headline": "Superwhisper Alternative für den Mac",
-      "description": "inlaut ist eine kostenlose Open-Source-Alternative zu Superwhisper für den Mac: Parakeet-Transducer statt schwerfälligem Whisper, kein Abo, kein Tonverlauf. Ehrlicher Vergleich mit Quellen.",
+      "headline": "Superwhisper Alternative für Mac und Windows",
+      "description": "inlaut als kostenlose Open-Source-Alternative zu Superwhisper: lokale Erkennung auf Mac und Windows (unsignierte Beta). Vergleich von Modellen, Datenschutz, Preisen und Plattformgrenzen.",
       "inLanguage": "de",
       "datePublished": "2026-10-14",
-      "dateModified": "2026-10-14",
+      "dateModified": "2026-10-18",
       "image": "https://inlaut.de/og-image.png",
       "author": {
         "@type": "Person",
@@ -67,7 +67,7 @@
           "name": "Warum ist inlaut schneller als Superwhisper Free?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Superwhisper Free nutzt lokale OpenAI Whisper-Modelle. Whisper ist ein autoregressives Modell, das Audio in 30-Sekunden-Blöcken verarbeitet und nach dem Sprechen 1 bis 3 Sekunden Bedenkzeit benötigt. inlaut nutzt standardmäßig das Streaming-Modell Parakeet Ultra auf der Apple Neural Engine, das Text in unter 0,1 Sekunden an den Cursor tippt."
+            "text": "Auf dem Mac nutzt inlaut standardmäßig Parakeet Ultra auf der Apple Neural Engine. Superwhisper Free verwendet Whisper-Modelle, deren Erkennung anders arbeitet. Die tatsächliche Verzögerung hängt von Hardware, Modell und Diktatlänge ab; die Mac-Angaben sind keine Zusage für die Windows-Beta."
           }
         },
         {
@@ -75,7 +75,7 @@
           "name": "Speichert inlaut Audioaufnahmen oder einen Verlauf ab?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Nein. inlaut behält weder Tonaufnahmen noch diktierte Texte. Superwhisper speichert Audio-Aufnahmen standardmäßig dauerhaft auf der Festplatte („Keep recordings for: Forever“), sofern dies nicht manuell in den Einstellungen umgestellt wird."
+            "text": "Normale Diktate erzeugen keine Audiodateien und keinen Diktatverlauf auf der Festplatte. Windows hält das letzte Diktat im Arbeitsspeicher; im optionalen Zwischenablage-Modus bleibt es außerdem in der Zwischenablage. Ausdrücklich aktivierte Windows-Testaufnahmen können Audio und erkannten Text lokal speichern. Es gibt keinen automatischen Upload. Superwhisper speichert Aufnahmen standardmäßig dauerhaft, sofern die Einstellung nicht geändert wird."
           }
         },
         {
@@ -91,7 +91,7 @@
           "name": "Versteht inlaut Deutsch und Englisch im selben Satz?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Ja. In der Einstellung „Deutsch + English“ erkennt inlaut fließend beide Sprachen im selben Satz, ohne dass manuell zwischen Sprachen oder Modi umgeschaltet werden muss."
+            "text": "Ja, auf dem Mac mit Parakeet Ultra und der Einstellung „Deutsch + English“. Unter Windows wählst du Deutsch oder Englisch; nach einem Sprachwechsel ist ein Neustart nötig. Gemischte Diktate unterstützt die Windows-Beta nicht."
           }
         }
       ]
@@ -108,16 +108,16 @@
   </header>
 
   <main class="wrap prose prose-wide" id="inhalt">
-    <h1>Superwhisper Alternative für den Mac</h1>
-    <p class="lead">inlaut ist eine kostenlose Open-Source-Diktier-App für macOS und Windows (unsignierte Beta). Beide Apps tippen gesprochenen Text direkt an die Schreibmarke jeder beliebigen Anwendung. Der Unterschied: inlaut setzt standardmäßig auf das moderne Fast-Conformer-Modell Parakeet, verlangt kein Abo für schnelle Erkennung und speichert prinzipbedingt keinen Tonverlauf ab.</p>
+    <h1>Superwhisper Alternative für Mac und Windows</h1>
+    <p class="lead">inlaut ist eine kostenlose Open-Source-Diktier-App für macOS und Windows (unsignierte Beta). Die Erkennung läuft lokal: auf dem Mac mit Parakeet Ultra, unter Windows mit getrennten FastConformer-Modellen für Deutsch oder Englisch. Dieser Vergleich berücksichtigt beide Plattformen und kennzeichnet Mac-Funktionen gesondert.</p>
     <p class="note">Stand: 14. Oktober 2026. Diese Seite stammt vom Entwickler von inlaut. Alle Angaben zu Superwhisper stammen aus der Dokumentation des Anbieters und sind unten belegt und verlinkt.</p>
 
     <h2>Kurz gesagt</h2>
     <ul>
-      <li><strong>Parakeet standardmäßig kostenlos:</strong> In Superwhisper sind schnelle Transducer-Modelle wie Parakeet dem kostenpflichtigen Pro-Plan vorbehalten. inlaut bringt Parakeet Ultra standardmäßig und dauerhaft kostenlos mit.</li>
+      <li><strong>Parakeet standardmäßig kostenlos:</strong> In Superwhisper sind schnelle Transducer-Modelle wie Parakeet dem kostenpflichtigen Pro-Plan vorbehalten. inlaut bringt Parakeet Ultra auf dem Mac kostenlos mit; auch die Windows-Modelle sind kostenlos.</li>
       <li><strong>Kein Abo, keine Lifetime-Gebühr:</strong> inlaut ist 100&nbsp;% kostenlos (GPL-3.0). Superwhisper Pro kostet laut Anbieter 8,49&nbsp;$ pro Monat, 84,99&nbsp;$ im Jahr oder 249,99&nbsp;$ für eine Lifetime-Lizenz.</li>
-      <li><strong>Kein Tonverlauf auf der Festplatte:</strong> Superwhisper speichert Aufnahmen standardmäßig dauerhaft lokal ab. inlaut behält weder Roh-Audio noch Diktat-Historie.</li>
-      <li><strong>Schlanker Fußabdruck:</strong> inlaut belegt im Leerlauf nur rund 50–60&nbsp;MB Arbeitsspeicher in der Menüleiste.</li>
+      <li><strong>Kein Tonverlauf auf der Festplatte:</strong> Superwhisper speichert Aufnahmen standardmäßig dauerhaft lokal ab. Normale inlaut-Diktate erzeugen keine Audiodateien oder einen Diktatverlauf auf der Festplatte. Optional aktivierte Windows-Testaufnahmen sind eine Ausnahme.</li>
+      <li><strong>Schlanker Fußabdruck:</strong> Die Mac-App belegt im Leerlauf rund 50–60&nbsp;MB Arbeitsspeicher in der Menüleiste. Diese Angabe gilt nicht für die Windows-Beta.</li>
     </ul>
 
     <h2>inlaut und Superwhisper im Vergleich</h2>
@@ -126,16 +126,16 @@
         <caption class="visually-hidden">Vergleich von inlaut und Superwhisper</caption>
         <thead><tr><th scope="col">Eigenschaft</th><th scope="col">inlaut</th><th scope="col">Superwhisper</th></tr></thead>
         <tbody>
-          <tr><th scope="row">Wo wird die Sprache erkannt?</th><td>Lokal auf der Apple Neural Engine</td><td>Lokal auf dem Gerät (Free: Whisper; Pro: auch Parakeet); Cloud optional (Pro)</td></tr>
-          <tr><th scope="row">Latenz beim Diktieren</th><td><strong>&lt; 0,1&nbsp;s</strong> (sofort nach Loslassen der Taste)</td><td>1,5–3,0&nbsp;s in Free (Whisper); schnelles Parakeet nur in Pro</td></tr>
+          <tr><th scope="row">Wo wird die Sprache erkannt?</th><td>Lokal: Mac auf der Apple Neural Engine, Windows auf der CPU</td><td>Lokal auf dem Gerät (Free: Whisper; Pro: auch Parakeet); Cloud optional (Pro)</td></tr>
+          <tr><th scope="row">Latenz beim Diktieren</th><td>Mac: kurze Verzögerung nach Loslassen; abhängig von Gerät und Diktatlänge. Keine entsprechende Windows-Zusage</td><td>1,5–3,0&nbsp;s in Free (Whisper); schnelles Parakeet nur in Pro</td></tr>
           <tr><th scope="row">Preis & Modell</th><td>Kostenlos (GPL-3.0)</td><td>Free (nur Whisper, max. 2 Modi); Pro 8,49&nbsp;$/Mo., 84,99&nbsp;$/Jahr oder 249,99&nbsp;$ einmalig</td></tr>
-          <tr><th scope="row">Audiospeicherung / Verlauf</th><td><strong>Kein Verlauf</strong> (weder Ton noch Text werden behalten)</td><td>Speichert Aufnahmen standardmäßig für immer („Keep recordings for: Forever“)</td></tr>
+          <tr><th scope="row">Audiospeicherung / Verlauf</th><td>Kein Diktatverlauf auf der Festplatte im normalen Betrieb; Windows-Testaufnahmen nur nach Aktivierung</td><td>Speichert Aufnahmen standardmäßig für immer („Keep recordings for: Forever“)</td></tr>
           <tr><th scope="row">Quellcode & Lizenz</th><td>Open Source (GPL-3.0) auf GitHub</td><td>Proprietär (SuperUltra, Inc., Delaware/USA)</td></tr>
-          <tr><th scope="row">Arbeitsspeicher</th><td>~50–60&nbsp;MB im Leerlauf</td><td>Modellabhängig (je nach geladenem Whisper-Modell)</td></tr>
-          <tr><th scope="row">Diktat in jede App</th><td>Ja (Taste halten oder freihändig)</td><td>Ja</td></tr>
+          <tr><th scope="row">Arbeitsspeicher</th><td>Mac: ~50–60&nbsp;MB im Leerlauf; Windows abweichend</td><td>Modellabhängig (je nach geladenem Whisper-Modell)</td></tr>
+          <tr><th scope="row">Diktat in jede App</th><td>Einfügen in Textfelder per Tastenkürzel; Windows-Kompatibilität in der eigenen App prüfen</td><td>Ja</td></tr>
           <tr><th scope="row">Systeme</th><td>Mac mit Apple Silicon, macOS 26+<br>Windows 10/11 (x64): unsignierte Beta</td><td>macOS (13.3 bzw. 14+), Windows, iOS, Android</td></tr>
-          <tr><th scope="row">Sprachen</th><td>Deutsch oder Englisch; gemischt in einem Satz nur auf dem Mac</td><td>Über 100 Sprachen (je nach geladenem Modell)</td></tr>
-          <tr><th scope="row">KI-Textüberarbeitung</th><td>Optional Füllwort- & Selbstkorrektur-Filter; keine LLM-Neudichtung</td><td>Ja (in Pro: KI-Modi, Kontext, Formatierung per Prompt)</td></tr>
+          <tr><th scope="row">Sprachen</th><td>Deutsch oder Englisch; gemischt in einem Satz nur mit Parakeet Ultra auf dem Mac</td><td>Über 100 Sprachen (je nach geladenem Modell)</td></tr>
+          <tr><th scope="row">KI-Textüberarbeitung</th><td>Mac: optionale Füllwort- und Selbstkorrektur-Filter. Kein freies Umformulieren; Windows ohne Apple Intelligence</td><td>Ja (in Pro: KI-Modi, Kontext, Formatierung per Prompt)</td></tr>
           <tr><th scope="row">Anbieter</th><td>Tobias Marks, Deutschland</td><td>SuperUltra, Inc., USA</td></tr>
         </tbody>
       </table>
@@ -147,43 +147,44 @@
     <ul>
       <li><strong>KI-Modi & System-Prompts:</strong> In Superwhisper Pro kannst du Modi definieren, die Notizen zusammenfassen, Code-Kommentare formatieren oder E-Mail-Entwürfe glätten.</li>
       <li><strong>Multiplattform:</strong> Superwhisper gibt es neben dem Mac auch für Windows, iOS und Android. inlaut unterstützt macOS auf Apple Silicon; die unsignierte Windows-Beta für x64-PCs erkennt Deutsch oder Englisch.</li>
-      <li><strong>Dateitranskription & Meeting-Modus:</strong> Superwhisper Pro bringt integrierte Tools zum Transkribieren langer Audio-Dateien und Meetings mit.</li>
+      <li><strong>Dateitranskription & Meeting-Modus:</strong> Superwhisper Pro bringt Funktionen für Audio-Dateien und Meetings mit. inlaut kann auf dem Mac einzelne Audio- und Videodateien transkribieren, bietet aber keinen Meeting-Modus. In der Windows-Beta fehlt Dateitranskription.</li>
       <li><strong>Mehr als 100 Sprachen:</strong> Durch die Unterstützung diverser Whisper-Modelle deckt Superwhisper ein riesiges Sprachenspektrum ab.</li>
     </ul>
 
     <h2>Warum viele Mac-Nutzer zu inlaut wechseln</h2>
-    <p><strong>1. Das Parakeet-Modell ohne Abo-Zwang:</strong> Wer in Superwhisper das moderne, blitzschnelle Parakeet-Modell nutzen möchte, muss das Pro-Abo (8,49&nbsp;$/Monat) abschließen. Die kostenlose Version beschränkt sich auf schwerfällige Whisper-Modelle, die nach jedem Satz spürbare Bedenkzeiten erfordern und bei Sprechpausen halluzinieren können. inlaut liefert Parakeet Ultra standardmäßig und dauerhaft kostenlos.</p>
-    <p><strong>2. Radikale Privatsphäre ohne Ton-Archiv:</strong> Superwhisper legt standardmäßig ein permanentes Archiv aller deiner Sprachaufnahmen auf der lokalen Festplatte an (Einstellung: <em>„Keep recordings: Forever“</em>). inlaut verarbeitet Audio im flüchtigen Speicher und löscht die Audiodaten sofort nach der Transkription. Es gibt keinen Verlauf, der ausgelesen oder vergessen werden könnte.</p>
-    <p><strong>3. Leichtgewichtige Menüleisten-App:</strong> inlaut verbraucht im Hintergrund nur 50 bis 60&nbsp;MB RAM und belastet weder Akku noch Lüfter deines MacBooks.</p>
-    <p><strong>4. Nahtloses Deutsch und Englisch:</strong> Sätze mit englischen Fachbegriffen oder eingestreuten Redewendungen (<em>„Ich habe den Pull Request gemergt und das Deployment gestartet“</em>) erkennt inlaut ohne manuelles Umschalten des Sprachmodus.</p>
+    <p><strong>1. Das Parakeet-Modell ohne Abo:</strong> Auf dem Mac enthält inlaut Parakeet Ultra kostenlos. Bei Superwhisper gehört Parakeet zum kostenpflichtigen Pro-Plan. Die tatsächliche Erkennungszeit hängt von Gerät, Modell und Länge des Diktats ab.</p>
+    <p><strong>2. Keine automatische Audioablage:</strong> Superwhisper legt standardmäßig ein lokales Archiv der Sprachaufnahmen an (<em>„Keep recordings: Forever“</em>). Normale inlaut-Diktate werden im Arbeitsspeicher erkannt, ohne Audiodateien oder einen Diktatverlauf auf der Festplatte. Die Windows-Beta hält das letzte Diktat im Speicher. Bewusst aktivierte Testaufnahmen können Audio und erkannten Text lokal speichern; sie werden nicht automatisch hochgeladen.</p>
+    <p><strong>3. Kleine Mac-App:</strong> Die Menüleisten-App belegt im Leerlauf rund 50 bis 60&nbsp;MB RAM. Während der Erkennung werden zusätzliche Ressourcen benötigt; die Windows-Beta verwendet andere Modelle und eine andere Laufzeit.</p>
+    <p><strong>4. Deutsch und Englisch auf dem Mac mischen:</strong> Sätze mit englischen Fachbegriffen (<em>„Ich habe den Pull Request gemergt und das Deployment gestartet“</em>) erkennt Parakeet Ultra im Mac-Modus „Deutsch + English“ ohne Umschalten. Unter Windows wählst du Deutsch oder Englisch; gemischte Diktate werden nicht unterstützt.</p>
 
     <h2>So gelingt der Wechsel von Superwhisper zu inlaut</h2>
     <ol>
-      <li><strong>inlaut laden:</strong> Die DMG-Datei herunterladen und in den Ordner „Programme“ ziehen.</li>
-      <li><strong>Einrichten:</strong> Beim ersten Start lädt inlaut das optimierte Sprachmodell einmalig herunter (~630&nbsp;MB).</li>
-      <li><strong>Taste wählen:</strong> Lege deine gewünschte Taste fest (z.&nbsp;B. die <kbd>🌐 fn</kbd>-Taste oder einen Shortcut). Halten und sprechen – beim Loslassen steht dein Text sofort an der Schreibmarke.</li>
+      <li><strong>inlaut laden:</strong> Auf dem Mac die DMG öffnen und inlaut in „Programme“ ziehen. Für Windows zuerst die <a href="/windows">Beta- und Installationshinweise</a> lesen, dann den Installer laden.</li>
+      <li><strong>Einrichten:</strong> macOS lädt beim ersten Start das Sprachmodell (~630&nbsp;MB). Der Windows-Installer enthält beide Modelle; wähle Deutsch oder Englisch und erlaube den Mikrofonzugriff.</li>
+      <li><strong>Taste wählen:</strong> Lege dein Tastenkürzel fest. Auf dem Mac ist auch die <kbd>🌐 fn</kbd>-Taste möglich. Teste Erkennung und Einfügen in deiner Ziel-App; die Windows-Beta unterstützt auch freihändiges Diktieren.</li>
       <li><strong>Vokabular übernehmen:</strong> Eigene Fachbegriffe und Namen, die du in Superwhisper hinterlegt hattest, kannst du in den inlaut-Einstellungen unter <em>Ersetzungen</em> eintragen.</li>
     </ol>
     <p>Beide Apps können problemlos parallel auf deinem Mac installiert bleiben. Vergib einfach zwei unterschiedliche Tasten, um die Erkennungsgeschwindigkeit und Genauigkeit direkt zu vergleichen.</p>
 
+    <p class="note">Windows ist eine unsignierte Beta für Windows 10/11 (x64). Lies vor dem Download die Installationshinweise. Die Modelle sind enthalten; Updates installierst du manuell, nachdem inlaut beendet wurde. Die Abnahme unter Windows 11 ist noch offen.</p>
     <p><a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" data-umami-event-position="superwhisper-alternative" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>inlaut für macOS herunterladen <span aria-hidden="true">↓</span></a>
-          <a class="button button-secondary" href="/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Windows <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a></p>
+          <a class="button button-secondary" href="/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Für Windows laden <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a></p>
 
     <h2>Häufige Fragen</h2>
     <h3>Gibt es eine kostenlose Alternative zu Superwhisper?</h3>
     <p>Ja. inlaut ist vollständig kostenlos, ohne Abo, ohne Limit und ohne In-App-Käufe. Superwhisper bietet eine eingeschränkte Free-Version (nur Whisper-Modelle, maximal 2 Modi); die schnelle Transducer-Erkennung und Cloud-Modelle kosten in Pro 8,49&nbsp;$ monatlich oder 249,99&nbsp;$ einmalig.</p>
 
     <h3>Warum ist inlaut schneller als Superwhisper Free?</h3>
-    <p>Superwhisper Free nutzt lokale OpenAI Whisper-Modelle. Whisper ist ein autoregressives Modell, das Audio in 30-Sekunden-Blöcken verarbeitet und nach dem Sprechen 1 bis 3 Sekunden Bedenkzeit benötigt. inlaut nutzt standardmäßig das Streaming-Modell Parakeet Ultra auf der Apple Neural Engine, das Text in unter 0,1 Sekunden an den Cursor tippt.</p>
+    <p>Auf dem Mac nutzt inlaut standardmäßig Parakeet Ultra auf der Apple Neural Engine. Superwhisper Free verwendet Whisper-Modelle, deren Erkennung anders arbeitet. Die tatsächliche Verzögerung hängt von Hardware, Modell und Diktatlänge ab; die Mac-Angaben sind keine Zusage für die Windows-Beta.</p>
 
     <h3>Speichert inlaut Audioaufnahmen oder einen Verlauf ab?</h3>
-    <p>Nein. inlaut behält weder Tonaufnahmen noch diktierte Texte. Superwhisper speichert Audio-Aufnahmen standardmäßig dauerhaft auf der Festplatte („Keep recordings for: Forever“), sofern dies nicht manuell in den Einstellungen umgestellt wird.</p>
+    <p>Normale Diktate erzeugen keine Audiodateien und keinen Diktatverlauf auf der Festplatte. Windows hält das letzte Diktat im Arbeitsspeicher; im optionalen Zwischenablage-Modus bleibt es außerdem in der Zwischenablage. Ausdrücklich aktivierte Windows-Testaufnahmen können Audio und erkannten Text lokal speichern. Es gibt keinen automatischen Upload. Superwhisper speichert Aufnahmen standardmäßig dauerhaft, sofern die Einstellung nicht geändert wird.</p>
 
     <h3>Ist inlaut Open Source?</h3>
     <p>Ja. Der vollständige Quellcode von inlaut steht unter der freien GPL-3.0-Lizenz auf GitHub bereit. Superwhisper ist proprietäre Software.</p>
 
     <h3>Versteht inlaut Deutsch und Englisch im selben Satz?</h3>
-    <p>Ja. In der Einstellung „Deutsch + English“ erkennt inlaut fließend beide Sprachen im selben Satz, ohne dass manuell zwischen Sprachen oder Modi umgeschaltet werden muss.</p>
+    <p>Ja, auf dem Mac mit Parakeet Ultra und der Einstellung „Deutsch + English“. Unter Windows wählst du Deutsch oder Englisch; nach einem Sprachwechsel ist ein Neustart nötig. Gemischte Diktate unterstützt die Windows-Beta nicht.</p>
 
     <h2>Quellen & Nachweise</h2>
     <p>Alle Angaben zu Superwhisper wurden im Oktober 2026 auf den offiziellen Dokumentationsseiten des Anbieters nachgelesen:</p>

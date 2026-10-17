@@ -13,7 +13,7 @@
   <meta name="theme-color" content="#F6F7F4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0C201F" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/style.css?v=windows-beta1">
+  <link rel="stylesheet" href="/style.css?v=windows-platforms2">
   <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
   <script src="/lang-switch.js" defer></script>
 </head>
@@ -29,7 +29,7 @@
     <p class="note">This is a translation of the German <a href="/datenschutz" hreflang="de" lang="de">Datenschutzerklärung</a>, which is the legally binding version.</p>
 
     <h2>In short</h2>
-    <p>This website sets no cookies, embeds no third-party tracking networks, and loads no content from third-party advertising servers. For privacy-friendly web analytics, we use a self-hosted instance of Umami (cookie-free, no fingerprinting, hosted in Germany/EU). The inlaut app processes your speech only on your computer and never sends voice data anywhere.</p>
+    <p>This website sets no cookies, embeds no third-party tracking networks, and loads no content from third-party advertising servers. For privacy-friendly web analytics, we use a self-hosted instance of Umami (cookie-free, no fingerprinting, hosted in Germany/EU). The inlaut app processes your speech locally on your Mac or Windows PC. It does not upload audio or dictations for speech recognition.</p>
 
     <h2>Controller</h2>
     <p>Tobias Marks, address see <a href="/en/legal-notice">legal notice</a>, email: <a href="mailto:hallo@inlaut.de">hallo@inlaut.de</a>.</p>
@@ -47,9 +47,13 @@
     <p>Links to GitHub lead to a website of GitHub, Inc., where its privacy policy applies. Merely visiting this page does not send any data to GitHub.</p>
 
     <h2>The inlaut app on macOS</h2>
-    <p>inlaut turns speech into text on your Mac. Recordings and recognized text are neither stored nor sent anywhere. On first launch, the app downloads the speech model once from Hugging Face (Hugging Face, Inc., USA). Like any web server, Hugging Face sees your IP address. Apple speech recognition may download language files from Apple when needed. If automatic update checks are on, inlaut queries the version feed on inlaut.de once a day. Cloudflare receives technically necessary connection data such as your IP address and the app version in the user agent. Update packages are only downloaded from GitHub when you ask for them; GitHub then also receives the connection data needed for the download. Automatic checks can be turned off in the settings. No dictations are sent with these requests, and no additional system profile is sent.</p>
+    <p>inlaut turns speech into text on your Mac. Normal dictation does not create an audio or text history; audio and dictations are not uploaded for recognition. Custom replacements and snippets are saved locally. You can choose to save file-transcription results as text files. On first launch, the app downloads the speech model once from Hugging Face (Hugging Face, Inc., USA). Like any web server, Hugging Face sees your IP address. Apple speech recognition may download language files from Apple when needed. If automatic update checks are on, inlaut queries the version feed on inlaut.de once a day. Cloudflare receives technically necessary connection data such as your IP address and the app version in the user agent. Update packages are only downloaded from GitHub when you ask for them; GitHub then also receives the connection data needed for the download. Automatic checks can be turned off in the settings. No dictations are sent with these requests, and no additional system profile is sent.</p>
 
-    <h2>The Windows beta</h2><p>The Windows beta processes speech locally and bundles its German and English speech models with the installer. It does not automatically upload audio, dictations or diagnostic reports. Local diagnostic logs contain technical metadata. If you explicitly enable test captures, audio and recognised text are saved locally; you can delete them. A crash report is previewed locally. Opening a prefilled GitHub issue requires a separate confirmation and sends the displayed report to GitHub; publication is a further action in the browser. Updates for this unsigned beta are installed manually through the website. Downloading installers or checking for updates sends the connection data needed for those requests to GitHub or the update service, but no dictations.</p>
+    <h2>The Windows beta</h2>
+    <p>The Windows beta processes speech locally and bundles its German and English speech models with the installer. Normal dictation does not create an audio or text history. “Last dictation” keeps the most recently recognised text in memory. Custom replacements and snippets are saved locally. Audio, dictations and diagnostic reports are not uploaded automatically; local diagnostic logs contain technical metadata.</p>
+    <p>Direct text input leaves the clipboard untouched. If you enable optional clipboard mode, your dictation replaces the previous contents and stays on the clipboard until the next copy. What happens to inserted text afterwards depends on the destination application.</p>
+    <p>If you explicitly enable test captures, audio and recognised text for up to ten dictations are saved locally; you can delete these files. A crash report is previewed locally. Opening a prefilled GitHub issue requires a separate confirmation and sends the displayed report to GitHub; publication is a further action in the browser.</p>
+    <p>Updates for this unsigned beta are installed manually through the website. Downloading installers or checking for updates sends the connection data needed for those requests to GitHub or the update service, but no dictations. If the German speech model is missing, the app can download it from Hugging Face; the server then receives the connection data needed for that download, such as your IP address.</p>
 
     <h2>Your rights</h2>
     <p>You have the right of access, rectification, erasure, restriction of processing, data portability and objection (Art. 15–21 GDPR). You can also lodge a complaint with a data protection supervisory authority, for example the one responsible for where you live.</p>

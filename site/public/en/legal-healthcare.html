@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>inlaut for Legal & Healthcare: Local Dictation with Privilege & Confidentiality</title>
-  <meta name="description" content="Local, on-device speech-to-text without cloud for attorneys, law firms, physicians and healthcare practices. GDPR & professional secrecy compliant, future-proof via open source.">
+  <meta name="description" content="Local dictation for legal and healthcare teams on Mac and as a Windows beta. No cloud recognition, open source and clear deployment notes for your IT team.">
     <link rel="canonical" href="https://inlaut.de/en/legal-healthcare">
   <meta property="og:type" content="article">
   <meta property="og:title" content="inlaut for Legal & Healthcare: Local Dictation with Privilege & Confidentiality">
-  <meta property="og:description" content="Local, on-device speech-to-text without cloud for attorneys, law firms, physicians and healthcare practices. GDPR & professional secrecy compliant.">
+  <meta property="og:description" content="Local dictation for legal and healthcare teams on Mac and as a Windows beta. No cloud recognition, open source and clear deployment notes for your IT team.">
   <meta property="og:url" content="https://inlaut.de/en/legal-healthcare">
   <meta property="og:image" content="https://inlaut.de/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="inlaut for Legal & Healthcare: Local Dictation with Privilege & Confidentiality">
-  <meta name="twitter:description" content="Local, on-device speech-to-text without cloud for attorneys, law firms, physicians and healthcare practices. GDPR & professional secrecy compliant.">
+  <meta name="twitter:description" content="Local dictation for legal and healthcare teams on Mac and as a Windows beta. No cloud recognition, open source and clear deployment notes for your IT team.">
   <meta name="twitter:image" content="https://inlaut.de/og-image.png">
   <link rel="alternate" hreflang="de" href="https://inlaut.de/kanzleien-praxen">
   <link rel="alternate" hreflang="en" href="https://inlaut.de/en/legal-healthcare">
@@ -24,7 +24,7 @@
   <meta name="theme-color" content="#F6F7F4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0C201F" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/style.css?v=biz1">
+  <link rel="stylesheet" href="/style.css?v=windows-platforms2">
   <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
   <script src="/lang-switch.js" defer></script>
   <script type="application/ld+json">
@@ -37,10 +37,10 @@
       "url": "https://inlaut.de/en/legal-healthcare",
       "mainEntityOfPage": "https://inlaut.de/en/legal-healthcare",
       "headline": "inlaut for Legal & Healthcare: Local Dictation with Privilege & Confidentiality",
-      "description": "Local, on-device speech-to-text without cloud for attorneys, law firms, physicians and healthcare practices. GDPR & professional secrecy compliant, future-proof via open source.",
+      "description": "Local dictation for legal and healthcare teams on Mac and as a Windows beta. No cloud recognition, open source and clear deployment notes for your IT team.",
       "inLanguage": "en",
       "datePublished": "2026-10-14",
-      "dateModified": "2026-10-14",
+      "dateModified": "2026-10-18",
       "image": "https://inlaut.de/og-image.png",
       "author": {
         "@type": "Person",
@@ -62,34 +62,34 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Why is inlaut safe for legally privileged or medical speech?",
+          "name": "Does inlaut initiate outbound network connections?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Because speech audio never leaves the local machine. Recognition runs entirely on-device with no cloud intermediary, eliminating third-party disclosure risks and compliance exposure."
+            "text": "On Mac, the speech model is downloaded once from Hugging Face; the Windows beta bundles both models and can download missing German model files. A missing English model requires reinstalling the bilingual installer. Optional update checks contact inlaut.de; new versions come from GitHub. Updates to the unsigned Windows beta are installed manually through the website. These requests do not contain dictations. Diagnostic material is shared only if you explicitly submit it yourself."
           }
         },
         {
           "@type": "Question",
-          "name": "Do we need a Data Processing Agreement (DPA)?",
+          "name": "Can inlaut be deployed on isolated or air-gapped networks?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No. Because no audio recordings or transcripts are transmitted to external servers or third parties, no external data processing takes place."
+            "text": "Recognition works offline once the app and models are ready. Mac downloads its model first; the Windows installer bundles both models. Review installation, update procedures and IT policies before deploying to isolated networks."
           }
         },
         {
           "@type": "Question",
-          "name": "Why does open source provide greater long-term sustainability?",
+          "name": "How does the clipboard handle privileged text?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Proprietary software and cloud providers expose practices to price spikes, acquisitions, and forced cloud migrations. As GPL-3.0 open source, inlaut's code can be audited, self-hosted, and independently maintained indefinitely."
+            "text": "On Mac, inlaut inserts text through the clipboard and then restores its previous contents. Windows uses direct insertion by default. The optional clipboard mode replaces the previous contents and leaves the latest dictation there. Windows history and cloud sync are disabled for that entry; third-party clipboard managers must respect the flags themselves. The destination app determines what happens to text after insertion."
           }
         },
         {
           "@type": "Question",
-          "name": "When will the native Windows version be available?",
+          "name": "Are enterprise support contracts or SLAs available?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "The native Windows beta supports local German or English dictation on Windows 10 and 11 (x64). The installer is unsigned; Windows may show a security warning during installation. Test the beta in your own applications before using it for daily work."
+            "text": "inlaut is an independent open-source project and does not offer paid SLAs. Detailed specifications for security and network architecture are documented openly on our inlaut at work page."
           }
         }
       ]
@@ -106,8 +106,8 @@
   </header>
 
   <main class="wrap prose prose-wide" id="content">
-    <h1>inlaut for Legal & Healthcare: Local Dictation with True Privilege</h1>
-    <p class="lead">Attorneys, notary offices, tax advisors, and physicians share the same dilemma: dictation saves hours every day, but cloud-based speech recognition compromises attorney-client privilege, medical confidentiality, and GDPR compliance. inlaut provides the answer: 100% on-device speech-to-text with zero cloud dependencies, no accounts, and the long-term sustainability of open source.</p>
+    <h1>inlaut for Legal & Healthcare: Local Dictation on Mac and Windows</h1>
+    <p class="lead">Attorneys, notary offices, tax advisors and physicians work with confidential information. inlaut recognises dictation locally on Mac and, as a Windows beta, on x64 PCs: no cloud recognition, no account and open source. Your IT team should review local data handling and the beta’s limits before deployment.</p>
     <p class="note">Note: This page describes the technical architecture of inlaut. It does not constitute legal counsel. Compliance evaluations rest with your organization’s legal or data protection officers.</p>
 
     <figure class="persona-image prose-figure"><img src="/unternehmen/kanzlei.webp" width="1168" height="880" alt="An attorney dictating legal briefs into their workstation behind closed doors" loading="lazy"><span class="ki-badge">AI<span class="ki-more">-generated</span></span><figcaption>Illustration, AI-generated. The depicted person is fictional.</figcaption></figure>
@@ -121,12 +121,12 @@
     </ul>
 
     <h2>How inlaut Protects Confidentiality by Design</h2>
-    <p>inlaut was engineered from day one to guarantee that confidential voice audio never leaves your local workstation:</p>
+    <p>inlaut sends no audio or text to a cloud service for speech recognition:</p>
     <ul>
       <li><strong>100% On-Device Processing:</strong> Speech recognition runs entirely on local hardware: Parakeet Ultra on Mac, German and English FastConformer models in the Windows beta.</li>
       <li><strong>Zero Cloud Intermediaries:</strong> inlaut runs no transcription servers. Speech recognition functions fully without an active internet connection—even inside strictly air-gapped practice networks.</li>
-      <li><strong>No Audio History or Retention:</strong> The microphone is only energized while holding your designated push-to-talk key. Audio samples are held strictly in transient RAM during recognition and discarded immediately afterwards. No audio logs or recording archives are kept on disk.</li>
-      <li><strong>No DPA Required:</strong> Because no voice or transcript data is transmitted externally, no Data Processing Agreement under GDPR Art. 28 is required for dictation.</li>
+      <li><strong>No Audio History or Retention:</strong> Normal dictation is recognised in memory and its audio is discarded afterwards. The microphone runs during a started dictation, including hands-free mode, or an explicitly started test. The Windows beta keeps the last dictation in memory and can save audio and recognised text to disk when test captures are explicitly enabled. These files are not sent automatically.</li>
+      <li><strong>No DPA Required:</strong> Local recognition sends no dictations to the developer. As we understand it, this involves no processing on your behalf. Your team must assess the legal requirements and the use of the destination app, clipboard and any diagnostic material you choose to share.</li>
     </ul>
 
     <h2>Future-Proof Independence Through Open Source</h2>
@@ -141,27 +141,29 @@
     <h2>Seamless Practice Workflow Integration</h2>
     <p>inlaut adapts directly to your established desktop environment without disrupting existing tooling:</p>
     <ul>
-      <li><strong>Types Directly at the Cursor:</strong> Whether drafting briefs in Word, composing emails in Outlook, entering case notes in practice management suites, or filing EHR entries: inlaut pastes recognized text directly into whichever application has focus.</li>
+      <li><strong>Types Directly at the Cursor:</strong> inlaut inserts text into the selected field, for example in a word processor or email app. Test your case-management or clinical software; compatibility with individual specialist applications is not guaranteed. On Windows, insertion into apps running as administrator can be restricted.</li>
       <li><strong>Custom Replacements for Terminology:</strong> Define custom substitutions for statutory abbreviations (e.g. <em>GDPR, HIPAA, USC, CFR</em>), Latin phrases, or complex medical diagnoses.</li>
       <li><strong>Voice-Triggered Snippets:</strong> Insert multi-line disclaimers, standardized clauses, or firm signatures with a single spoken trigger phrase. Custom dictionaries and snippets can be exported and distributed across your team.</li>
     </ul>
 
-    <h2>macOS and the Windows beta</h2><p>The native Windows beta supports local German or English dictation on Windows 10 and 11 (x64). The installer is unsigned; Windows may show a security warning during installation. Test the beta in your own applications before using it for daily work.</p>
+    <h2>macOS and the Windows beta</h2>
+    <p>macOS requires Apple Silicon and macOS 26 or later. Windows beta 0.7.0-beta.9 supports Windows 10/11 (x64) and bundles both local speech models: English or German, without mixed-language dictation. File transcription and Apple Intelligence are Mac features. Windows 11 acceptance testing is still pending.</p>
+    <p class="note">The Windows installer is unsigned; Windows may warn about or block installation. Updates are installed manually after quitting inlaut. Read the <a href="/en/windows">installation notes and beta limits</a> and test your applications before using confidential data.</p>
 
     <div class="actions" style="margin: 2.5rem 0;">
       <a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" data-umami-event-position="legal-healthcare" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0-en.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Download for macOS (v0.5.0) <span aria-hidden="true">↓</span></a>
-          <a class="button button-secondary" href="/en/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Windows <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a>
+          <a class="button button-secondary" href="/en/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Download for Windows <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a>
     </div>
 
     <h2>FAQ for Practice & Clinical IT Teams</h2>
     <h3>Does inlaut initiate outbound network connections?</h3>
-    <p>Only three strictly scoped requests: the one-time speech model download from Hugging Face during setup, the daily update feed check from <code>inlaut.de/updates/appcast.xml</code> (which can be disabled entirely in app settings), and update package downloads from GitHub. Spoken audio and text are never part of any network payload.</p>
+    <p>On Mac, the speech model is downloaded once from Hugging Face; the Windows beta bundles both models and can download missing German model files. A missing English model requires reinstalling the bilingual installer. Optional update checks contact inlaut.de; new versions come from GitHub. Updates to the unsigned Windows beta are installed manually through the website. These requests do not contain dictations. Diagnostic material is shared only if you explicitly submit it yourself.</p>
 
     <h3>Can inlaut be deployed on isolated or air-gapped networks?</h3>
-    <p>Yes. Once the initial speech model file is installed, inlaut operates completely offline without needing any internet connection.</p>
+    <p>Recognition works offline once the app and models are ready. Mac downloads its model first; the Windows installer bundles both models. Review installation, update procedures and IT policies before deploying to isolated networks.</p>
 
     <h3>How does the clipboard handle privileged text?</h3>
-    <p>inlaut inserts text via the clipboard at the current cursor position. The clipboard payload is marked with transient flags so privacy-conscious clipboard managers do not persist it, and inlaut immediately restores your previous clipboard contents.</p>
+    <p>On Mac, inlaut inserts text through the clipboard and then restores its previous contents. Windows uses direct insertion by default. The optional clipboard mode replaces the previous contents and leaves the latest dictation there. Windows history and cloud sync are disabled for that entry; third-party clipboard managers must respect the flags themselves. The destination app determines what happens to text after insertion.</p>
 
     <h3>Are enterprise support contracts or SLAs available?</h3>
     <p>inlaut is an independent open-source project and does not offer paid SLAs. Detailed specifications for security and network architecture are documented openly on our <a href="/en/business">inlaut at work</a> page.</p>

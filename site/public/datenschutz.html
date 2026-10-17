@@ -13,7 +13,7 @@
   <meta name="theme-color" content="#F6F7F4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0C201F" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/style.css?v=windows-beta1">
+  <link rel="stylesheet" href="/style.css?v=windows-platforms2">
   <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
   <script src="/lang-switch.js" defer></script>
 </head>
@@ -28,7 +28,7 @@
     <h1>Datenschutz</h1>
 
     <h2>Kurz gesagt</h2>
-    <p>Diese Website setzt keine Cookies, bindet keine Werbenetzwerke ein und lädt keine Inhalte von fremden Servern Dritter. Zur datensparsamen Reichweitenmessung nutzen wir eine selbst gehostete Instanz von Umami (ohne Cookies, ohne Fingerprinting, Serverstandort Deutschland/EU). Die App inlaut verarbeitet deine Sprache ausschließlich lokal auf deinem Mac und überträgt keine Sprachdaten.</p>
+    <p>Diese Website setzt keine Cookies, bindet keine Werbenetzwerke ein und lädt keine Inhalte von fremden Servern Dritter. Zur datensparsamen Reichweitenmessung nutzen wir eine selbst gehostete Instanz von Umami (ohne Cookies, ohne Fingerprinting, Serverstandort Deutschland/EU). Die App inlaut verarbeitet deine Sprache lokal auf deinem Mac oder Windows-PC. Zur Spracherkennung werden weder Audio noch Diktate hochgeladen.</p>
 
     <h2>Verantwortlicher</h2>
     <p>Tobias Marks, Anschrift siehe <a href="/impressum">Impressum</a>, E-Mail: <a href="mailto:hallo@inlaut.de">hallo@inlaut.de</a>.</p>
@@ -46,9 +46,13 @@
     <p>Links zu GitHub führen auf eine Website der GitHub, Inc. Dort gelten deren Datenschutzbestimmungen. Beim bloßen Besuch dieser Seite werden keine Daten an GitHub übertragen.</p>
 
     <h2>Die App inlaut auf macOS</h2>
-    <p>inlaut wandelt Sprache auf deinem Mac in Text um. Aufnahmen und erkannter Text werden nicht gespeichert und nicht übertragen. Beim ersten Start lädt die App das Sprachmodell einmalig von Hugging Face (Hugging Face, Inc., USA) herunter. Dabei sieht Hugging Face wie jeder Webserver deine IP-Adresse. Die Apple-Spracherkennung kann bei Bedarf Sprachdateien von Apple laden. Wenn die automatische Update-Prüfung eingeschaltet ist, fragt inlaut täglich den Versionsfeed auf inlaut.de ab. Dabei erhält Cloudflare technisch notwendige Verbindungsdaten wie IP-Adresse und die App-Version in der Programmkennung. Update-Pakete werden erst auf deine Anforderung von GitHub heruntergeladen; dabei erhält auch GitHub die für den Download notwendigen Verbindungsdaten. Die automatische Prüfung lässt sich in den Einstellungen abschalten. Diktate werden bei diesen Anfragen nicht übertragen; ein zusätzliches Systemprofil wird nicht gesendet.</p>
+    <p>inlaut wandelt Sprache auf deinem Mac in Text um. Beim normalen Diktieren wird kein Audio- oder Textverlauf angelegt; Audio und Diktate werden nicht zur Erkennung hochgeladen. Eigene Ersetzungen und Textbausteine werden lokal gespeichert. Ergebnisse der Datei-Transkription kannst du selbst als Textdatei sichern. Beim ersten Start lädt die App das Sprachmodell einmalig von Hugging Face (Hugging Face, Inc., USA) herunter. Dabei sieht Hugging Face wie jeder Webserver deine IP-Adresse. Die Apple-Spracherkennung kann bei Bedarf Sprachdateien von Apple laden. Wenn die automatische Update-Prüfung eingeschaltet ist, fragt inlaut täglich den Versionsfeed auf inlaut.de ab. Dabei erhält Cloudflare technisch notwendige Verbindungsdaten wie IP-Adresse und die App-Version in der Programmkennung. Update-Pakete werden erst auf deine Anforderung von GitHub heruntergeladen; dabei erhält auch GitHub die für den Download notwendigen Verbindungsdaten. Die automatische Prüfung lässt sich in den Einstellungen abschalten. Diktate werden bei diesen Anfragen nicht übertragen; ein zusätzliches Systemprofil wird nicht gesendet.</p>
 
-    <h2>Die Windows-Beta</h2><p>Die Windows-Beta verarbeitet Sprache lokal und liefert die deutschen und englischen Sprachmodelle im Installer mit. Audio, Diktate und Diagnoseberichte werden nicht automatisch hochgeladen. Lokale Diagnoseprotokolle enthalten technische Metadaten. Wenn du Testaufnahmen ausdrücklich aktivierst, werden Audio und erkannter Text lokal gespeichert; diese Dateien kannst du löschen. Ein Fehlerbericht wird zunächst lokal angezeigt. Das Öffnen eines vorausgefüllten GitHub-Issues erfordert eine eigene Bestätigung und überträgt den angezeigten Bericht an GitHub; das öffentliche Absenden ist ein weiterer Schritt im Browser. Updates dieser unsignierten Beta installierst du manuell über die Website. Beim Download von Installern oder bei Update-Prüfungen erhalten GitHub beziehungsweise der Update-Dienst notwendige Verbindungsdaten, aber keine Diktate.</p>
+    <h2>Die Windows-Beta</h2>
+    <p>Die Windows-Beta verarbeitet Sprache lokal und liefert die deutschen und englischen Sprachmodelle im Installer mit. Beim normalen Diktieren wird kein Audio- oder Textverlauf angelegt. „Letztes Diktat“ hält den zuletzt erkannten Text im Arbeitsspeicher bereit. Eigene Ersetzungen und Textbausteine werden lokal gespeichert. Audio, Diktate und Diagnoseberichte werden nicht automatisch hochgeladen; lokale Diagnoseprotokolle enthalten technische Metadaten.</p>
+    <p>Die direkte Texteingabe lässt die Zwischenablage unberührt. Wenn du den optionalen Zwischenablage-Modus einschaltest, ersetzt dein Diktat den bisherigen Inhalt und bleibt bis zum nächsten Kopieren in der Zwischenablage. Was mit eingefügtem Text weiter geschieht, bestimmt die Zielanwendung.</p>
+    <p>Wenn du Testaufnahmen ausdrücklich aktivierst, werden Audio und erkannter Text für bis zu zehn Diktate lokal gespeichert; diese Dateien kannst du löschen. Ein Fehlerbericht wird zunächst lokal angezeigt. Das Öffnen eines vorausgefüllten GitHub-Issues erfordert eine eigene Bestätigung und überträgt den angezeigten Bericht an GitHub; das öffentliche Absenden ist ein weiterer Schritt im Browser.</p>
+    <p>Updates dieser unsignierten Beta installierst du manuell über die Website. Beim Download von Installern oder bei Update-Prüfungen erhalten GitHub beziehungsweise der Update-Dienst notwendige Verbindungsdaten, aber keine Diktate. Fehlt das deutsche Sprachmodell, kann die App es von Hugging Face nachladen; dabei erhält der Server die für den Download erforderlichen Verbindungsdaten wie deine IP-Adresse.</p>
 
     <h2>Deine Rechte</h2>
     <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO). Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren, zum Beispiel bei der für deinen Wohnort zuständigen.</p>

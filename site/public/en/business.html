@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>inlaut at work: dictation without the cloud, privacy and IT security</title>
-  <meta name="description" content="A Mac dictation app that processes speech on the device only: which data arises, which network connections exist, what that means for GDPR and IT security, and what inlaut does not offer.">
+  <meta name="description" content="A dictation app for macOS and Windows (unsigned beta) that processes speech locally: which data arises, which network connections exist, what that means for GDPR and IT security, and what inlaut does not offer.">
   <link rel="canonical" href="https://inlaut.de/en/business">
   <link rel="alternate" hreflang="de" href="https://inlaut.de/unternehmen">
   <link rel="alternate" hreflang="en" href="https://inlaut.de/en/business">
@@ -15,7 +15,7 @@
   <meta name="theme-color" content="#F6F7F4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0C201F" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/style.css?v=biz1">
+  <link rel="stylesheet" href="/style.css?v=windows-platforms2">
   <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
   <script src="/lang-switch.js" defer></script>
   <script type="application/ld+json">
@@ -28,10 +28,10 @@
       "url": "https://inlaut.de/en/business",
       "mainEntityOfPage": "https://inlaut.de/en/business",
       "headline": "inlaut at work: dictation without the cloud",
-      "description": "A Mac dictation app that processes speech on the device only: which data arises, which network connections exist, what that means for GDPR and IT security, and what inlaut does not offer.",
+      "description": "A dictation app for macOS and Windows (unsigned beta) that processes speech locally: which data arises, which network connections exist, what that means for GDPR and IT security, and what inlaut does not offer.",
       "inLanguage": "en",
       "datePublished": "2026-10-12",
-      "dateModified": "2026-10-12",
+      "dateModified": "2026-10-18",
       "image": "https://inlaut.de/og-image-en.png",
       "author": {
         "@type": "Person",
@@ -56,7 +56,7 @@
           "name": "Do dictations leave the computer?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No. Recording and recognition run on your computer. inlaut operates no server that audio or text could be sent to, and it stores neither recordings nor a history of dictations."
+            "text": "Speech recognition stays on your computer and does not transmit dictations. Normal operation creates no audio files or dictation history on disk. Explicitly enabled Windows test captures can save audio and recognised text locally. You decide whether to share diagnostic material; the destination app and clipboard also have their own data handling rules."
           }
         },
         {
@@ -72,7 +72,7 @@
           "name": "Which network connections does inlaut make?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Three: the one-time download of the speech model from Hugging Face, the daily request for the update feed on inlaut.de and, when you install an update, the download from GitHub. None of these requests contain dictations."
+            "text": "On Mac, the speech model is downloaded once from Hugging Face; the Windows beta bundles both models and can download missing German model files. A missing English model requires reinstalling the bilingual installer. Optional update checks contact inlaut.de; new versions come from GitHub. Updates to the unsigned Windows beta are installed manually through the website. These requests do not contain dictations. Diagnostic material is shared only if you explicitly submit it yourself."
           }
         },
         {
@@ -114,72 +114,72 @@
 
   <main class="wrap prose prose-wide" id="content">
     <h1>inlaut at work: dictation without the cloud</h1>
-    <p class="lead">inlaut turns speech into text locally on your computer. There is no server that dictations could be sent to, no account and no telemetry. This page sums up for IT, data protection and information security what the app does and what it does not.</p>
-    <p class="note">As of 13 October 2026, inlaut 0.5.0. This page describes how the app works and is not legal advice. Whether you may use it is for you to decide based on your own processes.</p>
+    <p class="lead">inlaut turns speech into text locally on your Mac or Windows PC. There is no server that dictations could be sent to, no account and no telemetry. This page sums up for IT, data protection and information security what the app does and what it does not.</p>
+    <p class="note">As of 18 October 2026. macOS 0.5.0 and Windows 0.7.0-beta.9. This page describes how the app works and is not legal advice. Whether you may use it is for you to decide based on your own processes.</p>
 
     <figure class="persona-image prose-figure"><img src="/unternehmen/it-sicherheit.webp" width="1168" height="880" alt="AI-generated image: An IT security lead sits in an office in front of a server cabinet and speaks towards her laptop" loading="lazy"><span class="ki-badge">AI<span class="ki-more">-generated</span></span><figcaption>Illustrative image, AI-generated. The person is fictional.</figcaption></figure>
 
-    <aside class="platform-note"><strong>Windows beta: available as an unsigned download.</strong><p>The sections below describe the released macOS app. The Windows beta bundles German and English speech models. Its installer is unsigned; Windows may warn about or block installation. Updates are installed manually through the website. It has local diagnostic logs and optional test captures that can contain recordings and recognised text. There is no automatic upload. See <a href="/en/windows">Windows beta status and limits</a>.</p></aside>
+    <aside class="platform-note"><strong>macOS and Windows: local recognition, different release stages.</strong><p>The macOS app is signed and notarized. The Windows beta for Windows 10/11 (x64) is unsigned: Windows may warn about or block installation. Both speech models are bundled; select English or German separately. Updates are installed manually. Review the <a href="/en/windows">Windows installation notes and beta limits</a> before deployment; Windows 11 acceptance testing is still pending.</p></aside>
     <h2>At a glance</h2>
     <ul>
-      <li><strong>Processing:</strong> entirely on the Mac, also without a network.</li>
-      <li><strong>Data held by the developer:</strong> none. No account, no telemetry, no crash reports, no usage statistics.</li>
-      <li><strong>Storage:</strong> no recordings, no history of dictations.</li>
+      <li><strong>Processing:</strong> entirely on your Mac or Windows PC, also offline once the model is ready.</li>
+      <li><strong>Data held by the developer:</strong> no automatic transfer of dictations, telemetry or crash reports. No account or usage statistics.</li>
+      <li><strong>Storage:</strong> normal dictation creates no audio files or dictation history on disk. Windows offers explicitly enabled local test captures.</li>
       <li><strong>Code:</strong> open source under GPL-3.0-or-later, fully readable.</li>
-      <li><strong>Delivery:</strong> signed with a Developer ID, notarized by Apple, signed updates.</li>
+      <li><strong>Delivery:</strong> macOS signed with a Developer ID and notarized by Apple; Windows as an unsigned beta installed manually.</li>
       <li><strong>Cost:</strong> none, including commercial use.</li>
     </ul>
 
     <h2>Which data is processed where</h2>
     <ul>
-      <li><strong>Audio:</strong> The microphone is only active while someone dictates. The recording sits in memory, is turned into text there and then discarded. inlaut does not write it to disk.</li>
-      <li><strong>Files:</strong> “Transcribe File …” reads an audio or video file you choose and shows the text in a window. The file is neither changed nor copied. The transcript sits in memory until another file is transcribed or inlaut quits, and is only saved as a text file if you ask for it.</li>
-      <li><strong>Recognised text:</strong> inlaut inserts it at the cursor via the clipboard. The entry is marked as transient so that clipboard managers do not keep it; inlaut then restores the previous contents. What happens to the text next is up to the app it lands in.</li>
-      <li><strong>Self-corrections (beta, off unless someone turns it on):</strong> with “Resolve self-corrections”, inlaut hands single sentences of a dictation to the Apple Intelligence language model that comes with macOS and runs on the Mac. inlaut only uses the on-device model, not Apple's Private Cloud Compute. The model answers yes or no and writes no text. Anyone who does not want that leaves the setting off; “Tidy up dictations” on its own works with fixed rules and no language model.</li>
+      <li><strong>Audio:</strong> The microphone is active during a started dictation or microphone test. Normal dictations are recognised in memory and their audio is discarded afterwards. On Windows, explicitly enabled test captures can save audio and recognised text locally; they are not uploaded automatically.</li>
+      <li><strong>Files:</strong> macOS only: “Transcribe File …” reads an audio or video file you choose and displays its transcript. The source file is unchanged. A transcript is saved as a text file only on request. The Windows beta has no file transcription.</li>
+      <li><strong>Recognised text:</strong> On Mac, inlaut inserts text through the clipboard and then restores its previous contents. Windows uses direct insertion by default. The optional clipboard mode replaces the previous contents and leaves the latest dictation there. Windows history and cloud sync are disabled for that entry; third-party clipboard managers must respect the flags themselves. The destination app determines what happens to text after insertion. The Windows app also keeps the last dictation in memory until it quits.</li>
+      <li><strong>Self-corrections (macOS only, beta, off by default):</strong> with “Resolve self-corrections”, inlaut hands single sentences of a dictation to the Apple Intelligence language model that comes with macOS and runs on the Mac. inlaut only uses the on-device model, not Apple's Private Cloud Compute. The model answers yes or no and writes no text. Anyone who does not want that leaves the setting off; “Tidy up dictations” on its own works with fixed rules and no language model.</li>
       <li><strong>Settings, replacements and snippets:</strong> stored locally in the user account's preferences. An export writes replacements and snippets to a file in the place you choose.</li>
-      <li><strong>Logs:</strong> The system log contains lengths, timings and error messages, never dictated text.</li>
+      <li><strong>Logs:</strong> Technical diagnostic logs contain metadata such as lengths, timings and errors, not dictation content. Separate optional Windows test captures can contain audio and recognised text. Local crash reports are not sent automatically.</li>
     </ul>
-    <p>There are two ways to recognise speech: the Parakeet Ultra speech model that inlaut downloads and runs on the Neural Engine, or the on-device speech recognition of macOS.</p>
+    <p>On Mac, choose Parakeet Ultra on the Neural Engine or macOS on-device recognition. Windows runs local FastConformer models on the CPU: English or German, with a restart after changing language. Mixed-language dictation with Parakeet Ultra and Apple Intelligence are available only on Mac.</p>
 
     <h2>Network connections</h2>
-    <p>inlaut makes exactly these connections:</p>
+    <p>Setup and updates use the following connections:</p>
     <ul>
-      <li><strong>Speech model (once):</strong> On first launch the app downloads about 630 MB from Hugging Face (huggingface.co and its download servers). The revision is pinned, every file is checked by SHA-256 and only used after that.</li>
-      <li><strong>Update check (daily, can be turned off):</strong> a request for <code>inlaut.de/updates/appcast.xml</code>. It reveals the IP address and the app version, nothing else. No system profile is sent.</li>
-      <li><strong>Update download (on request only):</strong> from GitHub Releases, when someone installs an update.</li>
+      <li><strong>Speech model (once):</strong> On first launch, macOS downloads about 630 MB from Hugging Face (huggingface.co and its download servers). Windows bundles German and English models and can download missing German model files. A missing English model requires reinstalling the bilingual installer. Revisions are pinned and files are checked using SHA-256.</li>
+      <li><strong>Update check (daily, can be turned off):</strong> The app can ask inlaut.de for new versions; on Mac via <code>inlaut.de/updates/appcast.xml</code>. The request reveals the IP address and, on Mac, app version. No system profile or dictation content is sent. The unsigned Windows beta cannot install updates through its built-in updater.</li>
+      <li><strong>Update download (on request only):</strong> from GitHub Releases. On Windows, download the new installer through the website and quit inlaut before installing it.</li>
     </ul>
     <p>If you choose Apple's speech recognition, you allow macOS to download language assets from Apple when needed. None of these requests contain dictations. Once the model is loaded, dictation works without a network.</p>
 
     <figure class="persona-image prose-figure"><img src="/unternehmen/kanzlei.webp" width="1168" height="880" alt="AI-generated image: A lawyer sits at his desk behind a closed door, holding a document and speaking towards his laptop" loading="lazy"><span class="ki-badge">AI<span class="ki-more">-generated</span></span><figcaption>Illustrative image, AI-generated. The person is fictional.</figcaption></figure>
 
     <h2>Data protection and GDPR</h2>
-    <p>Dictated content goes neither to the developer nor to third parties. As we understand it, dictating therefore involves no processing on your behalf and no transfer to a third country; a data processing agreement for the dictations is not needed because nobody outside your company receives them.</p>
+    <p>Speech recognition does not transmit dictations to the developer or third parties. As we understand it, this involves no processing of dictations on your behalf. Assess the destination application, clipboard and any diagnostic material you choose to share separately.</p>
     <p>You remain responsible for the content: for what is dictated and for the application the text is inserted into. Which connection data arises during download and update checks is described in the <a href="/en/privacy">privacy policy</a>.</p>
     <p>inlaut holds no privacy or security certification. What we can offer is verifiability: every statement on this page can be checked in the source code.</p>
 
     <h2>IT security</h2>
     <ul>
       <li><strong>Open source:</strong> The code is on <a href="https://github.com/tobymarks/inlaut" target="_blank" rel="noopener">GitHub</a>. You can audit it and build the app yourself.</li>
-      <li><strong>Signature:</strong> The app is signed with a Developer ID, notarized by Apple and uses the Hardened Runtime.</li>
-      <li><strong>Updates:</strong> Feed and update archives are signed; the app only installs updates with a valid signature. Updates are never installed without someone confirming.</li>
+      <li><strong>Signature:</strong> The macOS app is signed with a Developer ID, notarized by Apple and uses the Hardened Runtime. The Windows beta is unsigned; SmartScreen or organization policies can warn about or prevent installation.</li>
+      <li><strong>Updates:</strong> macOS verifies signed updates and installs them after confirmation. The unsigned Windows beta is updated manually with the new installer.</li>
       <li><strong>Model:</strong> pinned revision, a checksum per file, our own downloader with no third-party components fetched at runtime.</li>
       <li><strong>OpenSSF Best Practices:</strong> inlaut meets the “passing” level of the <a href="https://www.bestpractices.dev/projects/15409" target="_blank" rel="noopener">OpenSSF Best Practices Badge</a>. It is a self-assessment; the answer to every criterion is public there.</li>
-      <li><strong>No App Sandbox:</strong> inlaut runs outside the sandbox, like other tools that insert text into other apps.</li>
+      <li><strong>No App Sandbox:</strong> The macOS app runs outside the App Sandbox; the Windows beta is a regular desktop app without an app container.</li>
     </ul>
     <p><a href="https://www.bestpractices.dev/projects/15409" target="_blank" rel="noopener"><img src="/unternehmen/openssf-best-practices.svg" width="184" height="20" alt="OpenSSF Best Practices: passing" loading="lazy"></a></p>
     <h3>Permissions</h3>
     <ul>
-      <li><strong>Microphone:</strong> to record while dictating.</li>
-      <li><strong>Accessibility:</strong> to paste the text with ⌘V and to use the fn key as a trigger. Without this permission the text stays on the clipboard.</li>
-      <li><strong>Speech Recognition:</strong> only if Apple's speech recognition is selected.</li>
+      <li><strong>Microphone:</strong> for a started dictation or an explicitly started microphone test.</li>
+      <li><strong>Accessibility:</strong> macOS only: to paste text with ⌘V and use the fn key as a trigger. Without this permission the text stays on the clipboard.</li>
+      <li><strong>Speech Recognition:</strong> macOS only, if Apple's speech recognition is selected.</li>
     </ul>
 
     <h2>Deployment and operation</h2>
     <ul>
-      <li><strong>Requirements:</strong> Mac with Apple Silicon, macOS 26 or later, about 630 MB for the speech model per user account.</li>
-      <li><strong>Installation:</strong> as a DMG or with Homebrew: <code>brew install --cask tobymarks/tap/inlaut</code>.</li>
-      <li><strong>Identifier:</strong> bundle ID <code>de.tobymarks.inlaut</code>, for example for approvals in device management.</li>
-      <li><strong>Firewall:</strong> setup and updates only need huggingface.co, inlaut.de and github.com with their respective download servers.</li>
+      <li><strong>Requirements:</strong> Mac with Apple Silicon, macOS 26 or later, about 630 MB for the speech model per user account. Windows beta: Windows 10/11 on x64 PCs; Windows 11 acceptance testing is still pending.</li>
+      <li><strong>Installation:</strong> macOS as a DMG or with Homebrew: <code>brew install --cask tobymarks/tap/inlaut</code>. Windows uses a per-user installer with bundled models; quit inlaut before installation or an update.</li>
+      <li><strong>Identifier:</strong> macOS bundle ID <code>de.tobymarks.inlaut</code>, for example for approvals in device management.</li>
+      <li><strong>Firewall:</strong> Model downloads, update checks and downloads use huggingface.co, inlaut.de and github.com with their download servers. Optional Apple speech recognition may also download language assets from Apple.</li>
     </ul>
 
     <h2>What inlaut does not offer</h2>
@@ -188,18 +188,18 @@
       <li>no support contract, no guaranteed response times, no warranty (GPL-3.0),</li>
       <li>no central management, no admin console, no documented device management policies,</li>
       <li>no certification such as ISO 27001,</li>
-      <li>macOS: German and English on Apple silicon; Windows beta: German or English on x64 PCs,</li>
+      <li>macOS: German and English, including mixed sentences; Windows beta: one language per dictation, no file transcription or Apple Intelligence,</li>
       <li>no recording or transcription of meetings.</li>
     </ul>
     <p>If one of these is what keeps you from using it, write to us. What is needed ends up as an issue on GitHub.</p>
 
     <h2>Frequently asked questions</h2>
     <h3>Do dictations leave the computer?</h3>
-    <p>No. Recording and recognition run on your computer. inlaut operates no server that audio or text could be sent to, and it stores neither recordings nor a history of dictations.</p>
+    <p>Speech recognition stays on your computer and does not transmit dictations. Normal operation creates no audio files or dictation history on disk. Explicitly enabled Windows test captures can save audio and recognised text locally. You decide whether to share diagnostic material; the destination app and clipboard also have their own data handling rules.</p>
     <h3>Do we need a data processing agreement?</h3>
     <p>For dictating, as we understand it, no: the developer of inlaut receives no dictations and does not process them on your behalf. This is not legal advice; the assessment is up to your data protection officer.</p>
     <h3>Which network connections does inlaut make?</h3>
-    <p>Three: the one-time download of the speech model from Hugging Face, the daily request for the update feed on inlaut.de and, when you install an update, the download from GitHub. None of these requests contain dictations.</p>
+    <p>On Mac, the speech model is downloaded once from Hugging Face; the Windows beta bundles both models and can download missing German model files. A missing English model requires reinstalling the bilingual installer. Optional update checks contact inlaut.de; new versions come from GitHub. Updates to the unsigned Windows beta are installed manually through the website. These requests do not contain dictations. Diagnostic material is shared only if you explicitly submit it yourself.</p>
     <h3>Can the update check be turned off?</h3>
     <p>Yes, in the app's settings. inlaut then only looks for updates when someone explicitly asks it to.</p>
     <h3>May we use inlaut in a company for free?</h3>
@@ -209,7 +209,9 @@
 
     <h2>Contact</h2>
     <p>We answer questions from IT, data protection or information security at <a href="mailto:hallo@inlaut.de">hallo@inlaut.de</a>. Please send security reports there as well.</p>
-    <p><a class="button" data-umami-event="cta-home" data-umami-event-source="business" href="/en">More about inlaut</a></p>
+    <p class="note">Windows is an unsigned beta. The download page explains possible security warnings and manual installation.</p>
+    <p><a class="button" data-umami-event="cta-home" data-umami-event-source="business" href="/en">More about inlaut</a>
+      <a class="button button-secondary" href="/en/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Download for Windows <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a></p>
   </main>
 
   <footer>

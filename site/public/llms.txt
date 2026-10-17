@@ -1,25 +1,40 @@
 # inlaut
 
-> inlaut ist eine kostenlose Open-Source-Diktier-App für macOS und Windows (unsignierte Beta). Die veröffentlichte Mac-Version benötigt Apple Silicon und macOS 26 oder neuer. Taste halten, sprechen, loslassen: Die Spracherkennung läuft lokal auf dem Mac und fügt den Text in das aktive Textfeld jeder App ein. Auf Deutsch und Englisch, auch gemischt im selben Satz, ohne Konto, ohne Cloud, auch offline.
-> English summary: inlaut is a free, open-source (GPL-3.0) dictation app for macOS and Windows (unsigned beta, German or English). The released Mac version supports German and English. Speech recognition runs fully on-device (no cloud, no account, works offline) and supports German, English and both mixed in one sentence. English page: https://inlaut.de/en
+> inlaut ist eine kostenlose Open-Source-Diktier-App für Mac und Windows. Sprache wird lokal auf dem jeweiligen Computer erkannt, ohne Cloud-Konto. macOS 0.5.0 ist für Apple Silicon ab macOS 26 verfügbar; Windows 0.7.0-beta.9 ist eine unsignierte Beta für Windows 10/11 x64. Funktionsumfang, Modelle und Installationswege unterscheiden sich.
+> English summary: inlaut is a free, open-source dictation app for Mac and Windows. Speech recognition runs locally on each computer, without a cloud account. macOS 0.5.0 requires Apple silicon and macOS 26 or later. Windows 0.7.0-beta.9 is an unsigned beta for Windows 10/11 x64. Mixed German/English dictation, Apple speech recognition, Apple Intelligence corrections and file transcription are Mac features; Windows offers separately selected German or English dictation. Details: https://inlaut.de/en and https://inlaut.de/en/windows
 
-Windows: Native Beta für x64-PCs mit Windows 10/11, lokale Spracherkennung und Oberfläche wahlweise auf Deutsch oder Englisch, beide Modelle im Installer, Sprachwechsel nach Neustart, keine gemischten Diktate. Version 0.7.0-beta.9 ist als unsignierter EXE-Installer verfügbar. Windows SmartScreen kann warnen und einen unbekannten Herausgeber melden; Installation nur nach bewusstem Download von der offiziellen Website. Smart App Control oder Organisationsrichtlinien können die Installation blockieren. Updates werden manuell über die Website installiert; inlaut vorher beenden. Die direkte Eingabe lässt die Zwischenablage unberührt. Im optionalen Zwischenablage-Modus ersetzt das Diktat den bisherigen Inhalt und bleibt bis zum nächsten Kopieren erhalten. Die Windows-11-Abnahme steht noch aus. Leise Sprache und Wörter am Anfang oder Ende einer Aufnahme können unzuverlässig erkannt werden. Keine Apple Intelligence, Apple-Spracherkennung oder Datei-Transkription. Optionale Diagnose-Testaufnahmen können Audio/Text lokal speichern; kein automatischer Upload. Details: https://inlaut.de/windows und https://inlaut.de/en/windows
+## Gemeinsam auf Mac und Windows
 
-## Fakten zur veröffentlichten macOS-Version
+- Kostenlos, kein Abo und kein Konto. Der Quellcode steht unter GPL-3.0-or-later.
+- Aufnahme und Spracherkennung laufen lokal. Sind die Modelle installiert, funktioniert das Diktieren ohne Internet. Downloads und Update-Prüfungen benötigen Netzwerkverbindungen; dabei werden keine Diktate zur Erkennung übertragen.
+- Diktat in das aktive Textfeld, eigene Ersetzungen, Textbausteine und Sprachbefehle für Zeilen/Absätze. Die Kompatibilität des Einfügens hängt von Plattform und Zielanwendung ab.
+- Oberfläche auf Deutsch oder Englisch; Diktatsprache und Oberfläche sind unabhängig wählbar.
+- Normales Diktieren erzeugt keinen gespeicherten Audio- oder Textverlauf. Einstellungen, eigene Ersetzungen und Textbausteine werden lokal gespeichert. Die unten genannten Windows-Testaufnahmen sind eine ausdrücklich aktivierte Ausnahme.
+- Typische Nutzung: Mails, Angebote, Tickets, Commit-Messages, Notizen, Manuskripte und Prompts. Keine Smartphone-App, keine native Linux-App und keine Teamverwaltung.
 
-- Preis: kostenlos, kein Abo, kein Konto. Lizenz GPL-3.0-or-later.
-- Plattform: Mac mit Apple Silicon, macOS 26 oder neuer. Unsignierte Windows-Beta für Windows 10/11 (x64) verfügbar; Windows-11-Abnahme noch offen. Kein iPhone/iPad.
-- Sprachen: Deutsch, Englisch und beide gemischt (Einstellung Deutsch / English / Deutsch + English). Die Oberfläche gibt es auf Deutsch und Englisch.
-- Spracherkennung: Parakeet Ultra (ein Modell für Deutsch, Englisch und gemischte Sätze, rund 630 MB), läuft lokal als Core ML auf der Neural Engine des Mac. Alternativ die lokale Apple-Spracherkennung.
-- Datenschutz: Aufnahmen und Diktate werden weder übertragen noch als Verlauf gespeichert. Das Mikrofon ist nur beim Diktieren aktiv. Internet nur für den einmaligen Modell-Download und die Update-Suche.
-- Bedienung: Tastenkombination oder fn-/Globus-Taste halten und sprechen; zweimal fn tippen = freihändiges Diktat.
-- Text landet am Cursor in jeder App (Mail, Notizen, Word, Pages, Slack, Teams, Browser, KI-Chats). Braucht dafür die Bedienungshilfen-Berechtigung.
-- Eigene Ersetzungen für Fachbegriffe und Namen; Sprachbefehle „neue Zeile“ und „neuer Absatz“ bzw. „new line“ und „new paragraph“.
-- Transkribiert auch Aufnahmen: „Datei transkribieren …“ wandelt Audio- und Videodateien (MP3, M4A, WAV, MP4, MOV, WebM mit Opus) lokal in Text um, auf Wunsch mit Zeitmarken. Sprecher werden nicht unterschieden.
-- Textbausteine: Eine gesprochene Phrase fügt einen hinterlegten längeren Text ein (Signatur, Bankverbindung). Ersetzungen und Textbausteine lassen sich exportieren und importieren.
-- Diktate aufräumen (optional): lässt Fülllaute („ähm“) und versehentlich doppelt Gesagtes weg. Selbstkorrekturen auflösen (Beta, optional): aus „am Montag, nein, am Dienstag“ wird „am Dienstag“; dafür prüft das lokale Sprachmodell von Apple Intelligence jeden Fall auf dem Mac, es wird nichts gesendet. inlaut streicht nur Wörter und formuliert nicht um.
-- Mikrofon wählbar („Aufnehmen mit“); „Automatisch“ nutzt das Mikrofon des Mac, solange ein Bluetooth-Headset verbunden ist.
-- Typische Nutzung: Mails, Angebote, Tickets, Commit-Messages, Notizen, Manuskripte, Prompts für KI-Assistenten. inlaut ist ein Diktat-Werkzeug, kein Meeting-Transkriptionsdienst.
+## macOS 0.5.0
+
+- Voraussetzung: Mac mit Apple Silicon, macOS 26 oder neuer. App und DMG sind mit Developer ID signiert und von Apple notarisiert.
+- Sprachen: Deutsch, Englisch und beide gemischt in einem Diktat. Einstellung Deutsch / English / Deutsch + English.
+- Erkennung: Parakeet Ultra, rund 630 MB, als Core ML auf der Neural Engine. Das Modell wird beim ersten Start von Hugging Face geladen. Alternativ lokale Apple-Spracherkennung, gegebenenfalls mit Sprachdatei-Download von Apple.
+- Aufnahme über Tastenkombination oder fn-/Globus-Taste; Doppeltippen auf fn ermöglicht freihändiges Diktieren. Mikrofon wählbar; „Automatisch“ bevorzugt das Mac-Mikrofon, solange ein Bluetooth-Headset verbunden ist.
+- Einfügen verwendet die Zwischenablage und benötigt die Bedienungshilfen-Berechtigung. Nach automatischem Einfügen wird der vorherige Inhalt wiederhergestellt, solange nichts Neues kopiert wurde. Ist automatisches Einfügen nicht möglich, bleibt das Diktat zum manuellen Einfügen in der Zwischenablage.
+- Datei-Transkription: Audio und Video (etwa MP3, M4A, WAV, MP4, MOV und WebM mit Opus) werden lokal transkribiert, optional mit Zeitmarken. Keine Sprecherunterscheidung. Das Ergebnis wird nur gespeichert, wenn du es selbst sicherst.
+- „Diktate aufräumen“ entfernt optional Fülllaute und versehentliche Wiederholungen. „Selbstkorrekturen auflösen“ ist eine optionale Beta-Funktion: Apples lokales Sprachmodell bestätigt Korrekturen wie „am Montag, nein, am Dienstag“. Es wird kein Text in die Cloud gesendet und nicht mit KI umformuliert.
+- Signierte Updates über Sparkle: tägliche automatische Prüfung abschaltbar; Download und Installation auf Anforderung.
+
+## Windows 0.7.0-beta.9
+
+- Voraussetzung: Windows 10 oder 11 auf Intel-/AMD-PCs mit x64-Prozessor. Frühe Beta; Windows-11-Abnahme, zusätzliche Bildschirmkonfigurationen, Standby und physisches Mikrofon-Ab-/Anstecken benötigen weitere Tests. Keine native ARM-Version.
+- App und EXE-Installer sind unsigniert. SmartScreen kann warnen und einen unbekannten Herausgeber anzeigen. Smart App Control oder Organisationsrichtlinien können die Installation blockieren. Installationshinweise: https://inlaut.de/windows und https://inlaut.de/en/windows
+- Installer ohne Administratorrechte; beide Sprachmodelle und die .NET-Laufzeit sind enthalten. Updates werden manuell von der Website geladen; inlaut vor der Installation vollständig beenden. Der sichere in-App-Installer kann diese unsignierte Beta nicht aktualisieren.
+- Erkennung: getrennte deutsche und englische FastConformer-INT8-Modelle. Diktat- und Oberflächensprache lassen sich unabhängig wählen; Sprachwechsel gelten nach Neustart. Keine gemischten Diktate. Fehlt das deutsche Modell, kann die App es von Hugging Face nachladen.
+- Wählbare Taste und Aufnahme-Modi: halten, umschalten oder kombiniert mit Doppeltippen. Das Mikrofon ist während der Aufnahme oder eines ausdrücklich gestarteten Mikrofontests aktiv. Der Test speichert keine Aufnahme.
+- Direkte Eingabe lässt die Zwischenablage unberührt. Der optionale Zwischenablage-Modus ersetzt deren bisherigen Inhalt durch das Diktat und behält es bis zum nächsten Kopieren. Mehrzeilige Eingabe in manchen Office-/Browserfeldern benötigt diesen Modus; in Excel vorher die Zelle bearbeiten.
+- „Letztes Diktat“ hält den letzten erkannten Text im Arbeitsspeicher bereit. Diagnoseprotokolle enthalten technische Metadaten. Ausdrücklich aktivierte Testaufnahmen speichern Audio und Text für bis zu zehn Diktate lokal. Fehlerberichte werden lokal geprüft; eine Übergabe an GitHub erfordert Bestätigung. Kein automatischer Upload.
+- Bekannte Grenzen: Leise Sprache und Wörter am Aufnahmebeginn/-ende können verloren gehen. Zwischen getrennten Diktaten können Abstände oder die Großschreibung fehlen. Diktierte Texte prüfen. Details: https://github.com/tobymarks/inlaut/issues/20 und https://github.com/tobymarks/inlaut/issues/23
+- Keine Apple-Spracherkennung, Apple-Intelligence-Korrekturen oder Datei-Transkription. Keine zugesicherte Erkennungs- oder Funktionsgleichheit mit der Mac-App.
+- Release und Prüfsumme: https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.9
 
 ## Links
 
@@ -29,11 +44,11 @@ Windows: Native Beta für x64-PCs mit Windows 10/11, lokale Spracherkennung und 
 - [Website und Download](https://inlaut.de/): Funktionen, Anwendungsbeispiele, häufige Fragen
 - [English website](https://inlaut.de/en): features, examples, FAQ
 - [Häufige Fragen](https://inlaut.de/#fragen)
-- [Diktier-Apps für den Mac im Vergleich](https://inlaut.de/vergleich): zehn Apps nebeneinander (inlaut, Apple Diktat, Wispr Flow, Superwhisper, MacWhisper, VoiceInk, Handy, Spokenly, Typeless, Aqua Voice), mit Quellen der Anbieter
+- [Diktier-Apps für Mac und Windows im Vergleich](https://inlaut.de/vergleich): zehn Apps nebeneinander (inlaut, Apple Diktat, Wispr Flow, Superwhisper, MacWhisper, VoiceInk, Handy, Spokenly, Typeless, Aqua Voice), mit Quellen der Anbieter
 - [Dictation apps for the Mac compared](https://inlaut.de/en/compare): the same comparison in English
 - [inlaut als Alternative zu Wispr Flow](https://inlaut.de/wispr-flow-alternative): lokal statt Cloud, kostenlos, Open Source; was Wispr Flow kann und inlaut nicht
 - [inlaut as a Wispr Flow alternative](https://inlaut.de/en/wispr-flow-alternative): the same page in English
-- [inlaut als Alternative zu Superwhisper](https://inlaut.de/superwhisper-alternative): Parakeet Ultra kostenlos statt im Pro-Abo, kein Speichern von Audiodaten, Open Source
+- [inlaut als Alternative zu Superwhisper](https://inlaut.de/superwhisper-alternative): lokales Diktat, Plattformen, Funktionsunterschiede und Datenschutz
 - [inlaut as a Superwhisper alternative](https://inlaut.de/en/superwhisper-alternative): the same page in English
 - [Diktierfunktion am Mac einrichten und Fehler beheben](https://inlaut.de/diktierfunktion-mac): Anleitung zum Diktat von macOS mit Checkliste und Apple-Quellen
 - [Mac dictation: how to set it up and fix it](https://inlaut.de/en/mac-dictation): the same guide in English
@@ -42,7 +57,7 @@ Windows: Native Beta für x64-PCs mit Windows 10/11, lokale Spracherkennung und 
 - [inlaut für Kanzleien und Praxen](https://inlaut.de/kanzleien-praxen): Lokale Spracherkennung für Rechtsanwälte, Notare, Steuerberater und Ärzte ohne Cloud (§ 203 StGB, Art. 9 DSGVO, Open-Source-Zukunftssicherheit)
 - [inlaut for legal and healthcare](https://inlaut.de/en/legal-healthcare): the same page in English
 - [Quellcode auf GitHub](https://github.com/tobymarks/inlaut): README, Releases, Roadmap (Issues)
-- [Aktuelle Version herunterladen (DMG)](https://github.com/tobymarks/inlaut/releases/latest)
+- [Veröffentlichte macOS-Version 0.5.0](https://github.com/tobymarks/inlaut/releases/tag/v0.5.0)
 
 ## Optional
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>inlaut – Diktieren auf Mac und Windows: lokal und offline</title>
-  <meta name="description" content="Diktieren auf macOS und Windows (Beta): Taste halten, sprechen, loslassen, und inlaut schreibt den Text in jede App. Die Spracherkennung läuft lokal, auch ohne Internet. Ohne Konto, ohne Cloud. Kostenlos und Open Source.">
+  <meta name="description" content="Diktieren auf macOS und Windows (Beta): Taste halten, sprechen, loslassen, und inlaut schreibt den Text ins aktive Textfeld. Die Spracherkennung läuft lokal, auch ohne Internet. Ohne Konto, ohne Cloud. Kostenlos und Open Source.">
   <link rel="canonical" href="https://inlaut.de/">
   <link rel="alternate" hreflang="de" href="https://inlaut.de/">
   <link rel="alternate" hreflang="en" href="https://inlaut.de/en">
@@ -54,11 +54,35 @@
           "Text landet direkt im aktiven Textfeld jeder App",
           "Eigene Ersetzungen für Fachbegriffe und Namen",
           "Sprachbefehle „neue Zeile“ und „neuer Absatz“ (englisch: „new line“, „new paragraph“)",
-          "Keine Speicherung oder Übertragung von Aufnahmen und Diktaten"
+          "Beim normalen Diktieren kein gespeicherter Audio- oder Textverlauf und kein Upload"
         ],
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
         "author": { "@id": "https://inlaut.de/#tobias-marks" },
         "sameAs": ["https://github.com/tobymarks/inlaut", "https://www.instagram.com/inlaut.de/", "https://www.facebook.com/inlaut.de"]
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://inlaut.de/windows#app",
+        "name": "inlaut für Windows (Beta)",
+        "description": "inlaut für Windows 10/11 (x64): kostenlose Beta für lokales Diktat auf Deutsch oder Englisch. Unsignierter Download mit Hinweisen zur Windows-Warnung.",
+        "url": "https://inlaut.de/windows",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Windows 10 / Windows 11 (x64)",
+        "softwareVersion": "0.7.0-beta.9",
+        "inLanguage": [
+          "de",
+          "en"
+        ],
+        "isAccessibleForFree": true,
+        "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "downloadUrl": "https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.9/inlaut-0.7.0-beta.9-windows-x64-setup.exe",
+        "installUrl": "https://inlaut.de/windows#installation",
+        "releaseNotes": "https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.9",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR"
+        }
       }
     ]
   }
@@ -80,7 +104,7 @@
   <meta property="og:image:height" content="672">
   <meta property="og:image:alt" content="inlaut: Deine Stimme. Direkt als Text. Diktieren, lokal auf deinem Mac.">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="/style.css?v=windows-beta1">
+  <link rel="stylesheet" href="/style.css?v=windows-platforms2">
   <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
   <script src="/lang-switch.js" defer></script>
   <script type="application/ld+json" id="faq-schema">
@@ -118,7 +142,7 @@
       "name": "In welchen Apps kann ich diktieren?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "In jeder App mit Textfeld: Mail, Notizen, Pages, Word, Outlook, Teams, Slack, im Browser oder im Chatfenster eines KI-Assistenten. inlaut fügt den Text dort ein, wo dein Cursor steht. Auf dem Mac braucht es einmalig die Berechtigung unter Bedienungshilfen. Ohne sie bleibt der Text in der Zwischenablage."
+        "text": "inlaut fügt Text am Cursor ein, etwa in Mail, Notizen, Word, Outlook, im Browser oder im Chatfenster. Auf dem Mac braucht es dafür einmalig die Berechtigung unter Bedienungshilfen. Ohne sie bleibt der Text in der Zwischenablage. Probiere die Windows-Beta zuerst in deinen eigenen Apps aus: Das Einfügen ist noch nicht überall zuverlässig. Mehr zu den Beta-Grenzen."
       }
     },
     {
@@ -134,7 +158,7 @@
       "name": "Wie gut versteht inlaut Deutsch und Fachbegriffe?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Auf dem Mac: Das Standardmodell Parakeet Ultra versteht Deutsch und Englisch und kommt auch mit Fachbegriffen meist gut zurecht. Wenn ein Wort trotzdem falsch erkannt wird, legst du eine eigene Ersetzung an. Danach stimmt die Schreibweise jedes Mal."
+        "text": "Auf dem Mac arbeitet standardmäßig Parakeet Ultra; die Windows-Beta nutzt separate FastConformer-Modelle für Deutsch und Englisch. Auf beiden Plattformen kannst du wiederkehrende Erkennungsfehler mit eigenen Ersetzungen korrigieren. Prüfe Fachbegriffe, Namen und Zahlen vor der Weitergabe."
       }
     },
     {
@@ -174,7 +198,7 @@
       "name": "Kann inlaut auch Aufnahmen transkribieren?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Auf dem Mac: Ja. Über „Datei transkribieren …“ im Menü wandelt inlaut eine Audio- oder Videodatei in Text um, zum Beispiel den Mitschnitt einer Besprechung oder eine Sprachnachricht. Das Ergebnis erscheint in einem eigenen Fenster, auf Wunsch mit Zeitmarken, und lässt sich kopieren oder sichern. Auch das geschieht nur auf deinem Mac. Sprecher unterscheidet inlaut dabei nicht."
+        "text": "Auf dem Mac: Ja. Über „Datei transkribieren …“ im Menü wandelt inlaut eine Audio- oder Videodatei in Text um, zum Beispiel den Mitschnitt einer Besprechung oder eine Sprachnachricht. Das Ergebnis erscheint in einem eigenen Fenster, auf Wunsch mit Zeitmarken, und lässt sich kopieren oder sichern. Auch das geschieht nur auf deinem Mac. Sprecher unterscheidet inlaut dabei nicht. Die Windows-Beta bietet noch keine Dateitranskription."
       }
     },
     {
@@ -182,7 +206,7 @@
       "name": "Welches Mikrofon nutzt inlaut?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Auf dem Mac: Das legst du in der Einstellung „Aufnehmen mit“ fest. Mit „Automatisch“ nimmt inlaut das Mikrofon des Mac, solange ein Bluetooth-Headset verbunden ist, denn Headsets brauchen über eine Sekunde, bis sie aufnehmen. Du kannst auch die Auswahl von macOS übernehmen oder ein bestimmtes Mikrofon festlegen."
+        "text": "Auf dem Mac: Das legst du in der Einstellung „Aufnehmen mit“ fest. Mit „Automatisch“ nimmt inlaut das Mikrofon des Mac, solange ein Bluetooth-Headset verbunden ist, denn Headsets brauchen über eine Sekunde, bis sie aufnehmen. Du kannst auch die Auswahl von macOS übernehmen oder ein bestimmtes Mikrofon festlegen. Unter Windows wählst und testest du das Mikrofon ebenfalls in den Einstellungen; die automatische Bluetooth-Sonderregel gibt es dort nicht."
       }
     },
     {
@@ -190,7 +214,7 @@
       "name": "Entfernt inlaut „ähm“ und Versprecher?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Auf dem Mac: Auf Wunsch. Mit der Einstellung „Diktate aufräumen“ lässt inlaut Fülllaute wie „ähm“ weg, ebenso Wörter, die du versehentlich doppelt gesagt hast. Mit „Selbstkorrekturen auflösen (Beta)“ wird aus „am Montag, nein, am Dienstag“ einfach „am Dienstag“. Dafür prüft Apple Intelligence auf deinem Mac, ob du dich wirklich korrigiert hast; gesendet wird dabei nichts. inlaut streicht in beiden Fällen nur Wörter und formuliert nichts um. Beide Einstellungen sind zunächst ausgeschaltet."
+        "text": "Auf dem Mac: Auf Wunsch. Mit der Einstellung „Diktate aufräumen“ lässt inlaut Fülllaute wie „ähm“ weg, ebenso Wörter, die du versehentlich doppelt gesagt hast. Mit „Selbstkorrekturen auflösen (Beta)“ wird aus „am Montag, nein, am Dienstag“ einfach „am Dienstag“. Dafür prüft Apple Intelligence auf deinem Mac, ob du dich wirklich korrigiert hast; gesendet wird dabei nichts. inlaut streicht in beiden Fällen nur Wörter und formuliert nichts um. Beide Einstellungen sind zunächst ausgeschaltet und stehen in der Windows-Beta nicht zur Verfügung."
       }
     },
     {
@@ -239,17 +263,17 @@
   <main id="inhalt">
     <section class="wrap hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow">Diktieren. Lokal auf deinem Computer.</p>
+        <p class="eyebrow">Diktieren. Auf Mac und Windows.</p>
         <h1 id="hero-title">Deine Stimme.<br><span>Direkt als Text.</span></h1>
       </div>
       <div class="hero-side">
         <p class="lead">Ein Gedanke, eine Nachricht, eine ganze Seite. Taste halten, sprechen, loslassen. inlaut schreibt dort, wo dein Cursor steht.</p>
         <div class="actions">
           <a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" data-umami-event-position="hero" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Für macOS laden <span aria-hidden="true">↓</span></a>
-          <a class="button button-secondary" href="/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Windows <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a>
+          <a class="button button-secondary" href="/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Für Windows laden <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a>
           <a class="text-link" href="#so-gehts">So funktioniert’s <span aria-hidden="true">↓</span></a>
         </div>
-        <p class="availability">Kostenlos <span aria-hidden="true">·</span> macOS 0.5.0 · Apple Silicon ab macOS 26<br>Windows-Beta für Windows 10/11 (x64) · Unsignierter Download · Windows-Warnung möglich</p>
+        <p class="availability">Kostenlos <span aria-hidden="true">·</span> macOS 0.5.0 · Apple Silicon ab macOS 26<br>Windows 0.7.0-beta.9 · Windows 10/11 (x64)<br><a href="/windows#installation">Unsignierte Beta · Windows-Sicherheitswarnung möglich</a></p>
       </div>
       <figure class="interview-film hero-film">
         <div class="film-frame">
@@ -262,7 +286,7 @@
           <span class="ki-badge">KI<span class="ki-more">-generiert</span></span>
           <button type="button" class="film-play"><span class="film-play-icon" aria-hidden="true"></span>Mit Ton ansehen</button>
         </div>
-        <figcaption class="film-caption"><span class="faces" aria-hidden="true"><img src="/video/faces/mehmet.webp" width="56" height="56" alt=""><img src="/video/faces/henriette.webp" width="56" height="56" alt=""><img src="/video/faces/tarek.webp" width="56" height="56" alt=""><img src="/video/faces/hanna.webp" width="56" height="56" alt=""><img src="/video/faces/albers.webp" width="56" height="56" alt=""><img src="/video/faces/selin.webp" width="56" height="56" alt=""></span><span><strong>Sechs Berufe, eine Idee: sprechen statt tippen.</strong> Die Personen sind fiktiv, Bild und Stimme sind mit KI erzeugt.</span></figcaption>
+        <figcaption class="film-caption"><span class="faces" aria-hidden="true"><img src="/video/faces/mehmet.webp" width="56" height="56" alt=""><img src="/video/faces/henriette.webp" width="56" height="56" alt=""><img src="/video/faces/tarek.webp" width="56" height="56" alt=""><img src="/video/faces/hanna.webp" width="56" height="56" alt=""><img src="/video/faces/albers.webp" width="56" height="56" alt=""><img src="/video/faces/selin.webp" width="56" height="56" alt=""></span><span><strong>Sechs Berufe, eine Idee: sprechen statt tippen.</strong> Das Video zeigt Beispiele aus der Mac-Version. Die Personen sind fiktiv, Bild und Stimme sind mit KI erzeugt.</span></figcaption>
       </figure>
     </section>
 
@@ -271,9 +295,9 @@
     <section class="wrap features-section" aria-labelledby="features-title">
       <div class="section-heading"><h2 id="features-title">Platz für deine Gedanken.</h2><p>inlaut hält sich im Hintergrund. Und ist da, wenn du etwas zu sagen hast.</p></div>
       <div class="features">
-        <article class="feature"><h3>Dein Computer hört zu. Sonst niemand.</h3><p>Die Spracherkennung läuft auf deinem Computer. Aufnahmen und Diktate werden weder als Verlauf gespeichert noch übertragen. Das Mikrofon ist beim Diktieren oder einem ausdrücklich gestarteten Mikrofontest aktiv.</p></article>
-        <article class="feature"><h3>Deutsch, Englisch oder beides.</h3><p>Auf dem Mac versteht inlaut Deutsch und Englisch, auch gemischt, mit Parakeet Ultra oder der lokalen Apple-Spracherkennung. Die Windows-Beta bietet separate lokale Modelle für Deutsch und Englisch. Deine Sprache bleibt auf deinem Gerät.</p></article>
-        <article class="feature"><h3>Da, wo du gerade schreibst.</h3><p>Mail, Notiz oder Dokument: Dein Diktat landet direkt im aktiven Textfeld. Du bleibst in der App, in der du gerade arbeitest.</p></article>
+        <article class="feature"><h3>Dein Computer hört zu. Sonst niemand.</h3><p>Die Spracherkennung läuft auf deinem Computer. Beim normalen Diktieren werden Aufnahmen und Diktate weder als Verlauf gespeichert noch übertragen. Windows-Testaufnahmen werden nur gespeichert, wenn du das ausdrücklich einschaltest.</p></article>
+        <article class="feature"><h3>Deutsch, Englisch oder beides.</h3><p>Auf dem Mac versteht inlaut mit Parakeet Ultra Deutsch und Englisch, auch gemischt. Alternativ kannst du die lokale Apple-Spracherkennung für eine gewählte Sprache nutzen. Die Windows-Beta bietet separate lokale Modelle für Deutsch und Englisch. Deine Sprache bleibt auf deinem Gerät.</p></article>
+        <article class="feature"><h3>Da, wo du gerade schreibst.</h3><p>Mail, Notiz oder Dokument: Dein Diktat landet direkt im aktiven Textfeld. Die Windows-Beta solltest du zuerst mit deinen Apps ausprobieren; das Einfügen kann je nach Anwendung unterschiedlich funktionieren.</p></article>
         <article class="feature"><h3>Deine Wörter. Deine Schreibweise.</h3><p>Eigene Ersetzungen korrigieren wiederkehrende Fehler. Mit „neue Zeile“ und „neuer Absatz“ gibst du deinem Text schon beim Sprechen Struktur.</p></article>
       </div>
     </section>
@@ -303,12 +327,12 @@
           <span class="key-hint">Mac: <kbd>fn</kbd> halten &amp; sprechen</span>
           <div class="recording-pill"><span class="recording-dot" aria-hidden="true"></span><span>Hört zu</span><span class="level-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
         </div>
-        <figcaption>So kann dein Diktat aussehen. Beispielansicht.</figcaption>
+        <figcaption>So kann dein Diktat aussehen. Beispielansicht auf dem Mac; unter Windows nutzt du dein gewähltes Tastenkürzel.</figcaption>
       </figure>
       </div>
       <ol class="steps">
-        <li><span class="step-number" aria-hidden="true">1</span><div><h3>Auf dem Mac einrichten.</h3><p>DMG-Datei öffnen und das inlaut-Symbol auf den Ordner „Programme“ ziehen. Starte inlaut dann aus „Programme“. Die App lädt das Sprachmodell (rund 630 MB) und führt dich durch die Berechtigungen für Mikrofon und Einfügen.</p></div></li>
-        <li><span class="step-number" aria-hidden="true">2</span><div><h3>Deine Taste halten und sprechen.</h3><p>Nutze deine Tastenkombination oder richte die <kbd>🌐 fn</kbd>-Taste ein. Zweimal auf die fn-Taste tippen startet ein freihändiges Diktat.</p></div></li>
+        <li><span class="step-number" aria-hidden="true">1</span><div><h3>Auf deinem Computer einrichten.</h3><p><strong>Mac:</strong> DMG öffnen, inlaut in „Programme“ ziehen und dort starten. Die App lädt das Sprachmodell (rund 630 MB) und führt dich durch die Berechtigungen für Mikrofon und Einfügen.</p><p><strong>Windows:</strong> <a href="/windows#installation">Beta-Hinweise lesen</a> und den EXE-Installer starten. Er installiert in dein Benutzerkonto; beide Sprachmodelle sind schon enthalten. Die Beta ist unsigniert, deshalb kann Windows eine Sicherheitswarnung anzeigen.</p></div></li>
+        <li><span class="step-number" aria-hidden="true">2</span><div><h3>Deine Taste halten und sprechen.</h3><p>Wähle auf beiden Plattformen dein Tastenkürzel. Auf dem Mac kannst du auch die <kbd>🌐 fn</kbd>-Taste nutzen und mit zweimaligem Tippen freihändig diktieren. Unter Windows wählst du in den Einstellungen, ob du die Taste halten oder die Aufnahme per Tastendruck umschalten möchtest.</p></div></li>
         <li><span class="step-number" aria-hidden="true">3</span><div><h3>Loslassen. Der Text steht da.</h3><p>inlaut wandelt deine Worte in Text um und fügt ihn am Cursor ein. Beim freihändigen Diktieren beendet ein weiterer Tastendruck die Aufnahme.</p></div></li>
       </ol>
     </section>
@@ -335,19 +359,19 @@
             <figure class="persona-image"><img src="/personas/henriette.webp" width="1200" height="896" alt="KI-generiertes Bild: Henriette, Autorin, sitzt im Arbeitszimmer mit Bücherwand am Schreibtisch und spricht" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
             <h3>Henriette <span>Autorin</span></h3>
             <p>Beim Erzählen fließen die Gedanken schneller als beim Tippen. Das Manuskript soll privat bleiben.</p>
-            <p class="persona-fix"><strong>Mit inlaut:</strong> Zweimal fn, und sie diktiert freihändig ganze Passagen. Nichts davon verlässt ihren Mac.</p>
+            <p class="persona-fix"><strong>Mit inlaut:</strong> Sie startet den freihändigen Modus und diktiert ganze Passagen. Die Spracherkennung läuft auf ihrem Computer.</p>
           </article>
           <article class="persona">
             <figure class="persona-image"><img src="/personas/selin.webp" width="1200" height="896" alt="KI-generiertes Bild: Selin, Business-Coach, sitzt nach einer Sitzung im hellen Coaching-Raum und spricht in Richtung ihres Laptops" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
             <h3>Selin <span>Business-Coach</span></h3>
             <p>Gesprächsnotizen müssen direkt nach der Sitzung festgehalten werden. Und sie sind vertraulich.</p>
-            <p class="persona-fix"><strong>Mit inlaut:</strong> Sie spricht ihre Notizen in jede App. Aufnahmen werden weder gespeichert noch übertragen.</p>
+            <p class="persona-fix"><strong>Mit inlaut:</strong> Sie spricht ihre Notizen ins Textfeld. Beim normalen Diktieren werden Aufnahmen weder gespeichert noch übertragen.</p>
           </article>
           <article class="persona">
             <figure class="persona-image"><img src="/personas/valerie.webp" width="1200" height="896" alt="KI-generiertes Bild: Valerie, im Vertrieb viel unterwegs, sitzt am Flughafen-Gate mit dem Laptop auf den Knien und spricht leise" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
             <h3>Valerie <span>Vertrieb, viel unterwegs</span></h3>
             <p>Mails und Besuchsberichte am Gate, im Zug oder im Flugzeug. Oft ohne Netz.</p>
-            <p class="persona-fix"><strong>Mit inlaut:</strong> Nach dem einmaligen Laden des Sprachmodells funktioniert inlaut ohne Internet.</p>
+            <p class="persona-fix"><strong>Mit inlaut:</strong> Nach der Einrichtung funktioniert inlaut ohne Internet. Unter Windows sind die Sprachmodelle schon im Installer enthalten.</p>
           </article>
           <article class="persona">
             <figure class="persona-image"><img src="/personas/lukas.webp" width="1200" height="896" alt="KI-generiertes Bild: Lukas, Werkstudent, sitzt im Coworking-Space am langen Holztisch und spricht zu seinem Laptop" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
@@ -365,7 +389,7 @@
             <figure class="persona-image"><img src="/personas/albers.webp" width="1200" height="896" alt="KI-generiertes Bild: Herr Albers, Grundschullehrer, sitzt abends am Küchentisch neben einem Stapel Hefte und spricht in Richtung seines Laptops" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
             <h3>Herr Albers <span>Grundschullehrer</span></h3>
             <p>Sonntagabend, zweiundzwanzig Zeugnisse. Jede Bemerkung will noch getippt werden.</p>
-            <p class="persona-fix"><strong>Mit inlaut:</strong> Er spricht die Bemerkungen ein, „neuer Absatz“ gliedert sie. Das Mikrofon ist nur beim Diktieren an.</p>
+            <p class="persona-fix"><strong>Mit inlaut:</strong> Er spricht die Bemerkungen ein, „neuer Absatz“ gliedert sie. Er startet die Aufnahme bewusst mit seinem Tastenkürzel.</p>
           </article>
           <article class="persona">
             <figure class="persona-image"><img src="/personas/ruth.webp" width="1200" height="896" alt="KI-generiertes Bild: Ruth, Pfarrerin, sitzt im Pfarrbüro am Fenster und spricht lächelnd in Richtung ihres Laptops" loading="lazy"><span class="ki-badge">KI<span class="ki-more">-generiert</span></span></figure>
@@ -383,16 +407,16 @@
         <details><summary>Ist inlaut kostenlos?</summary><p>Ja. inlaut ist kostenlos, ohne Abo, ohne Konto und ohne Werbung. Der Quellcode ist Open Source unter der Lizenz GPL-3.0 und liegt auf GitHub.</p></details>
         <details><summary>Funktioniert das Diktieren ohne Internet?</summary><p>Ja. Die Spracherkennung läuft auf deinem Computer. Auf dem Mac lädt inlaut das Sprachmodell beim ersten Start (rund 630 MB); bei der Windows-Beta sind beide Sprachmodelle im Installer enthalten. Für Downloads und Update-Prüfungen ist Internet nötig, fürs Diktieren nicht.</p></details>
         <details><summary>Werden meine Aufnahmen in eine Cloud geschickt?</summary><p>Nein. Deine Stimme wird auf deinem Computer in Text umgewandelt. Beim normalen Diktieren werden Aufnahmen und Diktate weder übertragen noch als Verlauf gespeichert. Optionale Windows-Testaufnahmen werden nur nach ausdrücklichem Einschalten lokal gespeichert. Das Mikrofon ist beim Diktieren oder einem ausdrücklich gestarteten Mikrofontest aktiv.</p></details>
-        <details><summary>In welchen Apps kann ich diktieren?</summary><p>In jeder App mit Textfeld: Mail, Notizen, Pages, Word, Outlook, Teams, Slack, im Browser oder im Chatfenster eines KI-Assistenten. inlaut fügt den Text dort ein, wo dein Cursor steht. Auf dem Mac braucht es einmalig die Berechtigung unter Bedienungshilfen. Ohne sie bleibt der Text in der Zwischenablage.</p></details>
+        <details><summary>In welchen Apps kann ich diktieren?</summary><p>inlaut fügt Text am Cursor ein, etwa in Mail, Notizen, Word, Outlook, im Browser oder im Chatfenster. Auf dem Mac braucht es dafür einmalig die Berechtigung unter Bedienungshilfen. Ohne sie bleibt der Text in der Zwischenablage. Probiere die Windows-Beta zuerst in deinen eigenen Apps aus: Das Einfügen ist noch nicht überall zuverlässig. <a href="/windows">Mehr zu den Beta-Grenzen</a>.</p></details>
         <details><summary>Wie starte ich ein Diktat?</summary><p>Auf dem Mac: Halte deine Tastenkombination oder die <kbd>🌐 fn</kbd>-Taste gedrückt, sprich und lass los. Für längere Texte tippst du zweimal auf die fn-Taste und diktierst freihändig. Ein weiterer Tastendruck beendet die Aufnahme. Unter Windows wählst du in den Einstellungen ein Tastenkürzel und den Aufnahme-Modus.</p></details>
-        <details><summary>Wie gut versteht inlaut Deutsch und Fachbegriffe?</summary><p>Auf dem Mac: Das Standardmodell Parakeet Ultra versteht Deutsch und Englisch und kommt auch mit Fachbegriffen meist gut zurecht. Wenn ein Wort trotzdem falsch erkannt wird, legst du eine eigene Ersetzung an. Danach stimmt die Schreibweise jedes Mal.</p></details>
+        <details><summary>Wie gut versteht inlaut Deutsch und Fachbegriffe?</summary><p>Auf dem Mac arbeitet standardmäßig Parakeet Ultra; die Windows-Beta nutzt separate FastConformer-Modelle für Deutsch und Englisch. Auf beiden Plattformen kannst du wiederkehrende Erkennungsfehler mit eigenen Ersetzungen korrigieren. Prüfe Fachbegriffe, Namen und Zahlen vor der Weitergabe.</p></details>
         <details><summary>Kann ich Zeilenumbrüche und Absätze diktieren?</summary><p>Ja. Sag „neue Zeile“ oder „neuer Absatz“, und inlaut setzt den Umbruch an der Stelle.</p></details>
         <details><summary>Was ist der Unterschied zur Diktierfunktion von macOS?</summary><p>macOS bringt eine eigene Diktierfunktion mit. inlaut ist eine Alternative mit einem eigenen Sprachmodell für Deutsch und Englisch, eigenen Ersetzungen, Befehlen für Zeilen und Absätze und einer frei wählbaren Taste. Wie du die Bordmittel aktivierst, liest du in unserer Anleitung zur <a href="/diktierfunktion-mac">Diktierfunktion am Mac</a>, oder sieh dir unseren direkten <a href="/vergleich">Vergleich der Diktier-Apps</a> an.</p></details>
         <details><summary>Welche Computer unterstützt inlaut?</summary><p>Mac: Apple Silicon (M1 oder neuer), macOS 26 oder neuer. Windows-Beta: Windows 10 oder 11 auf einem Intel- oder AMD-PC mit x64-Prozessor. Der Windows-Installer ist nicht signiert; die Windows-11-Abnahme ist noch offen. Eine native Version für Windows ARM, Linux, iPhone oder iPad gibt es nicht.</p></details>
         <details><summary>Welche Sprachen unterstützt inlaut?</summary><p>Auf dem Mac Deutsch und Englisch, auch gemischt im selben Satz. Die Windows-Beta bietet Deutsch oder Englisch für Diktat und Oberfläche; die Sprache wird in den Einstellungen gewählt. Gemischte Diktate werden dort nicht unterstützt. Beide Versionen haben noch nicht denselben Funktionsumfang.</p></details>
-        <details><summary>Kann inlaut auch Aufnahmen transkribieren?</summary><p>Auf dem Mac: Ja. Über „Datei transkribieren …“ im Menü wandelt inlaut eine Audio- oder Videodatei in Text um, zum Beispiel den Mitschnitt einer Besprechung oder eine Sprachnachricht. Das Ergebnis erscheint in einem eigenen Fenster, auf Wunsch mit Zeitmarken, und lässt sich kopieren oder sichern. Auch das geschieht nur auf deinem Mac. Sprecher unterscheidet inlaut dabei nicht.</p></details>
-        <details><summary>Welches Mikrofon nutzt inlaut?</summary><p>Auf dem Mac: Das legst du in der Einstellung „Aufnehmen mit“ fest. Mit „Automatisch“ nimmt inlaut das Mikrofon des Mac, solange ein Bluetooth-Headset verbunden ist, denn Headsets brauchen über eine Sekunde, bis sie aufnehmen. Du kannst auch die Auswahl von macOS übernehmen oder ein bestimmtes Mikrofon festlegen.</p></details>
-        <details><summary>Entfernt inlaut „ähm“ und Versprecher?</summary><p>Auf dem Mac: Auf Wunsch. Mit der Einstellung „Diktate aufräumen“ lässt inlaut Fülllaute wie „ähm“ weg, ebenso Wörter, die du versehentlich doppelt gesagt hast. Mit „Selbstkorrekturen auflösen (Beta)“ wird aus „am Montag, nein, am Dienstag“ einfach „am Dienstag“. Dafür prüft Apple Intelligence auf deinem Mac, ob du dich wirklich korrigiert hast; gesendet wird dabei nichts. inlaut streicht in beiden Fällen nur Wörter und formuliert nichts um. Beide Einstellungen sind zunächst ausgeschaltet.</p></details>
+        <details><summary>Kann inlaut auch Aufnahmen transkribieren?</summary><p>Auf dem Mac: Ja. Über „Datei transkribieren …“ im Menü wandelt inlaut eine Audio- oder Videodatei in Text um, zum Beispiel den Mitschnitt einer Besprechung oder eine Sprachnachricht. Das Ergebnis erscheint in einem eigenen Fenster, auf Wunsch mit Zeitmarken, und lässt sich kopieren oder sichern. Auch das geschieht nur auf deinem Mac. Sprecher unterscheidet inlaut dabei nicht. Die Windows-Beta bietet noch keine Dateitranskription.</p></details>
+        <details><summary>Welches Mikrofon nutzt inlaut?</summary><p>Auf dem Mac: Das legst du in der Einstellung „Aufnehmen mit“ fest. Mit „Automatisch“ nimmt inlaut das Mikrofon des Mac, solange ein Bluetooth-Headset verbunden ist, denn Headsets brauchen über eine Sekunde, bis sie aufnehmen. Du kannst auch die Auswahl von macOS übernehmen oder ein bestimmtes Mikrofon festlegen. Unter Windows wählst und testest du das Mikrofon ebenfalls in den Einstellungen; die automatische Bluetooth-Sonderregel gibt es dort nicht.</p></details>
+        <details><summary>Entfernt inlaut „ähm“ und Versprecher?</summary><p>Auf dem Mac: Auf Wunsch. Mit der Einstellung „Diktate aufräumen“ lässt inlaut Fülllaute wie „ähm“ weg, ebenso Wörter, die du versehentlich doppelt gesagt hast. Mit „Selbstkorrekturen auflösen (Beta)“ wird aus „am Montag, nein, am Dienstag“ einfach „am Dienstag“. Dafür prüft Apple Intelligence auf deinem Mac, ob du dich wirklich korrigiert hast; gesendet wird dabei nichts. inlaut streicht in beiden Fällen nur Wörter und formuliert nichts um. Beide Einstellungen sind zunächst ausgeschaltet und stehen in der Windows-Beta nicht zur Verfügung.</p></details>
         <details><summary>Kann ich Textbausteine einfügen?</summary><p>Ja. Unter „Textbausteine“ legst du längere Texte ab, die du immer wieder brauchst, etwa eine Signatur oder die Bankverbindung. Sag die zugehörige Phrase für sich allein, und inlaut schreibt den Text. Ersetzungen und Textbausteine lassen sich gemeinsam exportieren und auf einem anderen Computer mit inlaut importieren.</p></details>
         <details><summary>Gibt es inlaut für Windows, iPhone oder iPad?</summary><p>Die native Windows-Beta ist als unsignierter Download verfügbar. Hinweise zur Windows-Sicherheitswarnung und Voraussetzungen stehen auf der <a href="/windows">Windows-Beta-Seite</a>. Für iPhone und iPad gibt es inlaut nicht.</p></details>
         <details><summary>Wie installiere ich inlaut?</summary><p>Auf dem Mac öffnest du die DMG-Datei und ziehst inlaut in den Ordner „Programme“. Der erste Start führt dich durch Modell-Download und Berechtigungen. Die Windows-Beta nutzt einen EXE-Installer für dein Benutzerkonto. Der Installer ist nicht signiert; Windows kann bei der Installation eine Sicherheitswarnung anzeigen.</p></details>
@@ -401,7 +425,7 @@
 
     <section class="wrap project" aria-labelledby="project-title">
       <div class="project-inner maker"><div class="maker-mark" aria-hidden="true"><img src="/brand/app-icon.png" width="80" height="80" alt="" loading="lazy"></div><div><p class="eyebrow">Von Mensch zu Mensch</p><h2 id="project-title">Hallo, ich bin Tobias.</h2><p>Hinter inlaut steht kein Konzern, sondern ich. inlaut ist mein privates Projekt: kostenlos und Open Source, ohne Werbung und ohne Konto.</p><p>Ob Lob, ein Fehler oder ein Wunsch: Schreib mir einfach. Am liebsten an <a href="mailto:hallo@inlaut.de">hallo@inlaut.de</a> oder auf GitHub.</p><p class="maker-sig">Tobias Marks, macht inlaut</p><div class="actions"><a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" data-umami-event-position="maker" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Für macOS laden <span aria-hidden="true">↓</span></a>
-          <a class="button button-secondary" href="/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Windows <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a><a class="text-link" data-umami-event="github-click" data-umami-event-position="maker" href="https://github.com/tobymarks/inlaut" target="_blank" rel="noopener">inlaut auf GitHub <span aria-hidden="true">↗</span></a></div></div></div>
+          <a class="button button-secondary" href="/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Für Windows laden <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a><a class="text-link" data-umami-event="github-click" data-umami-event-position="maker" href="https://github.com/tobymarks/inlaut" target="_blank" rel="noopener">inlaut auf GitHub <span aria-hidden="true">↗</span></a></div><p class="download-note">Mac: stabile Version · Windows: unsignierte Beta, Sicherheitswarnung möglich. <a href="/windows">Voraussetzungen und Hinweise</a>.</p></div></div>
     </section>
   </main>
 

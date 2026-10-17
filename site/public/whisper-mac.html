@@ -15,7 +15,7 @@
   <meta name="theme-color" content="#F6F7F4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0C201F" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/style.css?v=cmp1">
+  <link rel="stylesheet" href="/style.css?v=windows-platforms2">
   <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
   <script src="/lang-switch.js" defer></script>
   <script type="application/ld+json">
@@ -31,7 +31,7 @@
       "description": "Wie du OpenAI Whisper auf dem Mac lokal und ohne Cloud nutzt: Möglichkeiten über whisper.cpp, Python und moderne Core-ML-Alternativen für verzögerungsfreies Diktieren.",
       "inLanguage": "de",
       "datePublished": "2026-10-14",
-      "dateModified": "2026-10-14",
+      "dateModified": "2026-10-18",
       "image": "https://inlaut.de/og-image.png",
       "author": {
         "@type": "Person",
@@ -88,7 +88,7 @@
           "name": "Was ist der Unterschied zwischen Whisper und inlaut?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Whisper ist ein vielseitiges Grundlagenmodell für Transkriptionen in über 90 Sprachen. Die macOS-Version von inlaut ist eine spezialisierte Diktier-App, die auf Parakeet TDT mit Core ML auf der Apple Neural Engine aufbaut. inlaut transkribiert zehnmal schneller, belegt im Leerlauf nur 50 MB RAM, tippt den Text direkt an die Cursor-Position und verhindert Halluzinationen bei Stille."
+            "text": "Whisper ist ein vielseitiges Modell für Transkriptionen in über 90 Sprachen. inlaut ist eine Diktier-App für Mac und Windows. Auf dem Mac nutzt sie Parakeet TDT mit Core ML und unterstützt Deutsch und Englisch gemischt. Die Windows-Beta verwendet getrennte lokale Modelle für Deutsch und Englisch; gemischtsprachiges Diktat und Datei-Transkription bietet sie nicht."
           }
         }
       ]
@@ -143,7 +143,7 @@ make -j
 
     <h2>Die moderne Alternative: Streaming mit Parakeet TDT auf Apple Silicon</h2>
     <p>In den letzten Jahren hat sich im Bereich der Spracherkennung für Desktop-Betriebssysteme ein Architekturwechsel vollzogen. Anstelle schwerfälliger Encoder-Decoder-Netze setzen moderne Diktierwerkzeuge auf <strong>Fast Conformer Transducer</strong> (wie NVIDIA Parakeet TDT).</p>
-    <p>In unserer App <strong>inlaut</strong> kommt ein optimiertes Parakeet-Ultra-Modell zum Einsatz, das über die Open-Source-Bibliothek <em>FluidAudio</em> nativ auf der Apple Neural Engine läuft:</p>
+    <p>In der macOS-Version unserer App <strong>inlaut</strong> kommt ein optimiertes Parakeet-Ultra-Modell zum Einsatz, das über die Open-Source-Bibliothek <em>FluidAudio</em> nativ auf der Apple Neural Engine läuft:</p>
     <ul>
       <li><strong>Echtzeit-Geschwindigkeit:</strong> 10 Sekunden Sprache werden auf einem Apple-Silicon-Mac in weniger als 0,1 Sekunden transkribiert. Der Text erscheint unmittelbar nach dem Loslassen der Taste.</li>
       <li><strong>Leichtgewicht im Leerlauf:</strong> Die App benötigt im Leerlauf lediglich 50 bis 60 MB RAM (gegenüber 1,5 bis 2,5 GB bei Whisper-Apps).</li>
@@ -160,7 +160,7 @@ make -j
             <th scope="col">Kriterium</th>
             <th scope="col">OpenAI Whisper (Standard)</th>
             <th scope="col">whisper.cpp (Core ML)</th>
-            <th scope="col">inlaut (Parakeet Ultra)</th>
+            <th scope="col">inlaut für Mac (Parakeet Ultra)</th>
             <th scope="col">macOS Diktierfunktion</th>
           </tr>
         </thead>
@@ -225,8 +225,10 @@ make -j
       <li>Beim ersten Start lädt inlaut einmalig das optimierte Sprachmodell (~630 MB) herunter. Danach arbeitet die App dauerhaft komplett offline.</li>
       <li>Halte deine gewählte Taste (z. B. <kbd>🌐 fn</kbd> oder eine Tastenkombination) gedrückt, sprich deinen Text und lass die Taste los – dein Text wird sofort eingefügt.</li>
     </ol>
-    <p><a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" data-umami-event-position="guide-whisper" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>inlaut für macOS laden <span aria-hidden="true">↓</span></a>
-          <a class="button button-secondary" href="/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Windows <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a></p>
+    <p>inlaut gibt es auch für <strong>Windows 10/11 (x64)</strong> als unsignierte Beta. Du wählst Deutsch oder Englisch getrennt; beide Modelle sind enthalten. Die oben genannten Mac-Messwerte und Core-ML-Funktionen gelten nicht für Windows. Windows kann eine Sicherheitswarnung anzeigen, Updates installierst du manuell. Einzelheiten stehen auf der <a href="/windows">Windows-Downloadseite</a>.</p>
+    <div class="actions"><a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" data-umami-event-position="guide-whisper" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Für macOS laden <span aria-hidden="true">↓</span></a>
+      <a class="button button-secondary" data-umami-event="cta-windows" data-umami-event-source="guide-whisper" href="/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Für Windows laden <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a></div>
+    <p class="note">Windows-Beta · Unsigniert, Windows-Warnung möglich.</p>
 
     <h2>Häufige Fragen zu Whisper am Mac</h2>
     <h3>Läuft OpenAI Whisper komplett offline auf dem Mac?</h3>
@@ -242,12 +244,12 @@ make -j
     <p>Whisper läuft grundsätzlich auch auf älteren Intel-Macs über die CPU, arbeitet dort aber sehr langsam und erzeugt viel Hitze. Auf Apple Silicon profitiert Whisper von der Neural Engine und Metal über Core ML, was die Berechnung deutlich beschleunigt.</p>
 
     <h3>Was ist der Unterschied zwischen Whisper und inlaut?</h3>
-    <p>Whisper ist ein vielseitiges Grundlagenmodell für Transkriptionen in über 90 Sprachen. Die macOS-Version von inlaut ist eine spezialisierte Diktier-App, die auf Parakeet TDT mit Core ML auf der Apple Neural Engine aufbaut. inlaut transkribiert zehnmal schneller, belegt im Leerlauf nur 50 MB RAM, tippt den Text direkt an die Cursor-Position und verhindert Halluzinationen bei Stille.</p>
+    <p>Whisper ist ein vielseitiges Modell für Transkriptionen in über 90 Sprachen. inlaut ist eine Diktier-App für Mac und Windows. Auf dem Mac nutzt sie Parakeet TDT mit Core ML und unterstützt Deutsch und Englisch gemischt. Die Windows-Beta verwendet getrennte lokale Modelle für Deutsch und Englisch; gemischtsprachiges Diktat und Datei-Transkription bietet sie nicht.</p>
 
     <h2>Weiterführende Vergleiche und Anleitungen</h2>
     <ul>
       <li><a href="/diktierfunktion-mac">Anleitung: Diktierfunktion am Mac einrichten und Fehler beheben</a></li>
-      <li><a href="/vergleich">Übersicht: Alle Mac-Diktier-Apps im direkten Vergleich</a></li>
+      <li><a href="/vergleich">Übersicht: Diktier-Apps für Mac und Windows im Vergleich</a></li>
       <li><a href="/wispr-flow-alternative">Wispr Flow Alternative: Diktieren ohne Cloud und ohne Abonnement</a></li>
       <li><a href="/unternehmen">Datenschutz & DSGVO: Offline-Diktat für Kanzleien und Unternehmen</a></li>
     </ul>

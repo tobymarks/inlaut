@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Superwhisper Alternative: Local, Zero-Latency, Open Source – inlaut</title>
-  <meta name="description" content="inlaut is a free, open-source alternative to Superwhisper for Mac: fast on-device Parakeet Transducer without subscriptions, and zero audio history. Honest comparison with sources.">
+  <title>Superwhisper alternative for Mac and Windows – inlaut</title>
+  <meta name="description" content="inlaut as a free, open-source Superwhisper alternative: local recognition on Mac and Windows (unsigned beta). Comparison of models, privacy, pricing and platform limits.">
   <link rel="canonical" href="https://inlaut.de/en/superwhisper-alternative">
   <link rel="alternate" hreflang="de" href="https://inlaut.de/superwhisper-alternative">
   <link rel="alternate" hreflang="en" href="https://inlaut.de/en/superwhisper-alternative">
@@ -15,7 +15,7 @@
   <meta name="theme-color" content="#F6F7F4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0C201F" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/style.css?v=cmp1">
+  <link rel="stylesheet" href="/style.css?v=windows-platforms2">
   <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
   <script src="/lang-switch.js" defer></script>
   <script type="application/ld+json">
@@ -27,11 +27,11 @@
       "@id": "https://inlaut.de/en/superwhisper-alternative#article",
       "url": "https://inlaut.de/en/superwhisper-alternative",
       "mainEntityOfPage": "https://inlaut.de/en/superwhisper-alternative",
-      "headline": "Superwhisper Alternative for Mac",
-      "description": "inlaut is a free, open-source alternative to Superwhisper for Mac: fast on-device Parakeet Transducer without subscriptions, and zero audio history. Honest comparison with sources.",
+      "headline": "Superwhisper Alternative for Mac and Windows",
+      "description": "inlaut as a free, open-source Superwhisper alternative: local recognition on Mac and Windows (unsigned beta). Comparison of models, privacy, pricing and platform limits.",
       "inLanguage": "en",
       "datePublished": "2026-10-14",
-      "dateModified": "2026-10-14",
+      "dateModified": "2026-10-18",
       "image": "https://inlaut.de/og-image-en.png",
       "author": {
         "@type": "Person",
@@ -67,7 +67,7 @@
           "name": "Why is inlaut faster than Superwhisper Free?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Superwhisper Free relies on local OpenAI Whisper models, which process audio in chunks and incur 1 to 3 seconds of decoding delay when dictating. inlaut uses the streaming Parakeet Ultra FastConformer model natively accelerated on the Apple Neural Engine, typing text under 0.1 seconds after releasing the key."
+            "text": "On Mac, inlaut uses Parakeet Ultra on the Apple Neural Engine by default. Superwhisper Free uses Whisper models with a different recognition approach. Actual delay depends on hardware, model and dictation length; Mac figures are not a promise for the Windows beta."
           }
         },
         {
@@ -75,7 +75,7 @@
           "name": "Does inlaut store recordings or an audio history?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No. inlaut never stores audio recordings or transcription history. Superwhisper saves recordings locally on disk indefinitely by default (“Keep recordings for: Forever”) unless changed manually in settings."
+            "text": "Normal dictation creates no audio files or dictation history on disk. Windows keeps the last dictation in memory; optional clipboard mode also leaves it on the clipboard. Explicitly enabled Windows test captures can save audio and recognised text locally. There is no automatic upload. Superwhisper stores recordings indefinitely by default unless the setting is changed."
           }
         },
         {
@@ -91,7 +91,7 @@
           "name": "Does inlaut support English and German in the same sentence?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. inlaut's “German + English” mode fluently handles bilingual sentences with technical terms without requiring manual language switching."
+            "text": "Yes, on Mac with Parakeet Ultra in “German + English” mode. On Windows, select English or German and restart after changing language. The Windows beta does not support mixed-language dictation."
           }
         }
       ]
@@ -108,16 +108,16 @@
   </header>
 
   <main class="wrap prose prose-wide" id="content">
-    <h1>Superwhisper Alternative for Mac</h1>
-    <p class="lead">inlaut is a free, open-source dictation app for macOS and Windows (unsigned beta). Both apps type speech straight into any active text field. The key difference: inlaut uses the modern Parakeet Fast-Conformer model by default, does not lock real-time performance behind subscriptions, and does not maintain an audio history on disk.</p>
+    <h1>Superwhisper Alternative for Mac and Windows</h1>
+    <p class="lead">inlaut is a free, open-source dictation app for macOS and Windows (unsigned beta). Recognition runs locally: Parakeet Ultra on Mac, separate FastConformer models for English or German on Windows. This comparison covers both platforms and marks Mac features separately.</p>
     <p class="note">As of October 14, 2026. Authored by the creator of inlaut. Statements regarding Superwhisper are verified from vendor documentation and referenced below.</p>
 
     <h2>At a Glance</h2>
     <ul>
-      <li><strong>Parakeet included for free:</strong> In Superwhisper, fast transducer models like Parakeet require the paid Pro plan. inlaut ships Parakeet Ultra by default at zero cost.</li>
+      <li><strong>Parakeet included for free:</strong> In Superwhisper, fast transducer models like Parakeet require the paid Pro plan. inlaut includes Parakeet Ultra on Mac for free; its Windows models are free too.</li>
       <li><strong>No subscription, no lifetime paywall:</strong> inlaut is 100% free software (GPL-3.0). Superwhisper Pro is priced at $8.49/month, $84.99/year, or $249.99 for a lifetime license.</li>
-      <li><strong>Zero audio logs:</strong> Superwhisper stores recordings locally indefinitely by default. inlaut keeps no audio files and no transcription history.</li>
-      <li><strong>Lightweight footprint:</strong> inlaut idles at only ~50–60&nbsp;MB RAM in your menu bar.</li>
+      <li><strong>Zero audio logs:</strong> Superwhisper stores recordings locally indefinitely by default. Normal inlaut dictation creates no audio files or dictation history on disk. Explicitly enabled Windows test captures are an exception.</li>
+      <li><strong>Lightweight footprint:</strong> The Mac app idles at around 50–60&nbsp;MB RAM in the menu bar. This figure does not apply to the Windows beta.</li>
     </ul>
 
     <h2>inlaut and Superwhisper Compared</h2>
@@ -126,16 +126,16 @@
         <caption class="visually-hidden">Comparison of inlaut and Superwhisper</caption>
         <thead><tr><th scope="col">Feature</th><th scope="col">inlaut</th><th scope="col">Superwhisper</th></tr></thead>
         <tbody>
-          <tr><th scope="row">Where is speech recognized?</th><td>On-device on the Apple Neural Engine</td><td>On-device (Free: Whisper; Pro: also Parakeet); Cloud optional (Pro)</td></tr>
-          <tr><th scope="row">Dictation latency</th><td><strong>&lt; 0.1&nbsp;s</strong> (immediate upon key release)</td><td>1.5–3.0&nbsp;s in Free (Whisper); fast Parakeet requires Pro</td></tr>
+          <tr><th scope="row">Where is speech recognized?</th><td>Locally: Apple Neural Engine on Mac, CPU on Windows</td><td>On-device (Free: Whisper; Pro: also Parakeet); Cloud optional (Pro)</td></tr>
+          <tr><th scope="row">Dictation latency</th><td>Mac: short delay after key release, depending on hardware and dictation length. No equivalent Windows claim</td><td>1.5–3.0&nbsp;s in Free (Whisper); fast Parakeet requires Pro</td></tr>
           <tr><th scope="row">Pricing</th><td>Free (GPL-3.0)</td><td>Free (Whisper only, max 2 modes); Pro $8.49/mo, $84.99/yr or $249.99 lifetime</td></tr>
-          <tr><th scope="row">Audio retention / History</th><td><strong>Zero history</strong> (neither audio nor text is retained)</td><td>Stores recordings forever by default (“Keep recordings for: Forever”)</td></tr>
+          <tr><th scope="row">Audio retention / History</th><td>No dictation history on disk in normal use; Windows test captures only when enabled</td><td>Stores recordings forever by default (“Keep recordings for: Forever”)</td></tr>
           <tr><th scope="row">Source code & License</th><td>Open Source (GPL-3.0) on GitHub</td><td>Proprietary (SuperUltra, Inc., Delaware/USA)</td></tr>
-          <tr><th scope="row">Memory footprint</th><td>~50–60&nbsp;MB idle</td><td>Model-dependent (varies by loaded Whisper model)</td></tr>
-          <tr><th scope="row">System-wide dictation</th><td>Yes (hold key or hands-free toggle)</td><td>Yes</td></tr>
+          <tr><th scope="row">Memory footprint</th><td>Mac: ~50–60&nbsp;MB idle; Windows differs</td><td>Model-dependent (varies by loaded Whisper model)</td></tr>
+          <tr><th scope="row">System-wide dictation</th><td>Insert into text fields with a shortcut; test Windows compatibility in your own apps</td><td>Yes</td></tr>
           <tr><th scope="row">Platforms</th><td>Mac with Apple Silicon, macOS 26+<br>Windows 10/11 (x64): unsigned beta</td><td>macOS (13.3 or 14+), Windows, iOS, Android</td></tr>
-          <tr><th scope="row">Languages</th><td>English or German; mixed in one sentence on Mac only</td><td>Over 100 languages (depending on model)</td></tr>
-          <tr><th scope="row">AI text rewriting</th><td>Optional filler word & self-correction filters; no LLM rewrites</td><td>Yes (Pro: custom AI modes, context, prompt templates)</td></tr>
+          <tr><th scope="row">Languages</th><td>English or German; mixed in one sentence with Parakeet Ultra on Mac only</td><td>Over 100 languages (depending on model)</td></tr>
+          <tr><th scope="row">AI text rewriting</th><td>Mac: optional filler-word and self-correction filters. No free-form rewriting; Windows has no Apple Intelligence</td><td>Yes (Pro: custom AI modes, context, prompt templates)</td></tr>
           <tr><th scope="row">Developer</th><td>Tobias Marks, Germany</td><td>SuperUltra, Inc., USA</td></tr>
         </tbody>
       </table>
@@ -147,43 +147,44 @@
     <ul>
       <li><strong>Custom AI Modes & System Prompts:</strong> Superwhisper Pro lets you define prompts that summarize notes, format code snippets, or rewrite emails.</li>
       <li><strong>Multiplatform:</strong> Superwhisper supports Windows, iOS, and Android alongside macOS. inlaut supports Apple silicon Macs; an unsigned Windows beta for x64 PCs is available with German or English support.</li>
-      <li><strong>File Transcription & Meeting Mode:</strong> Superwhisper Pro includes integrated features for transcribing pre-recorded audio files and meetings.</li>
+      <li><strong>File Transcription & Meeting Mode:</strong> Superwhisper Pro includes file and meeting transcription features. inlaut can transcribe individual audio or video files on Mac, but has no meeting mode. File transcription is unavailable in the Windows beta.</li>
       <li><strong>Over 100 Languages:</strong> With various Whisper model options, Superwhisper supports a wide global language spectrum.</li>
     </ul>
 
     <h2>Why Mac Users Choose inlaut</h2>
-    <p><strong>1. Parakeet without a paywall:</strong> To get fast, near-zero latency transcription in Superwhisper, users must subscribe to Pro ($8.49/mo). Its free tier is limited to Whisper, which pauses noticeably after every sentence and can hallucinate during silence. inlaut includes Parakeet Ultra by default and free forever.</p>
-    <p><strong>2. True privacy with zero retention:</strong> Superwhisper saves every voice recording to your drive indefinitely by default (<em>“Keep recordings: Forever”</em>). inlaut processes audio strictly in volatile memory and discards it immediately after typing. No voice database is created on your machine.</p>
-    <p><strong>3. Ultra-lightweight:</strong> Running at ~50–60&nbsp;MB RAM in the menu bar, inlaut does not impact battery life, thermal throttling, or system memory.</p>
-    <p><strong>4. Seamless bilingual German & English:</strong> Phrases mixing both languages (such as technical terminology in conversation) are recognized smoothly without manual mode switching.</p>
+    <p><strong>1. Parakeet without a subscription:</strong> inlaut includes Parakeet Ultra on Mac for free. Superwhisper offers Parakeet in its paid Pro plan. Actual recognition time depends on the device, model and dictation length.</p>
+    <p><strong>2. No automatic audio archive:</strong> Superwhisper saves voice recordings locally by default (<em>“Keep recordings: Forever”</em>). Normal inlaut dictation is recognised in memory, without audio files or dictation history on disk. The Windows beta keeps the last dictation in memory. Explicitly enabled test captures can save audio and recognised text locally; they are not uploaded automatically.</p>
+    <p><strong>3. A small Mac app:</strong> The menu bar app uses around 50–60&nbsp;MB RAM when idle. Recognition needs additional resources; the Windows beta uses different models and a different runtime.</p>
+    <p><strong>4. Mixed English and German on Mac:</strong> Parakeet Ultra in the Mac “German + English” mode recognises bilingual sentences without switching. On Windows, select English or German; mixed-language dictation is not supported.</p>
 
     <h2>How to Switch from Superwhisper to inlaut</h2>
     <ol>
-      <li><strong>Download inlaut:</strong> Open the DMG file and move inlaut into your Applications folder.</li>
-      <li><strong>Setup:</strong> On first launch, inlaut downloads the on-device model package once (~630&nbsp;MB).</li>
-      <li><strong>Choose your trigger:</strong> Set your preferred shortcut or hold the <kbd>🌐 fn</kbd> key to dictate. Releasing the key types the text instantly.</li>
+      <li><strong>Download inlaut:</strong> On Mac, open the DMG and move inlaut into Applications. On Windows, read the <a href="/en/windows">beta and installation notes</a> before downloading the installer.</li>
+      <li><strong>Setup:</strong> macOS downloads its speech model on first launch (~630&nbsp;MB). The Windows installer bundles both models; select English or German and allow microphone access.</li>
+      <li><strong>Choose your trigger:</strong> Set a shortcut. On Mac, you can also use the <kbd>🌐 fn</kbd> key. Test recognition and insertion in your destination app; the Windows beta also supports hands-free dictation.</li>
       <li><strong>Import custom vocabulary:</strong> Add names or specific technical jargon under inlaut’s <em>Replacements</em> settings.</li>
     </ol>
     <p>Both applications can remain installed simultaneously on your Mac. Simply assign different hotkeys to compare their speed and accuracy side-by-side.</p>
 
-    <p><a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" data-umami-event-position="superwhisper-alternative" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Download inlaut for macOS <span aria-hidden="true">↓</span></a>
-          <a class="button button-secondary" href="/en/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Windows <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a></p>
+    <p class="note">Windows is an unsigned beta for Windows 10/11 (x64). Read the installation warnings before downloading. Models are bundled; updates are installed manually after quitting inlaut. Windows 11 acceptance testing is still pending.</p>
+    <p><a class="button" data-umami-event="download-dmg" data-umami-event-version="0.5.0" data-umami-event-position="superwhisper-alternative" href="https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0-en.dmg"><svg class="apple-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>Download inlaut for macOS <span aria-hidden="true">↓</span></a>
+          <a class="button button-secondary" href="/en/windows"><svg class="windows-logo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 2h9v9H2zm11 0h9v9h-9zM2 13h9v9H2zm11 0h9v9h-9z"/></svg>Download for Windows <span class="beta-label">Beta</span><span aria-hidden="true">→</span></a></p>
 
     <h2>Frequently Asked Questions</h2>
     <h3>Is there a completely free alternative to Superwhisper?</h3>
     <p>Yes. inlaut is 100% free under the GPL-3.0 license with no limits, accounts, or in-app purchases. Superwhisper provides a limited Free plan restricted to Whisper models and up to 2 modes, while fast Transducer models and cloud features require Superwhisper Pro ($8.49/mo or $249.99 lifetime).</p>
 
     <h3>Why is inlaut faster than Superwhisper Free?</h3>
-    <p>Superwhisper Free relies on local OpenAI Whisper models, which process audio in chunks and incur 1 to 3 seconds of decoding delay when dictating. inlaut uses the streaming Parakeet Ultra FastConformer model natively accelerated on the Apple Neural Engine, typing text under 0.1 seconds after releasing the key.</p>
+    <p>On Mac, inlaut uses Parakeet Ultra on the Apple Neural Engine by default. Superwhisper Free uses Whisper models with a different recognition approach. Actual delay depends on hardware, model and dictation length; Mac figures are not a promise for the Windows beta.</p>
 
     <h3>Does inlaut store recordings or an audio history?</h3>
-    <p>No. inlaut never stores audio recordings or transcription history. Superwhisper saves recordings locally on disk indefinitely by default (“Keep recordings for: Forever”) unless changed manually in settings.</p>
+    <p>Normal dictation creates no audio files or dictation history on disk. Windows keeps the last dictation in memory; optional clipboard mode also leaves it on the clipboard. Explicitly enabled Windows test captures can save audio and recognised text locally. There is no automatic upload. Superwhisper stores recordings indefinitely by default unless the setting is changed.</p>
 
     <h3>Is inlaut open source?</h3>
     <p>Yes. The complete source code of inlaut is licensed under GPL-3.0 and available on GitHub. Superwhisper is closed-source, proprietary software.</p>
 
     <h3>Does inlaut support English and German in the same sentence?</h3>
-    <p>Yes. inlaut's “German + English” mode fluently handles bilingual sentences with technical terms without requiring manual language switching.</p>
+    <p>Yes, on Mac with Parakeet Ultra in “German + English” mode. On Windows, select English or German and restart after changing language. The Windows beta does not support mixed-language dictation.</p>
 
     <h2>References & Documentation</h2>
     <p>All Superwhisper specifications were verified on the vendor's official documentation pages in October 2026:</p>
