@@ -5,10 +5,14 @@ on:
     paths:
       - 'windows/**'
       - '.github/workflows/windows.yml'
+      - '.gitattributes'
+      - 'global.json'
   pull_request:
     paths:
       - 'windows/**'
       - '.github/workflows/windows.yml'
+      - '.gitattributes'
+      - 'global.json'
   workflow_dispatch:
 
 permissions:
@@ -28,7 +32,9 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore windows/Inlaut.sln
+        run: |
+          dotnet --info
+          dotnet restore windows/Inlaut.sln
 
       - name: Build Solution
         run: dotnet build windows/Inlaut.sln -c Release --no-restore
