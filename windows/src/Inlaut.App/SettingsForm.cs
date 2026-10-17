@@ -11,6 +11,7 @@ public class SettingsForm : FluentForm
     private readonly Action _onSettingsChanged;
     private readonly Action<AppSettings> _save;
     private readonly Action<bool> _startup;
+    private readonly Func<bool> _startupState;
     private readonly AudioRecorder _preview = new();
     private readonly System.Windows.Forms.Timer _meterTimer = new() { Interval = 100 };
     private readonly Label _status = new() { AutoSize = true, Dock = DockStyle.Top, AccessibleRole = AccessibleRole.StatusBar };
@@ -26,15 +27,14 @@ public class SettingsForm : FluentForm
     internal string Status => _status.Text;
 
     public SettingsForm(AppSettings settings, KeyTrigger keyTrigger, Action onSettingsChanged,
-        Action<AppSettings>? save = null, Action<bool>? startup = null, Action? checkUpdates = null)
+        Action<AppSettings>? save = null, Action<bool>? startup = null, Action? checkUpdates = null,
+        Func<bool>? startupState = null)
     {
         SuspendLayout();
         _settings = settings; _draft = settings.Clone(); _keyTrigger = keyTrigger; _onSettingsChanged = onSettingsChanged;
         _save = save ?? (s => s.Save()); _startup = startup ?? StartupRegistration.SetEnabled;
-        if (startup == null)
-        {
-            try { _draft.LaunchAtLogin = StartupRegistration.IsEnabled(); } catch { }
-        }
+        _startupState = startupState ?? StartupRegistration.IsEnabled;
+        try { _draft.LaunchAtLogin = _startupState(); } catch { }
         Text = UiText.Get("inlaut — Einstellungen"); AutoScaleDimensions = new SizeF(96, 96); AutoScaleMode = AutoScaleMode.Dpi;
         ClientSize = new Size(620, 620); MinimumSize = new Size(480, 480); StartPosition = FormStartPosition.CenterScreen;
         Font = WindowsTheme.Font(); MinimizeBox = false;
@@ -87,7 +87,7 @@ public class SettingsForm : FluentForm
         var text = Page(tabs, UiText.Get("Texteingabe"));
         Heading(text, UiText.Get("Einfügen in andere Programme"));
         Check(text, UiText.Get("Über Zwischenablage einfügen"), _draft.UseClipboardInsertion, v => _draft.UseClipboardInsertion = v);
-        Note(text, UiText.Get("Aus: direkte Eingabe, bei manchen Programmen zeichenweise. Ein: Text als Block einfügen; die Zwischenablage wird vorübergehend genutzt. Mehrzeilige Office-Diktate benötigen diesen Modus. In Excel vorher F2 drücken, damit alles in einer Zelle bleibt."));
+        Note(text, UiText.Get("Aus: direkte Eingabe ohne Zwischenablage, bei manchen Programmen zeichenweise. Ein: Text als Block einfügen. Das Diktat ersetzt den bisherigen Zwischenablage-Inhalt und bleibt dort, bis du etwas anderes kopierst. Mehrzeilige Office-Diktate benötigen diesen Modus. In Excel vorher F2 drücken, damit alles in einer Zelle bleibt."));
         Heading(text, UiText.Get("Text aufbereiten"));
         Check(text, UiText.Get("Zeilen und Absätze per Sprache"), _draft.VoiceCommands, v => _draft.VoiceCommands = v);
         Note(text, UiText.Get("„neue Zeile“ und „neuer Absatz“ erzeugen Umbrüche. Ausgeschaltet bleiben die gesprochenen Wörter erhalten."));
@@ -209,13 +209,16 @@ public class SettingsForm : FluentForm
     internal bool SaveChanges()
     {
         EndCapture(); StopPreview();
-        bool startupChanged = _draft.LaunchAtLogin != _settings.LaunchAtLogin;
         try
         {
             _draft.Validate();
+            // The registry may differ from the saved preference, or may have
+            // changed while settings were open. Roll back to what is there now.
+            bool previousStartup = _startupState();
+            bool startupChanged = _draft.LaunchAtLogin != previousStartup;
             if (startupChanged) _startup(_draft.LaunchAtLogin);
             try { _save(_draft); }
-            catch { if (startupChanged) _startup(_settings.LaunchAtLogin); throw; }
+            catch { if (startupChanged) _startup(previousStartup); throw; }
             _settings.CopyFrom(_draft.Clone()); _keyTrigger.UpdateTriggerKey(_settings.TriggerVkCode); _keyTrigger.Mode = _settings.TriggerMode;
             _onSettingsChanged(); _dirty = false; SetStatus(UiText.Get("Gespeichert. Sprachänderungen gelten nach einem Neustart von inlaut; andere Änderungen beim nächsten Diktat.")); return true;
         }

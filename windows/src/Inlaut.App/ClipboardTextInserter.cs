@@ -9,7 +9,13 @@ public static class ClipboardTextInserter
 {
     // Must run on the UI STA thread. A single paste avoids VK_PACKET bursts that
     // some editors turn into repetitions of the last character.
-    public static async Task InsertAsync(string text, DirectTextInserter.InputTarget? expectedTarget = null)
+    public static Task InsertAsync(string text, DirectTextInserter.InputTarget? expectedTarget = null) =>
+        InsertAsync(text, expectedTarget, keys => NativeMethods.SendInput((uint)keys.Length, keys, Marshal.SizeOf<NativeMethods.INPUT>()));
+
+    // Keep the native injection boundary replaceable for blocked/partial-input
+    // regression checks; normal calls always use SendInput above.
+    internal static async Task InsertAsync(string text, DirectTextInserter.InputTarget? expectedTarget,
+        Func<NativeMethods.INPUT[], uint> sendInput)
     {
         if (string.IsNullOrEmpty(text)) return;
         if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
@@ -27,23 +33,6 @@ public static class ClipboardTextInserter
         await Task.Delay(50);
         DirectTextInserter.RequireTarget(target);
 
-        // Materialize formats before replacing the clipboard: the source's OLE
-        // object may no longer serve its data after losing clipboard ownership.
-        var previous = new DataObject();
-        var original = Clipboard.GetDataObject();
-        if (original != null)
-        {
-            foreach (string format in original.GetFormats(false))
-            {
-                object? value = original.GetData(format, false);
-                if (value == null)
-                    throw new InvalidOperationException(UiText.Get("Die Zwischenablage konnte nicht vollständig gesichert werden."));
-                if (value is MemoryStream stream) value = new MemoryStream(stream.ToArray());
-                if (value is Image image) value = image.Clone();
-                previous.SetData(format, false, value);
-            }
-        }
-
         var payload = new DataObject();
         payload.SetText(text.ReplaceLineEndings("\r\n"), TextDataFormat.UnicodeText);
         // https://learn.microsoft.com/windows/win32/dataxchg/clipboard-formats
@@ -51,34 +40,23 @@ public static class ClipboardTextInserter
         payload.SetData("CanIncludeInClipboardHistory", new MemoryStream(new byte[4]));
         payload.SetData("CanUploadToCloudClipboard", new MemoryStream(new byte[4]));
         Clipboard.SetDataObject(payload, true, 5, 20);
-        uint sequence = NativeMethods.GetClipboardSequenceNumber();
-        try
+
+        // Clipboard mode intentionally replaces its previous contents. Neither
+        // SendInput's return value nor a timer proves the destination has read
+        // Ctrl+V. Leave the payload in place even on failure; never restore old
+        // data into a queued paste or overwrite something copied afterwards.
+        DirectTextInserter.RequireTarget(target);
+        if (ModifiersDown())
+            throw new InvalidOperationException(UiText.Get("Fenster oder gedrückte Tasten haben sich geändert. Bitte erneut diktieren."));
+        var keys = new[] { Key(0x11), Key(0x56), Key(0x56, true), Key(0x11, true) };
+        uint sent = sendInput(keys);
+        if (sent != keys.Length)
         {
-            DirectTextInserter.RequireTarget(target);
-            if (ModifiersDown())
-                throw new InvalidOperationException(UiText.Get("Fenster oder gedrückte Tasten haben sich geändert. Bitte erneut diktieren."));
-            var keys = new[] { Key(0x11), Key(0x56), Key(0x56, true), Key(0x11, true) };
-            uint sent = NativeMethods.SendInput((uint)keys.Length, keys, Marshal.SizeOf<NativeMethods.INPUT>());
-            if (sent != keys.Length)
-            {
-                int error = Marshal.GetLastWin32Error();
-                // Release any keys left down after a partially accepted shortcut.
-                var releases = new[] { Key(0x56, true), Key(0x11, true) };
-                NativeMethods.SendInput(2, releases, Marshal.SizeOf<NativeMethods.INPUT>());
-                throw new Win32Exception(error, UiText.Get("Windows hat das Einfügen blockiert. Läuft das Zielprogramm als Administrator?"));
-            }
-            // SendInput acknowledges queuing, not consumption. Keep the payload
-            // available while the target processes Ctrl+V; do not block our UI.
-            await Task.Delay(750);
-        }
-        finally
-        {
-            // Never overwrite something the user copied during the paste.
-            if (sequence != 0 && NativeMethods.GetClipboardSequenceNumber() == sequence)
-            {
-                if (previous.GetFormats(false).Length == 0) Clipboard.Clear();
-                else Clipboard.SetDataObject(previous, true, 5, 20);
-            }
+            int error = Marshal.GetLastWin32Error();
+            // Release any keys left down after a partially accepted shortcut.
+            var releases = new[] { Key(0x56, true), Key(0x11, true) };
+            sendInput(releases);
+            throw new Win32Exception(error, UiText.Get("Windows hat das Einfügen blockiert. Läuft das Zielprogramm als Administrator?"));
         }
     }
 

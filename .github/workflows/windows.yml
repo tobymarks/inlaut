@@ -42,9 +42,12 @@ jobs:
       - name: Text preservation regression
         run: dotnet run --project windows/tests/Inlaut.CoreSmoke -c Release
 
-      - name: Settings layout regression
-        timeout-minutes: 2
-        run: dotnet run --project windows/tests/Inlaut.UiSmoke -c Release
+      - name: Simulated dictation and failure recovery
+        run: dotnet run --project windows/tests/Inlaut.SimulationSmoke -c Release
+
+      - name: Windows UI, hotkey cancellation and delayed clipboard target
+        timeout-minutes: 3
+        run: dotnet run --project windows/tests/Inlaut.UiSmoke -c Release -- --paste --transitions
 
       - name: Install pinned Inno Setup compiler
         shell: pwsh

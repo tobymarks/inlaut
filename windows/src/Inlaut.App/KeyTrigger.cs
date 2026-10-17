@@ -8,6 +8,7 @@ public class KeyTrigger : IDisposable
 {
     public Action? OnStart { get; set; }
     public Action? OnStop { get; set; }
+    public Action? OnCancel { get; set; }
     public string Mode { get; set; } = "combined";
 
     private uint _triggerVkCode;
@@ -21,10 +22,11 @@ public class KeyTrigger : IDisposable
 
     private System.Windows.Forms.Timer? _holdTimer;
     private bool _isSuspended;
+    private long _startGeneration;
     public bool IsSuspended
     {
         get => _isSuspended;
-        set { _isSuspended = value; _phase = Phase.Idle; _keyDown = false; _lastTapAt = DateTime.MinValue; _ignoreNextRelease = false; _holdTimer?.Stop(); }
+        set { _isSuspended = value; _startGeneration++; _phase = Phase.Idle; _keyDown = false; _lastTapAt = DateTime.MinValue; _ignoreNextRelease = false; _holdTimer?.Stop(); }
     }
     private bool _ignoreNextRelease = false;
     private bool _keyDown;
@@ -44,6 +46,7 @@ public class KeyTrigger : IDisposable
 
     public void UpdateTriggerKey(uint newVkCode)
     {
+        _startGeneration++;
         _triggerVkCode = newVkCode;
         _keyDown = false;
         _phase = Phase.Idle;
@@ -73,6 +76,7 @@ public class KeyTrigger : IDisposable
 
     public void Stop()
     {
+        _startGeneration++;
         if (_hookId != IntPtr.Zero)
         {
             NativeMethods.UnhookWindowsHookEx(_hookId);
@@ -163,8 +167,10 @@ public class KeyTrigger : IDisposable
                     _holdTimer?.Stop();
                     if (_phase == Phase.Holding)
                     {
-                        // Cancel dictation
-                        TriggerStop();
+                        // A shortcut is not the end of a dictated utterance.
+                        // Discard audio instead of transcribing into a selection
+                        // that Ctrl+A (or another shortcut) is about to change.
+                        TriggerCancel();
                     }
                     _phase = Phase.Idle;
                     _lastTapAt = DateTime.MinValue;
@@ -265,8 +271,20 @@ public class KeyTrigger : IDisposable
             _dispatcher.BeginInvoke(action);
     }
 
-    private void TriggerStart() => Post(() => { if (!IsSuspended) OnStart?.Invoke(); });
+    private void TriggerStart()
+    {
+        long generation = ++_startGeneration;
+        Post(() => { if (!IsSuspended && generation == _startGeneration) OnStart?.Invoke(); });
+    }
     private void TriggerStop() => Post(() => OnStop?.Invoke());
+    private void TriggerCancel()
+    {
+        // The hold timer may have queued a start which the UI has not processed.
+        // Invalidate it before returning from the hook, then discard any recording
+        // which already started. All microphone work stays outside the hook.
+        _startGeneration++;
+        Post(() => OnCancel?.Invoke());
+    }
 
     public void Dispose()
     {

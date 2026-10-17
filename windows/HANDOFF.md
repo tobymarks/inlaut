@@ -35,9 +35,10 @@ checks from the macOS development session; the source of truth is the code.
   Metadata records `input-sent` with `native-edit`, `unicode-paced` or `clipboard`.
 - The previous clipboard + Ctrl+V path remains selectable via
   **Hilfe & Diagnose → Eingabe per Zwischenablage** (unchecked by default).
-  Previous clipboard formats
-  are restored after 750 ms if the sequence number is unchanged. Windows history/cloud
-  exclusion formats are set. This remains a timed heuristic, not target-app acknowledgement.
+  Since beta.9, the dictation payload remains until another copy replaces it.
+  Previous contents are never restored on a timer: slow targets could otherwise
+  paste those contents instead. Windows history/cloud exclusion formats remain set.
+  SendInput acceptance still does not acknowledge target-app consumption.
 - **User requirement under validation:** reliable insertion without the clipboard.
   The user copies between apps while dictating and does not want interference. Do not
   describe this requirement as universally solved. Keep the working clipboard path as a comparison
@@ -364,7 +365,8 @@ and paced output, physical microphone disconnect/reconnect, sleep/resume, Window
 trusted Windows signing and update/rollback policy. Existing limits remain:
 multiline Office requires opt-in clipboard; Excel requires cell edit; DOM fields
 sharing one native control are not reliably distinguished; queued characters
-cannot be recalled; arbitrary rich clipboard restoration is not fully verified.
+cannot be recalled. Clipboard insertion deliberately retains the dictated payload;
+there is no automatic restoration of previous clipboard contents.
 
 Release assessment: suitable as a candidate for a clearly labelled, limited
 Windows public beta to collect early-user feedback, not a stable/general release.

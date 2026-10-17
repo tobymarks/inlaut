@@ -4,9 +4,9 @@ Native, hochperformante On-Device-Diktier-App für Windows 10 & 11 ohne Cloud-Zw
 
 Für die Fortsetzung der Entwicklung direkt unter Windows: [HANDOFF.md](HANDOFF.md).
 
-## Öffentliche Beta 0.7.0-beta.8
+## Öffentliche Beta 0.7.0-beta.9
 
-[Windows-Installer herunterladen](https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.8/inlaut-0.7.0-beta.8-windows-x64-setup.exe)
+[Windows-Installer herunterladen](https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.9/inlaut-0.7.0-beta.9-windows-x64-setup.exe)
 für Windows 10/11 x64. Deutsch und Englisch sind mit getrennten lokalen Modellen
 enthalten; Diktat- und Oberflächensprache lassen sich unabhängig einstellen.
 Sprachwechsel benötigen einen Neustart. Gemischtsprachiges Diktieren ist Mac-only.
@@ -20,7 +20,7 @@ können die Installation vollständig blockieren.
 inlaut vor der Installation über das Tray-Menü beenden. Updates werden manuell
 von der Website heruntergeladen und installiert; der signierte In-App-Updater
 kann diese unsignierte Beta nicht aktualisieren. Einstellungen bleiben bei einer
-Neuinstallation erhalten. [Release und Prüfsumme](https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.8).
+Neuinstallation erhalten. [Release und Prüfsumme](https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.9).
 
 Bekannte Grenzen: Leise Sprache kann abgeschnitten werden; Leerzeichen und
 Großschreibung zwischen getrennten Diktaten benötigen mitunter Korrekturen.
@@ -91,8 +91,9 @@ Details und Microsoft-Referenzen stehen in `DESIGN.md`.
 
 Die Diagnose hat die Zeichenketten auf die Übergabe an das Zielprogramm eingegrenzt.
 Der weiterhin verfügbare Vergleichsmodus verwendet einen einzelnen Einfügevorgang (Strg+V).
-Die Zwischenablage wird vorübergehend genutzt und danach wiederhergestellt,
-sofern zwischenzeitlich nichts Neues kopiert wurde. Der Diktattext wird für den
+Das Diktat ersetzt den bisherigen Zwischenablage-Inhalt und bleibt dort, bis
+du etwas anderes kopierst. Es gibt keine zeitgesteuerte Wiederherstellung, damit
+langsame Zielprogramme nicht versehentlich den alten Inhalt einfügen. Der Diktattext wird für den
 Windows-Zwischenablageverlauf und die Cloud-Synchronisation ausgeschlossen.
 Das Sprachmodell lädt im Hintergrund; Einstellungen verwenden ein Layout ohne
 gegenseitige Größenänderungen. Während die Einstellungen offen sind, ist Diktieren pausiert.
@@ -129,7 +130,7 @@ von jeweils ungefähr 1 MB werden aufbewahrt und können jederzeit gelöscht wer
   * Das Taskleisten-Icon signalisiert den Aufnahmestatus mit einem roten Punkt.
 * **Nach dem Diktat:**
   * Sobald du die Tastenkombination erneut drückst, wird das Gesprochene lokal auf deinem Rechner transkribiert, durch die inlaut-Textpipeline bereinigt (Scharf-S-Wiederherstellung, Sprachbefehle, Formatierungen) und **direkt an der Cursor-Position in das aktive Fenster eingefügt** (Word, Browser, Outlook, Teams, Editor...).
-  * Standardmäßig bleibt die Zwischenablage unberührt. Nur im Vergleichsmodus wird sie vorübergehend verwendet und anschließend wiederhergestellt, solange nichts Neues kopiert wurde.
+  * Standardmäßig bleibt die Zwischenablage unberührt. Im Zwischenablage-Modus ersetzt das Diktat den bisherigen Inhalt und bleibt dort, bis etwas anderes kopiert wird.
 
 ---
 
@@ -157,7 +158,8 @@ von jeweils ungefähr 1 MB werden aufbewahrt und können jederzeit gelöscht wer
 ## Regressionstests
 
 - Plattformunabhängige Textprüfung: `dotnet run --project windows/tests/Inlaut.CoreSmoke -c Release`.
+- Portable Ablauf-Simulation mit echtem Produktionscode und simulierten Windows-Grenzen: `dotnet run --project windows/tests/Inlaut.SimulationSmoke -c Release`. Umfang und Grenzen stehen in [der Testbeschreibung](tests/Inlaut.SimulationSmoke/README.md).
 - Windows-Layoutprüfung (150 Größen- und Beschriftungsänderungen, 30-Sekunden-Watchdog): `dotnet run --project windows/tests/Inlaut.UiSmoke -c Release`.
-- Nur auf einem isolierten, interaktiven Windows-Testdesktop: denselben UI-Test mit `-- --paste` starten. Er prüft den eingefügten Text, Zwischenablage-Wiederherstellung, zwischenzeitliches Kopieren und das Ignorieren synthetischer Tasten durch den Diktat-Trigger. Dieser optionale Test benutzt Tastatureingaben und überschreibt die Test-Zwischenablage.
+- Nur auf einem isolierten, interaktiven Windows-Testdesktop: denselben UI-Test mit `-- --paste` starten. Er prüft den eingefügten Text, verzögertes Einfügen in einem separaten Zielprozess, zwischenzeitliches Kopieren und das Ignorieren synthetischer Tasten durch den Diktat-Trigger. Dieser optionale Test benutzt Tastatureingaben und überschreibt die Test-Zwischenablage.
 
 Die UI-Tests können auf macOS nur kompiliert, nicht ausgeführt werden.

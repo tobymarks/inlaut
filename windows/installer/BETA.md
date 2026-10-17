@@ -1,6 +1,6 @@
 # Windows beta
 
-This is the public unsigned beta 0.7.0-beta.8, not a general production release.
+This is the public unsigned beta 0.7.0-beta.9, not a general production release.
 Download only from https://inlaut.de/windows (German) or
 https://inlaut.de/en/windows (English), which link to the project's GitHub release.
 Windows may display SmartScreen ("Windows protected your PC") or an unknown
@@ -54,6 +54,10 @@ install different model families over the same app directory.
 Recognized text is retained in memory for the tray command "Letztes Diktat…".
 Check for partial insertion before copying it manually. Normal direct input does
 not use the clipboard. Clipboard insertion is optional and must be enabled.
+In that mode, dictation replaces the previous clipboard contents and stays there
+until something else is copied, including when the target does not accept the
+paste. There is no timed restoration that could paste old content into a slow
+application. Windows clipboard history and cloud-sync exclusion flags remain set.
 Native window/control changes abort insertion, but a focus change between web
 editors sharing one native control is not reliably detectable. Multiline input
 is supported in native Edit/RichEdit controls; unknown controls reject it rather

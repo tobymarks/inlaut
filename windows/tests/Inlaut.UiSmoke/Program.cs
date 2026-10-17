@@ -7,6 +7,8 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        if (args.Length == 2 && args[0] == "--clipboard-target")
+            return ClipboardChecks.RunSlowTargetChild(args[1]);
         if (args.Length == 3 && args[0] == "--english-model")
         {
             ModelManager.VerifyModel(args[1], "en");
@@ -15,7 +17,7 @@ internal static class Program
             if (!text.StartsWith("Well, I don't wish to see it any more", StringComparison.OrdinalIgnoreCase) || !text.Contains("old portrait", StringComparison.OrdinalIgnoreCase))
                 throw new Exception("English reference transcription differs: " + text);
             Console.WriteLine("PASS: packaged English model recognises the reference recording with the Windows engine");
-            return 0;
+            return RecognitionChecks.Run(text);
         }
         if (args.Length == 3 && args[0] == "--crash-child")
         {
@@ -41,7 +43,10 @@ internal static class Program
         {
             try
             {
+                InstanceChecks.Run();
                 await SettingsChecks.Run(host, trigger, args.Contains("--hardware"));
+                await HotkeyCancellationChecks.Run(host);
+                await ModelDownloadChecks.Run();
                 await LanguageChecks.Run(trigger);
                 await CrashChecks.Run();
                 await UpdateChecks.Run();
@@ -163,30 +168,7 @@ internal static class Program
 
                 // Opt-in only: this test operates the clipboard and keyboard.
                 // Run on an isolated interactive Windows test desktop.
-                if (args.Contains("--paste"))
-                {
-                    using var editor = new RichTextBox { Dock = DockStyle.Fill };
-                    host.Controls.Add(editor);
-                    host.Activate();
-                    editor.Focus();
-                    trigger.Start();
-                    int triggers = 0;
-                    trigger.OnStart = () => triggers++;
-                    Clipboard.SetText("clipboard sentinel");
-                    const string expected = "Erstes Wort, danach ein vollständiger Satz: Grüße, Straße, 100000!\nZweite Zeile?";
-                    await ClipboardTextInserter.InsertAsync(expected);
-                    if (editor.Text.ReplaceLineEndings("\n") != expected) throw new Exception("Paste text differs");
-                    if (Clipboard.GetText() != "clipboard sentinel") throw new Exception("Clipboard not restored");
-                    if (triggers != 0) throw new Exception("Injected shortcut triggered dictation");
-
-                    editor.Clear();
-                    var paste = ClipboardTextInserter.InsertAsync(expected);
-                    await Task.Delay(200);
-                    Clipboard.SetText("new copy during paste");
-                    await paste;
-                    if (Clipboard.GetText() != "new copy during paste") throw new Exception("New clipboard copy overwritten");
-                    Console.WriteLine("PASS: paste, clipboard restore, concurrent copy, injected-key filtering");
-                }
+                if (args.Contains("--paste")) await ClipboardChecks.Run(host);
             }
             catch (Exception ex) { Console.Error.WriteLine(ex); result = 1; }
             finally { host.Close(); }

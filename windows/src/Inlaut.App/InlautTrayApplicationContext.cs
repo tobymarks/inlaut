@@ -153,6 +153,7 @@ public class InlautTrayApplicationContext : ApplicationContext
         // 1. Single Key Hold-to-Talk & Double-Tap Hands-Free
         _keyTrigger.OnStart = () => StartDictation();
         _keyTrigger.OnStop = () => StopDictation();
+        _keyTrigger.OnCancel = () => CancelDictation();
         _keyTrigger.Start();
 
         // 2. Global Shortcut fallback (Ctrl+Alt+Space)
@@ -306,6 +307,32 @@ public class InlautTrayApplicationContext : ApplicationContext
         catch (Exception ex)
         {
             AppDialog.Error(UiText.Get("Mikrofon konnte nicht gestartet werden"), UiText.Get(ex.Message));
+        }
+    }
+
+    private void CancelDictation()
+    {
+        if (!_recorder.IsRecording || _isTranscribing) return;
+
+        try
+        {
+            // Dispose stops capture and discards its buffer without converting,
+            // transcribing, saving a test capture, or inserting any text. The
+            // recorder can be started again after Dispose (as Start itself does).
+            _recorder.Dispose();
+            LocalDiagnostics.Write("recording-cancelled", new { });
+        }
+        catch (Exception ex)
+        {
+            LocalDiagnostics.Write("failed", new { type = ex.GetType().Name, code = ex.HResult });
+            _notifyIcon.ShowBalloonTip(5000, UiText.Get("Diktat konnte nicht abgeschlossen werden"), UiText.Get(ex.Message), ToolTipIcon.Error);
+        }
+        finally
+        {
+            _dictationTarget = null;
+            _notifyIcon.Icon = _defaultIcon;
+            _indicator.HideIndicator();
+            UpdateReadyStatus();
         }
     }
 

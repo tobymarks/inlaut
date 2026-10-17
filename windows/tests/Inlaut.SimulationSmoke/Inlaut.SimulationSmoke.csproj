@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Inlaut.Core/Inlaut.Core.csproj" />
+    <Compile Include="../../src/Inlaut.App/KeyTrigger.cs" Link="Production/KeyTrigger.cs" />
+    <Compile Include="../../src/Inlaut.App/ClipboardTextInserter.cs" Link="Production/ClipboardTextInserter.cs" />
+    <Compile Include="../../src/Inlaut.App/ModelManager.cs" Link="Production/ModelManager.cs" />
+    <Compile Include="../Inlaut.UiSmoke/HotkeyCancellationChecks.cs" Link="Checks/HotkeyCancellationChecks.cs" />
+    <Compile Include="../Inlaut.UiSmoke/ModelDownloadChecks.cs" Link="Checks/ModelDownloadChecks.cs" />
+    <EmbeddedResource Include="../../models.json" LogicalName="Inlaut.App.models.json" />
+  </ItemGroup>
+</Project>

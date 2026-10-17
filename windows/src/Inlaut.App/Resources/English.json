@@ -1,4 +1,6 @@
 {
+  "inlaut konnte in dieser Windows-Sitzung nicht gestartet werden. Bitte abmelden und erneut anmelden oder den Support kontaktieren.": "inlaut could not start in this Windows session. Please sign out and sign back in, or contact support.",
+  "Der Download des Sprachmodells hat zu lange gedauert. Bitte die Verbindung prüfen und inlaut erneut starten.": "The speech model download timed out. Please check your connection and restart inlaut.",
   "Schließen": "Close",
   "Abbrechen": "Cancel",
   "Speichern": "Save",
@@ -37,7 +39,7 @@
   "Texteingabe": "Text input",
   "Einfügen in andere Programme": "Insert into other applications",
   "Über Zwischenablage einfügen": "Insert via clipboard",
-  "Aus: direkte Eingabe, bei manchen Programmen zeichenweise. Ein: Text als Block einfügen; die Zwischenablage wird vorübergehend genutzt. Mehrzeilige Office-Diktate benötigen diesen Modus. In Excel vorher F2 drücken, damit alles in einer Zelle bleibt.": "Off: direct input, character by character in some apps. On: paste text as a block using the clipboard temporarily. Multiline Office dictation needs this mode. In Excel, press F2 first to keep everything in one cell.",
+  "Aus: direkte Eingabe ohne Zwischenablage, bei manchen Programmen zeichenweise. Ein: Text als Block einfügen. Das Diktat ersetzt den bisherigen Zwischenablage-Inhalt und bleibt dort, bis du etwas anderes kopierst. Mehrzeilige Office-Diktate benötigen diesen Modus. In Excel vorher F2 drücken, damit alles in einer Zelle bleibt.": "Off: direct input without the clipboard, character by character in some apps. On: paste text as a block. Dictation replaces the previous clipboard contents and stays there until you copy something else. Multiline Office dictation needs this mode. In Excel, press F2 first to keep everything in one cell.",
   "Text aufbereiten": "Text processing",
   "Zeilen und Absätze per Sprache": "Spoken line and paragraph breaks",
   "„neue Zeile“ und „neuer Absatz“ erzeugen Umbrüche. Ausgeschaltet bleiben die gesprochenen Wörter erhalten.": "Say “new line” or “new paragraph” for English dictation, or “neue Zeile” / “neuer Absatz” for German. When disabled, the spoken words remain.",

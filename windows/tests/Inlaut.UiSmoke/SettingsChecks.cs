@@ -16,7 +16,7 @@ internal static class SettingsChecks
             string path = Path.Combine(folder, "settings.json");
             var original = new AppSettings();
             int changed = 0; bool startup = false;
-            using (var settings = new SettingsForm(original, trigger, () => changed++, s => s.Save(path), v => startup = v))
+            using (var settings = new SettingsForm(original, trigger, () => changed++, s => s.Save(path), v => startup = v, startupState: () => startup))
             {
                 settings.Show();
                 var tabs = Descendants(settings).OfType<TabControl>().Single();
@@ -87,13 +87,14 @@ internal static class SettingsChecks
             Console.WriteLine("PASS: real settings controls, save/reload, pipeline options, literal replacement, snippets and Mac-schema import/export");
 
             var live = new AppSettings(); bool startupState = false;
-            using (var failing = new SettingsForm(live, trigger, () => throw new Exception("Must not apply"), _ => throw new IOException("test write failure"), v => startupState = v))
+            using (var failing = new SettingsForm(live, trigger, () => throw new Exception("Must not apply"), _ => throw new IOException("test write failure"), v => startupState = v, startupState: () => startupState))
             {
                 failing.Draft.LaunchAtLogin = true;
                 failing.Draft.UseClipboardInsertion = true;
                 if (failing.SaveChanges() || live.UseClipboardInsertion || startupState || !failing.Status.StartsWith("Nicht gespeichert"))
                     throw new Exception("Failed save was reported/applied as success.");
             }
+            CheckStartupState(trigger, folder);
             string corrupt = Path.Combine(folder, "broken.json"); File.WriteAllText(corrupt, "broken"); AppSettings.Load(corrupt);
             if (AppSettings.LoadWarning == null || File.ReadAllText(corrupt) != "broken") throw new Exception("Corrupt settings overwritten or hidden.");
             AppSettings.Load(path);
@@ -186,6 +187,56 @@ internal static class SettingsChecks
             }
         }
         finally { Directory.Delete(folder, true); }
+    }
+    private static void CheckStartupState(KeyTrigger trigger, string folder)
+    {
+        // Reproduce both stale-preference directions: the checkbox starts from
+        // the registry, then the user changes it back to the persisted value.
+        foreach (bool registered in new[] { false, true })
+        {
+            var live = new AppSettings { LaunchAtLogin = !registered };
+            bool actual = registered;
+            var writes = new List<bool>();
+            string path = Path.Combine(folder, "startup-" + registered + ".json");
+            using (var form = new SettingsForm(live, trigger, () => { }, s => s.Save(path),
+                value => { writes.Add(value); actual = value; }, startupState: () => actual))
+            {
+                if (form.Draft.LaunchAtLogin != registered) throw new Exception("Startup UI did not reflect the registry.");
+                form.Draft.LaunchAtLogin = !registered;
+                if (!form.SaveChanges() || actual != !registered || !writes.SequenceEqual(new[] { !registered }) ||
+                    AppSettings.Load(path).LaunchAtLogin != !registered)
+                    throw new Exception("Stale saved preference prevented an actual startup change.");
+            }
+
+            live = new AppSettings { LaunchAtLogin = !registered };
+            actual = registered; writes.Clear();
+            using (var form = new SettingsForm(live, trigger, () => throw new Exception("Failed save was applied"),
+                _ => throw new IOException("test startup rollback"),
+                value => { writes.Add(value); actual = value; }, startupState: () => actual))
+            {
+                form.Draft.LaunchAtLogin = !registered;
+                if (form.SaveChanges() || actual != registered || !writes.SequenceEqual(new[] { !registered, registered }) ||
+                    live.LaunchAtLogin != !registered)
+                    throw new Exception("Failed save did not restore the actual registry state.");
+            }
+        }
+
+        // Read again at Save: another program can change startup while this
+        // settings window is open. A failed registry read must not write either store.
+        bool current = false, unreadable = false;
+        int startupWrites = 0, settingsWrites = 0;
+        using (var form = new SettingsForm(new AppSettings(), trigger, () => { }, _ => settingsWrites++,
+            value => { current = value; startupWrites++; },
+            startupState: () => unreadable ? throw new UnauthorizedAccessException("test registry read") : current))
+        {
+            current = true;
+            if (!form.SaveChanges() || current || startupWrites != 1 || settingsWrites != 1)
+                throw new Exception("Startup change after opening settings was ignored.");
+            unreadable = true;
+            if (form.SaveChanges() || startupWrites != 1 || settingsWrites != 1)
+                throw new Exception("Unknown registry state was overwritten or reported as saved.");
+        }
+        Console.WriteLine("PASS: actual startup state, stale preferences, external changes and failed-save rollback");
     }
     private static IEnumerable<Control> Descendants(Control root) => root.Controls.Cast<Control>().SelectMany(c => new[] { c }.Concat(Descendants(c)));
 }

@@ -4,6 +4,7 @@ namespace Inlaut.Core;
 
 public static class SharpS
 {
+    private static readonly Regex Words = new(@"[\p{L}\p{M}]+", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     private enum Anchor { Anywhere, Start, StartOrEnd, Word }
 
     private sealed class Rule
@@ -49,12 +50,9 @@ public static class SharpS
     {
         if (string.IsNullOrEmpty(text)) return text;
 
-        var words = text.Split(' ');
-        for (int i = 0; i < words.Length; i++)
-        {
-            words[i] = ReplaceWord(words[i]);
-        }
-        return string.Join(" ", words);
+        // Apply word anchors to letters, not punctuation or the line breaks
+        // already produced by voice commands. Keep every separator unchanged.
+        return Words.Replace(text, match => ReplaceWord(match.Value));
     }
 
     private static string ReplaceWord(string word)

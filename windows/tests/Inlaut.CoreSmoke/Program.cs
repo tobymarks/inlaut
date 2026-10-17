@@ -62,3 +62,20 @@ var english = new TextPipeline { Languages = [SpokenLanguage.English] };
 if (english.ProcessDictation("First line new line second line new paragraph last paragraph") != "First line\nSecond line\n\nLast paragraph" || english.ProcessDictation("gross") != "gross" || english.ProcessDictation("neue Zeile") != "neue Zeile")
     throw new Exception("English pipeline commands or language isolation failed");
 Console.WriteLine("PASS: English commands and isolation from German spelling/commands");
+
+foreach (var (input, expected) in new[]
+{
+    ("draussen.", "draußen."),
+    ("(Füsse), »draussen«!", "(Füße), »draußen«!"),
+    ("draussen\tfüsse\r\naussen", "draußen\tfüße\r\naußen"),
+    ("  draussen  füsse\n", "  draußen  füße\n"),
+    ("aussenden Fussel Grossist blossom weissagen", "aussenden Fussel Grossist blossom weissagen"),
+    ("🦶 Füsse — draussen…", "🦶 Füße — draußen…")
+})
+{
+    string actual = SharpS.Apply(input);
+    if (actual != expected) throw new Exception($"German spelling changed word boundaries: {input} => {actual}");
+}
+if (commands.ProcessDictation("draussen neue Zeile füsse.") != "draußen\nFüße.")
+    throw new Exception("Spelling after spoken line-break processing differs.");
+Console.WriteLine("PASS: German spelling at punctuation/Unicode/whitespace boundaries and after spoken line breaks; exceptions preserved");
