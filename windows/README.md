@@ -152,7 +152,7 @@ von jeweils ungefähr 1 MB werden aufbewahrt und können jederzeit gelöscht wer
 * **`Inlaut.Platform.Windows`**:
   * `SherpaEngine`: Lokale Inferenz mit FastConformer / Parakeet Modellen auf CPU oder DirectML via `sherpa-onnx`.
   * `TextInserter`: ursprüngliche Unicode-Ausgabe für den CLI-Prototyp und Vergleichstests. Die Tray-App verwendet standardmäßig `DirectTextInserter`; `ClipboardTextInserter` bleibt als auswählbarer Vergleichsmodus erhalten.
-* **`Inlaut.Core`** (.NET 8):
+* **`Inlaut.Core`** (.NET 10):
   * Plattformunabhängige Textlogik (`SharpS`, `VoiceCommands`, `Replacements`, `TextPipeline`). ß-Regeln, Ersetzungen (ß und ss gelten als gleich, unabhängig von der Windows-Sprache) und das Erkennen von Textbausteinen folgen dem Mac, ebenso die ß-Voreinstellung (in der Schweiz und Liechtenstein aus). Den Text eines Textbausteins fügt Windows unverändert ein; der Mac-Editor schneidet Leerzeichen und Zeilenumbrüche am Anfang und Ende ab. Bei Satzzeichen rund um Sprachbefehle und an den Rändern eines Diktats gibt es bewusste oder noch offene Unterschiede. Beide Plattformen prüfen gemeinsame Fälle aus [`TestData/text-pipeline.json`](../TestData/text-pipeline.json), das die bekannten Unterschiede benennt. Aufräumen und Selbstkorrekturen gibt es nur auf dem Mac.
 
 ## Regressionstests

@@ -31,7 +31,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Restore dependencies
         run: |
@@ -105,7 +105,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-ui-localizations
-          path: windows/tests/Inlaut.UiSmoke/bin/Release/net8.0-windows/*.png
+          path: windows/tests/Inlaut.UiSmoke/bin/Release/net10.0-windows/*.png
 
       - name: Verify signing metadata and unsigned-package rejection
         shell: pwsh

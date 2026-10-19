@@ -71,7 +71,7 @@ of misrecognized examples when comparing quality. Do not play audio unexpectedly
 ## Start work on Windows
 
 Read this file, `windows/README.md`, `windows/DESIGN.md` and repository instructions.
-Use .NET 8 SDK and PowerShell:
+Use .NET 10 SDK and PowerShell:
 
 ```powershell
 git switch feature/windows-prototype

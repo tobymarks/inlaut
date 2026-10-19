@@ -16,13 +16,13 @@
   },
   {
     "file": "windowsdesktop-wpf/THIRD-PARTY-NOTICES.TXT",
-    "url": "https://raw.githubusercontent.com/dotnet/wpf/d60df3c3ac9e49c0c0733d3948a9d3a22205f6f6/THIRD-PARTY-NOTICES.TXT",
+    "url": "https://raw.githubusercontent.com/dotnet/dotnet/4099f83977f4d29604a9aeb971fb0a7bc1d5f699/src/wpf/THIRD-PARTY-NOTICES.TXT",
     "sha256": "d23dba2fee20c6b59d8f7088ee9ed372459c952a319b7ca90f3eec370cc76eb9"
   },
   {
     "file": "windowsdesktop-winforms/THIRD-PARTY-NOTICES.TXT",
-    "url": "https://raw.githubusercontent.com/dotnet/winforms/6f3d394582b11915e1b057ea7816dab881ba2c44/THIRD-PARTY-NOTICES.TXT",
-    "sha256": "d68d386849444fab1012e84beb398aeca4aaa3d50e753e9f218242b3753aa28f"
+    "url": "https://raw.githubusercontent.com/dotnet/dotnet/4099f83977f4d29604a9aeb971fb0a7bc1d5f699/src/winforms/THIRD-PARTY-NOTICES.TXT",
+    "sha256": "5a412b38efae0b162dc0893b319023f4cd14a8985a0f9f9ae01ac052b37a36eb"
   },
   {
     "file": "kaldi-native-fbank/LICENSE",

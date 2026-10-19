@@ -55,10 +55,15 @@ function Copy-PackageNotices([string]$Id, [string]$PackageVersion, [bool]$Requir
     foreach ($file in $files) { Copy-Item -LiteralPath $file.FullName -Destination $target }
     $packagedNotices.Add([ordered]@{ package = $Id; version = $PackageVersion; source = "https://www.nuget.org/packages/$Id/$PackageVersion" })
 }
-foreach ($id in @('NAudio', 'Microsoft.Win32.Registry', 'System.Security.AccessControl', 'System.Security.Principal.Windows')) {
-    $keys = @($assets.libraries.Keys | Where-Object { $_ -like "$id/*" })
-    if ($keys.Count -ne 1) { throw "Expected one resolved $id package for license inclusion." }
-    Copy-PackageNotices $id ($keys[0].Split('/')[1]) ($id -ne 'NAudio')
+$keys = @($assets.libraries.Keys | Where-Object { $_ -like 'NAudio/*' })
+if ($keys.Count -ne 1) { throw 'Expected one resolved NAudio package for license inclusion.' }
+Copy-PackageNotices 'NAudio' ($keys[0].Split('/')[1])
+# .NET 10 prunes these NAudio dependencies because the shared framework contains them;
+# their notices come with the runtime packages below. A package version would need its own.
+foreach ($id in @('Microsoft.Win32.Registry', 'System.Security.AccessControl', 'System.Security.Principal.Windows')) {
+    if (@($assets.libraries.Keys | Where-Object { $_ -like "$id/*" }).Count -gt 0) {
+        throw "$id is restored as a package again; include its license and notices."
+    }
 }
 # These upstream snapshots supplement the licenses absent from the sherpa NuGet
 # packages. A dependency upgrade must refresh the matching source notices too.
@@ -70,7 +75,7 @@ $frameworks = @($runtime.runtimeOptions.includedFrameworks)
 foreach ($name in @('Microsoft.NETCore.App', 'Microsoft.WindowsDesktop.App')) {
     $framework = @($frameworks | Where-Object name -eq $name)
     if ($framework.Count -ne 1) { throw "Published runtime version missing: $name" }
-    if ($name -eq 'Microsoft.WindowsDesktop.App' -and $framework[0].version -ne '8.0.32') {
+    if ($name -eq 'Microsoft.WindowsDesktop.App' -and $framework[0].version -ne '10.0.13') {
         throw 'Refresh the pinned WPF/WinForms notices in windows/licenses for the new WindowsDesktop runtime.'
     }
     Copy-PackageNotices "$name.Runtime.win-x64" $framework[0].version ($name -eq 'Microsoft.NETCore.App')

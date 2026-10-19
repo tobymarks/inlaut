@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 
@@ -13,6 +14,8 @@ public enum IndicatorPhase
 
 public class RecordingIndicatorForm : FluentForm
 {
+    // Runtime settings only; forms are built in code, never by the designer.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string PositionPreference { get; set; } = "bottom";
     private IndicatorPhase _phase = IndicatorPhase.Hidden;
     private string _message = "";

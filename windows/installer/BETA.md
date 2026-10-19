@@ -74,7 +74,7 @@ validate Windows 11 and additional DPI configurations; arrange trusted code
 signing and establish an update/recovery policy. A successful build alone does
 not establish these acceptance criteria.
 
-Build on Windows with .NET 8 and Inno Setup 6:
+Build on Windows with .NET 10 and Inno Setup 6:
 
 ```powershell
 ./windows/installer/Build-Beta.ps1 -OutputDirectory ./publish/beta -CompilerPath 'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'

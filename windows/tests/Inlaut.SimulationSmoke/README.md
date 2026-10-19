@@ -1,6 +1,6 @@
 # Portable regression simulation
 
-Run on macOS, Linux or Windows with .NET 8:
+Run on macOS, Linux or Windows with .NET 10:
 
 ```sh
 dotnet run --project windows/tests/Inlaut.SimulationSmoke -c Release
