@@ -214,7 +214,8 @@ enum TextPolish {
             if let dropped = pending {
                 let kept = [structure(dropped.first), dropped.later, structure(gap)].first { !$0.isEmpty } ?? ""
                 if out.isEmpty {
-                    out = ""
+                    // Line breaks before the first word are a spoken command (#20).
+                    out = String(dropped.first.filter(\.isNewline))
                 } else if !kept.isEmpty {
                     out += kept + (kept.last!.isNewline ? "" : " ")
                 } else {

@@ -524,3 +524,26 @@ checks remain unchanged. No new physical Windows acceptance test is claimed.
 The known macOS CI failure #22 is independent: its TextPolish implementation and
 test are unchanged from main. Windows beta qualification uses the Windows build,
 CoreSmoke, UI/model tests and installer metadata/signature-rejection checks.
+
+## Shared text rules with macOS and .NET 10 (2026-10-19)
+
+The C# text steps had drifted from Swift (SharpS knew 19 of 39 rules, fixed only the
+first match in a word and wrote "GROß"; replacements treated ß and ss as different and
+depended on the Windows culture). They now follow Sources/*.swift rule for rule.
+TestData/text-pipeline.json holds shared cases that CoreSmoke (invariant, German and
+Turkish culture) and Tests/TextPipelineCorpusTests.swift both run; a text change on
+either platform updates that file. Swiss and Liechtenstein installs start with the ß
+step off, as on the Mac.
+
+Voice commands, decided by the maintainer: punctuation follows the macOS rules (tuned
+to Parakeet Ultra, which ends salutations and sign-offs with a full stop), and line
+breaks from a command at the start or end of a dictation stay on both platforms (#20).
+This reverses the beta.6 change that kept explicit punctuation around short lines:
+"Das passt. Neue Zeile. Ich komme morgen vorbei." now gives "Das passt,\nIch komme
+morgen vorbei" on both. TransitionChecks records the two command cases as formatting
+gaps for that reason. On the Mac, tidying and self-corrections keep a leading break.
+
+The app targets .NET 10 (.NET 8 support ends 2026-11-10). The installer's
+[InstallDelete] removes files only the .NET 8 build installed; an upgrade over beta.9
+has not been run on Windows yet. The pinned WinForms/WPF notices follow the runtime
+patch, so CI fails by design after each .NET patch until notices and pin are refreshed.

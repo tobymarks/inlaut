@@ -16,7 +16,7 @@ Dispatcher.Run(async () =>
     const string previous = "PRIVATE previous clipboard";
     Clipboard.SetText(previous);
     string text = new TextPipeline().ProcessDictation("draussen neue Zeile füsse.");
-    const string expected = "draußen\r\nFüße.";
+    const string expected = "draußen\r\nFüße";
     Task<string>? consumed = null;
     NativeMethods.InputQueue = inputs =>
     {

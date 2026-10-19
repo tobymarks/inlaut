@@ -7,15 +7,7 @@
     "expected must hold on both platforms. Where they differ on purpose or pending a decision, \"mac\" and \"windows\" replace it and \"differences\" names the known reasons below.",
     "When a change makes both platforms agree, replace \"mac\" and \"windows\" with \"expected\". Both runners reject unknown keys, keys the step does not use, equal mac and windows values and unused differences."
   ],
-  "differences": {
-    "signature": "macOS drops the full stop after a last line of up to four words, for sign-offs such as \"Tobias.\". Windows keeps the punctuation the recogniser wrote.",
-    "short-line-full-stop": "A full stop before a command after a line of up to four words: macOS turns it into a comma, because Parakeet Ultra ends salutations and sign-offs with one (\"Viele Grüße.\"). Windows keeps the full stop, so short sentences such as \"Das passt.\" stay sentences.",
-    "long-line-comma": "A comma before a command after a line of more than four words: macOS ends the line with a full stop, Windows keeps the comma.",
-    "long-line-no-punctuation": "No punctuation before a command after a line of more than four words: Windows adds a full stop, macOS adds nothing.",
-    "edge-breaks": "A command at the start or end of a dictation: Windows keeps its line break so that it applies next to the cursor (#20), macOS trims it.",
-    "edge-spaces": "Windows trims spaces, tabs and carriage returns at both ends of a dictation (a snippet stays as written) and inserts nothing for a dictation of only whitespace. macOS trims only when a voice command was found.",
-    "other-punctuation": "Other punctuation before a command: macOS keeps at most one mark, so a semicolon goes, \"...\" becomes \".\" and \",.\" becomes \",\". Windows keeps what the recogniser wrote."
-  },
+  "differences": {},
   "cases": [
     {
       "id": "sharps-compounds",
@@ -144,11 +136,7 @@
         "german"
       ],
       "input": "Hallo, neue Zeile, neuer Absatz, Tobias.",
-      "mac": "Hallo,\n\nTobias",
-      "windows": "Hallo,\n\nTobias.",
-      "differences": [
-        "signature"
-      ]
+      "expected": "Hallo,\n\nTobias"
     },
     {
       "id": "commands-english-ultra-commas",
@@ -157,11 +145,7 @@
         "english"
       ],
       "input": "Hi Sarah, new paragraph, thanks for the quick reply. I will send the file tomorrow. New paragraph. Best regards, new line, Tobias.",
-      "mac": "Hi Sarah,\n\nThanks for the quick reply. I will send the file tomorrow.\n\nBest regards,\nTobias",
-      "windows": "Hi Sarah,\n\nThanks for the quick reply. I will send the file tomorrow.\n\nBest regards,\nTobias.",
-      "differences": [
-        "signature"
-      ]
+      "expected": "Hi Sarah,\n\nThanks for the quick reply. I will send the file tomorrow.\n\nBest regards,\nTobias"
     },
     {
       "id": "commands-english-ultra-full-stops",
@@ -170,12 +154,7 @@
         "english"
       ],
       "input": "Hi Sarah, new paragraph, thanks for the quick reply. I will send the file tomorrow. New paragraph. Best regards. New line. Tobias.",
-      "mac": "Hi Sarah,\n\nThanks for the quick reply. I will send the file tomorrow.\n\nBest regards,\nTobias",
-      "windows": "Hi Sarah,\n\nThanks for the quick reply. I will send the file tomorrow.\n\nBest regards.\nTobias.",
-      "differences": [
-        "short-line-full-stop",
-        "signature"
-      ]
+      "expected": "Hi Sarah,\n\nThanks for the quick reply. I will send the file tomorrow.\n\nBest regards,\nTobias"
     },
     {
       "id": "commands-german-ultra-full-stops",
@@ -184,12 +163,7 @@
         "german"
       ],
       "input": "Hallo Frau Becker. Neuer Absatz. Vielen Dank für Ihre Nachricht von gestern. Neuer Absatz. Viele Grüße. Neue Zeile. Tobias.",
-      "mac": "Hallo Frau Becker,\n\nVielen Dank für Ihre Nachricht von gestern.\n\nViele Grüße,\nTobias",
-      "windows": "Hallo Frau Becker.\n\nVielen Dank für Ihre Nachricht von gestern.\n\nViele Grüße.\nTobias.",
-      "differences": [
-        "short-line-full-stop",
-        "signature"
-      ]
+      "expected": "Hallo Frau Becker,\n\nVielen Dank für Ihre Nachricht von gestern.\n\nViele Grüße,\nTobias"
     },
     {
       "id": "commands-question-stays",
@@ -207,12 +181,7 @@
         "english"
       ],
       "input": "Hi Sarah, new paragraph, thanks for the quick reply, I will send the file tomorrow, new paragraph, best regards, new line, tobias.",
-      "mac": "Hi Sarah,\n\nThanks for the quick reply, I will send the file tomorrow.\n\nBest regards,\nTobias",
-      "windows": "Hi Sarah,\n\nThanks for the quick reply, I will send the file tomorrow,\n\nBest regards,\nTobias.",
-      "differences": [
-        "long-line-comma",
-        "signature"
-      ]
+      "expected": "Hi Sarah,\n\nThanks for the quick reply, I will send the file tomorrow.\n\nBest regards,\nTobias"
     },
     {
       "id": "commands-without-punctuation",
@@ -252,17 +221,23 @@
       "expected": "Hallo Sarah,\nViele Grüße,\nTobias"
     },
     {
+      "id": "commands-capital-letters",
+      "step": "voiceCommands",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "input": "Hallo Sarah, NEW LINE, viele Grüße, NEUE ZEILE, Tobias",
+      "expected": "Hallo Sarah,\nViele Grüße,\nTobias"
+    },
+    {
       "id": "commands-long-line-without-punctuation",
       "step": "voiceCommands",
       "languages": [
         "german"
       ],
       "input": "Das ist ein langer Satz ohne Komma neue Zeile zweiter Satz",
-      "mac": "Das ist ein langer Satz ohne Komma\nZweiter Satz",
-      "windows": "Das ist ein langer Satz ohne Komma.\nZweiter Satz",
-      "differences": [
-        "long-line-no-punctuation"
-      ]
+      "expected": "Das ist ein langer Satz ohne Komma\nZweiter Satz"
     },
     {
       "id": "commands-long-line-comma",
@@ -271,11 +246,7 @@
         "german"
       ],
       "input": "Das ist ein langer Satz mit Komma danach, neue Zeile, zweiter Satz",
-      "mac": "Das ist ein langer Satz mit Komma danach.\nZweiter Satz",
-      "windows": "Das ist ein langer Satz mit Komma danach,\nZweiter Satz",
-      "differences": [
-        "long-line-comma"
-      ]
+      "expected": "Das ist ein langer Satz mit Komma danach.\nZweiter Satz"
     },
     {
       "id": "commands-short-sentence-full-stop",
@@ -284,12 +255,7 @@
         "german"
       ],
       "input": "Das passt. Neue Zeile. Ich komme morgen vorbei.",
-      "mac": "Das passt,\nIch komme morgen vorbei",
-      "windows": "Das passt.\nIch komme morgen vorbei.",
-      "differences": [
-        "short-line-full-stop",
-        "signature"
-      ]
+      "expected": "Das passt,\nIch komme morgen vorbei"
     },
     {
       "id": "commands-semicolon",
@@ -298,11 +264,7 @@
         "german"
       ],
       "input": "Erstens die Miete für den Oktober; neue Zeile; zweitens der Strom",
-      "mac": "Erstens die Miete für den Oktober\nZweitens der Strom",
-      "windows": "Erstens die Miete für den Oktober;\nZweitens der Strom",
-      "differences": [
-        "other-punctuation"
-      ]
+      "expected": "Erstens die Miete für den Oktober\nZweitens der Strom"
     },
     {
       "id": "commands-ellipsis",
@@ -311,12 +273,16 @@
         "german"
       ],
       "input": "Ich weiß nicht so genau, was ich sagen soll... neuer Absatz Vielleicht morgen.",
-      "mac": "Ich weiß nicht so genau, was ich sagen soll.\n\nVielleicht morgen",
-      "windows": "Ich weiß nicht so genau, was ich sagen soll...\n\nVielleicht morgen.",
-      "differences": [
-        "other-punctuation",
-        "signature"
-      ]
+      "expected": "Ich weiß nicht so genau, was ich sagen soll.\n\nVielleicht morgen"
+    },
+    {
+      "id": "commands-signature-keeps-ellipsis",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Bis dann, neue Zeile, vielleicht morgen...",
+      "expected": "Bis dann,\nVielleicht morgen..."
     },
     {
       "id": "commands-comma-and-full-stop",
@@ -325,11 +291,7 @@
         "german"
       ],
       "input": "Hallo Frau Becker,. neue Zeile Danke",
-      "mac": "Hallo Frau Becker,\nDanke",
-      "windows": "Hallo Frau Becker,.\nDanke",
-      "differences": [
-        "other-punctuation"
-      ]
+      "expected": "Hallo Frau Becker,\nDanke"
     },
     {
       "id": "dictation-commands-and-breaks",
@@ -347,11 +309,7 @@
         "english"
       ],
       "input": "neue Zeile",
-      "mac": "",
-      "windows": "\n",
-      "differences": [
-        "edge-breaks"
-      ]
+      "expected": "\n"
     },
     {
       "id": "dictation-only-new-paragraph",
@@ -360,11 +318,7 @@
         "english"
       ],
       "input": "neuer Absatz",
-      "mac": "",
-      "windows": "\n\n",
-      "differences": [
-        "edge-breaks"
-      ]
+      "expected": "\n\n"
     },
     {
       "id": "dictation-leading-command",
@@ -373,12 +327,7 @@
         "english"
       ],
       "input": "neue Zeile Zweite Zeile.",
-      "mac": "Zweite Zeile",
-      "windows": "\nZweite Zeile.",
-      "differences": [
-        "edge-breaks",
-        "signature"
-      ]
+      "expected": "\nZweite Zeile"
     },
     {
       "id": "dictation-explicit-full-stop",
@@ -387,12 +336,7 @@
         "english"
       ],
       "input": "Hallo. neuer Absatz Danke.",
-      "mac": "Hallo,\n\nDanke",
-      "windows": "Hallo.\n\nDanke.",
-      "differences": [
-        "short-line-full-stop",
-        "signature"
-      ]
+      "expected": "Hallo,\n\nDanke"
     },
     {
       "id": "dictation-trailing-command",
@@ -401,11 +345,7 @@
         "english"
       ],
       "input": "Ende neue Zeile",
-      "mac": "Ende",
-      "windows": "Ende\n",
-      "differences": [
-        "edge-breaks"
-      ]
+      "expected": "Ende\n"
     },
     {
       "id": "dictation-english-commands",
@@ -438,11 +378,7 @@
         "english"
       ],
       "input": "draussen neue Zeile füsse.",
-      "mac": "draußen\nFüße",
-      "windows": "draußen\nFüße.",
-      "differences": [
-        "signature"
-      ]
+      "expected": "draußen\nFüße"
     },
     {
       "id": "dictation-edge-spaces",
@@ -450,11 +386,7 @@
         "german"
       ],
       "input": "  draussen  füsse\n",
-      "mac": "  draußen  füße\n",
-      "windows": "draußen  füße\n",
-      "differences": [
-        "edge-spaces"
-      ]
+      "expected": "draußen  füße\n"
     },
     {
       "id": "dictation-only-spaces",
@@ -462,11 +394,7 @@
         "german"
       ],
       "input": "   ",
-      "mac": "   ",
-      "windows": "",
-      "differences": [
-        "edge-spaces"
-      ]
+      "expected": ""
     },
     {
       "id": "dictation-snippet-inserted-as-written",

@@ -101,6 +101,8 @@ Downloads/installations require a click. Secure in-app upgrades require a signed
 app, update helper and installer. This public unsigned beta intentionally refuses
 in-app update installation; download updates from the website instead. See
 UPDATES.md for future signed release qualification and the beta-to-stable procedure.
-Spoken line/paragraph commands now retain leading/trailing breaks and explicit
-punctuation. Automatic spacing/capitalization using preceding cursor text remains
+Spoken line/paragraph commands now retain leading/trailing breaks. Punctuation
+around them follows the macOS rules: a full stop after a line of up to four words
+before a command becomes a comma (salutations, sign-offs), and a last line of up
+to four words gets no full stop (signatures). Automatic spacing/capitalization using preceding cursor text remains
 under investigation; a new native two-dictation test suite documents the limits.
