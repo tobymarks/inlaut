@@ -113,13 +113,15 @@ jobs:
           $previous = Join-Path $env:RUNNER_TEMP 'inlaut-0.7.0-beta.9-windows-x64-setup.exe'
           Invoke-WebRequest 'https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.9/inlaut-0.7.0-beta.9-windows-x64-setup.exe' -OutFile $previous
           if ((Get-FileHash $previous -Algorithm SHA256).Hash -ne 'D7EFCE35E76DEAC5AC570B416B9CE4A3E0950CA995DA52C1BC214134C70D8A61') { throw 'beta.9 installer checksum mismatch' }
-          # The default folder, where beta.9 users have it; the update must find it on its own.
-          $app = Join-Path $env:LOCALAPPDATA 'Programs\inlaut Beta'
+          # A folder the user chose, with a space: the update runs without /DIR and has to find it.
+          $app = Join-Path $env:RUNNER_TEMP 'inlaut chosen folder'
+          $default = Join-Path $env:LOCALAPPDATA 'Programs\inlaut Beta'
           $data = Join-Path $env:LOCALAPPDATA 'inlaut'
           $settings = Join-Path $data 'settings.json'
-          if (Test-Path -LiteralPath $app) { throw "Install folder already exists: $app" }
-          function Install([string]$setup, [string]$log) {
-            $process = Start-Process $setup -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/LOG=`"$log`"") -Wait -PassThru
+          $saved = Join-Path $env:RUNNER_TEMP 'inlaut-settings-saved.json'
+          foreach ($folder in @($app, $default)) { if (Test-Path -LiteralPath $folder) { throw "Install folder already exists: $folder" } }
+          function Install([string]$setup, [string]$log, [string[]]$extra = @()) {
+            $process = Start-Process $setup -ArgumentList (@('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/LOG=`"$log`"") + $extra) -Wait -PassThru
             if ($process.ExitCode -ne 0) { throw "Installation failed: $setup ($($process.ExitCode))" }
           }
           function Files([string]$root) {
@@ -128,27 +130,61 @@ jobs:
           function SameHash([string]$a, [string]$b) {
             (Get-FileHash -LiteralPath $a -Algorithm SHA256).Hash -eq (Get-FileHash -LiteralPath $b -Algorithm SHA256).Hash
           }
+          # Settings as beta.9 saves them, with a replacement and a snippet.
+          function SaveSettings([string]$language) {
+            New-Item -ItemType Directory -Force $data | Out-Null
+            [ordered]@{
+              SpeechLanguage = $language; InterfaceLanguage = 'de'; TriggerVkCode = 163; TriggerKeyName = 'Strg rechts'
+              HoldDelayMs = 300; DoubleTapWindowMs = 450; UseClipboardInsertion = $false; VoiceCommands = $true
+              SharpS = $false; MicrophoneId = ''; PlaySounds = $false; LaunchAtLogin = $false
+              AutomaticUpdates = $false; UpdateConsentAsked = $true; BetaUpdates = $true
+              IndicatorPosition = 'top'; TriggerMode = 'hold'
+              Replacements = @([ordered]@{ From = 'Strasse'; To = 'Str.' })
+              Snippets = @([ordered]@{ Phrase = 'meine Adresse'; Text = "Musterweg 1`n12345 Musterstadt" })
+            } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $settings -Encoding utf8
+            Copy-Item -LiteralPath $settings $saved -Force
+          }
+          # Start the updated app as a user would and wait until it has loaded the model the settings ask for.
+          function StartAndCheck([string]$language) {
+            Remove-Item -LiteralPath (Join-Path $data 'diagnostics'), (Join-Path $data 'crash-reports') -Recurse -Force -ErrorAction SilentlyContinue
+            $diagnostics = Join-Path $data 'diagnostics/latest.jsonl'
+            $expected = @(Get-ChildItem -LiteralPath (Join-Path $payload "models/fastconformer-$language") -File |
+              Where-Object { $_.Name -like '*.onnx' -or $_.Name -eq 'tokens.txt' } | ForEach-Object { "$($_.Name)=$($_.Length)" } | Sort-Object)
+            $process = Start-Process (Join-Path $app 'Inlaut.exe') -PassThru
+            try {
+              $ready = $null
+              $deadline = (Get-Date).AddSeconds(120)
+              while (-not $ready -and (Get-Date) -lt $deadline) {
+                if ($process.HasExited) { throw "The updated app quit while starting: $($process.ExitCode)" }
+                Start-Sleep -Seconds 1
+                try {
+                  if (Test-Path -LiteralPath $diagnostics) {
+                    $ready = Get-Content -LiteralPath $diagnostics | ForEach-Object { $_ | ConvertFrom-Json } |
+                      Where-Object { $_.stage -eq 'model-ready' } | Select-Object -First 1
+                  }
+                } catch { } # The app may be writing the line right now.
+              }
+              if (-not $ready) { throw 'The updated app did not load its model within 120 seconds.' }
+              if ($ready.version.Split('+')[0] -cne $version) { throw "The model was loaded by $($ready.version)" }
+              $loaded = @($ready.metrics.files | ForEach-Object { "$($_.name)=$($_.bytes)" } | Sort-Object)
+              if (($loaded -join ';') -cne ($expected -join ';')) { throw "The updated app did not load the '$language' model its saved settings ask for." }
+              Start-Sleep -Seconds 5
+              if ($process.HasExited) { throw "The updated app quit after loading its model: $($process.ExitCode)" }
+              if (Test-Path -LiteralPath (Join-Path $data 'crash-reports/fault.json')) { throw 'The updated app recorded an unhandled exception.' }
+            } finally {
+              if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force; $process.WaitForExit() }
+            }
+            if (-not (SameHash $saved $settings)) { throw 'The updated app changed the saved settings.' }
+          }
 
-          Install $previous (Join-Path $env:RUNNER_TEMP 'inlaut-update-beta9.log')
+          Install $previous (Join-Path $env:RUNNER_TEMP 'inlaut-update-beta9.log') @("/DIR=`"$app`"")
           $shipped = @(Files $payload)
           $dropped = @(Files $app | Where-Object { $_ -notin $shipped -and $_ -notlike 'unins000.*' })
           if ($dropped.Count -eq 0) { throw 'beta.9 installed no file that this build drops, so the test proves nothing.' }
-
-          # Settings as beta.9 saves them. English, so falling back to the defaults (German) shows.
-          New-Item -ItemType Directory -Force $data | Out-Null
-          [ordered]@{
-            SpeechLanguage = 'en'; InterfaceLanguage = 'de'; TriggerVkCode = 163; TriggerKeyName = 'Strg rechts'
-            HoldDelayMs = 300; DoubleTapWindowMs = 450; UseClipboardInsertion = $false; VoiceCommands = $true
-            SharpS = $false; MicrophoneId = ''; PlaySounds = $false; LaunchAtLogin = $false
-            AutomaticUpdates = $false; UpdateConsentAsked = $true; BetaUpdates = $true
-            IndicatorPosition = 'top'; TriggerMode = 'hold'
-            Replacements = @([ordered]@{ From = 'Strasse'; To = 'Str.' })
-            Snippets = @([ordered]@{ Phrase = 'meine Adresse'; Text = "Musterweg 1`n12345 Musterstadt" })
-          } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $settings -Encoding utf8
-          $saved = Join-Path $env:RUNNER_TEMP 'inlaut-settings-before-update.json'
-          Copy-Item -LiteralPath $settings $saved
+          SaveSettings 'en'
 
           Install $installer (Join-Path $env:RUNNER_TEMP 'inlaut-update-beta10.log')
+          if (Test-Path -LiteralPath $default) { throw "The update ignored the existing folder and installed into $default" }
           $product = [Diagnostics.FileVersionInfo]::GetVersionInfo((Join-Path $app 'Inlaut.exe')).ProductVersion
           if ($product.Split('+')[0] -cne $version) { throw "The update did not replace the app in its folder: $product" }
           $left = @(Files $app | Where-Object { $_ -notin $shipped -and $_ -notlike 'unins000.*' })
@@ -158,42 +194,18 @@ jobs:
           }
           if (-not (SameHash $saved $settings)) { throw 'The update changed the settings file.' }
 
-          # Start the updated app as a user would and wait until it has loaded the model the settings ask for.
-          Remove-Item -LiteralPath (Join-Path $data 'diagnostics'), (Join-Path $data 'crash-reports') -Recurse -Force -ErrorAction SilentlyContinue
-          $diagnostics = Join-Path $data 'diagnostics/latest.jsonl'
-          $english = @(Get-ChildItem -LiteralPath (Join-Path $payload 'models/fastconformer-en') -File |
-            Where-Object { $_.Name -like '*.onnx' -or $_.Name -eq 'tokens.txt' } | ForEach-Object { "$($_.Name)=$($_.Length)" } | Sort-Object)
-          $process = Start-Process (Join-Path $app 'Inlaut.exe') -PassThru
-          try {
-            $ready = $null
-            $deadline = (Get-Date).AddSeconds(120)
-            while (-not $ready -and (Get-Date) -lt $deadline) {
-              if ($process.HasExited) { throw "The updated app quit while starting: $($process.ExitCode)" }
-              Start-Sleep -Seconds 1
-              try {
-                if (Test-Path -LiteralPath $diagnostics) {
-                  $ready = Get-Content -LiteralPath $diagnostics | ForEach-Object { $_ | ConvertFrom-Json } |
-                    Where-Object { $_.stage -eq 'model-ready' } | Select-Object -First 1
-                }
-              } catch { } # The app may be writing the line right now.
-            }
-            if (-not $ready) { throw 'The updated app did not load its model within 120 seconds.' }
-            if ($ready.version.Split('+')[0] -cne $version) { throw "The model was loaded by $($ready.version)" }
-            $loaded = @($ready.metrics.files | ForEach-Object { "$($_.name)=$($_.bytes)" } | Sort-Object)
-            if (($loaded -join ';') -cne ($english -join ';')) { throw 'The updated app did not load the English model its saved settings ask for.' }
-            Start-Sleep -Seconds 5
-            if ($process.HasExited) { throw "The updated app quit after loading its model: $($process.ExitCode)" }
-            if (Test-Path -LiteralPath (Join-Path $data 'crash-reports/fault.json')) { throw 'The updated app recorded an unhandled exception.' }
-          } finally {
-            if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force; $process.WaitForExit() }
-          }
-          if (-not (SameHash $saved $settings)) { throw 'The updated app changed the saved settings.' }
+          # Without a settings file the app picks English on a non-German Windows and German on
+          # a German one; a file it cannot read gives German. Only a file the app finds and reads
+          # passes both starts.
+          StartAndCheck 'en'
+          SaveSettings 'de'
+          StartAndCheck 'de'
 
           $process = Start-Process (Join-Path $app 'unins000.exe') -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=`"$(Join-Path $env:RUNNER_TEMP 'inlaut-update-uninstall.log')`"") -Wait -PassThru
           if ($process.ExitCode -ne 0) { throw "Uninstall after the update failed: $($process.ExitCode)" }
           if (Test-Path -LiteralPath (Join-Path $app 'Inlaut.exe')) { throw 'Uninstall left the updated application behind.' }
           if (-not (SameHash $saved $settings)) { throw 'Uninstall changed the saved settings.' }
-          Write-Output "The update over beta.9 removed all $($dropped.Count) files this build no longer ships, kept the settings, and the app started with the English model they select."
+          Write-Output "The update over beta.9 found its folder, removed all $($dropped.Count) files this build no longer ships, kept the settings, and the app started with the English and then the German model they select."
 
       - name: Upload UI regression screenshots
         uses: actions/upload-artifact@v4
