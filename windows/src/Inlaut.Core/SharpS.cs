@@ -49,13 +49,20 @@ public static class SharpS
         new("draußen", Anchor.Word),
         new("äuß"),                         // äußern, äußerst, Äußerung
         // Nouns
-        new("straße"),                      // Straßen, Hauptstraße
+        new("straße", unless: ["gleistrass", "keitstrass"]),  // Hauptstraße – not Gleis|trasse
         new("fuß", unless: ["fussel"]),     // Fußball, barfuß
         new("füße", Anchor.Word),           // not the town Füssen
         new("gruß"),
-        new("grüß"),                        // grüßen, Grüße
-        new("spaß"),
-        new("späß"),
+        new("grüß", unless: ["rüssel"]),    // grüßen, Grüße – not Saug|rüssel
+        new("spaß", Anchor.Start),          // spaßig, Spaßvogel – not Gesundheits|pass, Einkaufs|passage
+        new("späß", Anchor.Start),
+        new("riesenspaß"),                  // X|spaß and Xs|pass look alike, so only the usual compounds
+        new("heidenspaß"),
+        new("mordsspaß"),
+        new("fahrspaß"),
+        new("spielspaß"),
+        new("badespaß"),
+        new("ferienspaß"),
         new("maßnahm"),
         new("maßstab"),
         new("maßgeb"),                      // maßgeblich, maßgebend
@@ -70,7 +77,7 @@ public static class SharpS
         new("stöß"),
         new("reißverschluss"),              // reiß alone would hit Preis|senkung
         // Verbs with a long vowel before the ß
-        new("ließ"),                        // ließ, schließen, fließend, verließ
+        new("ließ", unless: ["vliess"]),    // ließ, schließen, fließend, verließ – not Vlies|stoff
         new("hieß"),                        // hieß, schießen
         new("gieß"),
         new("genieß"),

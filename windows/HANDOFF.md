@@ -533,7 +533,11 @@ depended on the Windows culture). They now follow Sources/*.swift rule for rule.
 TestData/text-pipeline.json holds shared cases that CoreSmoke (invariant, German and
 Turkish culture) and Tests/TextPipelineCorpusTests.swift both run; a text change on
 either platform updates that file. Swiss and Liechtenstein installs start with the ß
-step off, as on the Mac.
+step off, as on the Mac. A scan of the 14,573 ss words in a public German word list
+(davidak/wortliste) then showed rules that also hit compound joints on both platforms
+("Einkaufs|passage" → "Einkaufspaßage", "Vlies|stoff", "Gleis|trasse", "Saug|rüssel");
+Spaß is now anchored to the start of a word plus its usual compounds, and the
+sharps-leaves-compound-joints case keeps them out.
 
 Voice commands, decided by the maintainer: punctuation follows the macOS rules (tuned
 to Parakeet Ultra, which ends salutations and sign-offs with a full stop), and line

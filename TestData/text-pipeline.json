@@ -58,6 +58,18 @@
       "expected": "Fußgängerstraße Großstraße großgrüßen Straßenstraße"
     },
     {
+      "id": "sharps-leaves-compound-joints",
+      "step": "sharpS",
+      "input": "Einkaufspassage Buspassagier Johannespassion Zugangspasswort Gesundheitspass Tagespass Gebirgspässe Vliesstoff Gleistrasse Hochgeschwindigkeitstrasse Saugrüssel trespass dispassionate",
+      "expected": "Einkaufspassage Buspassagier Johannespassion Zugangspasswort Gesundheitspass Tagespass Gebirgspässe Vliesstoff Gleistrasse Hochgeschwindigkeitstrasse Saugrüssel trespass dispassionate"
+    },
+    {
+      "id": "sharps-spass-compounds",
+      "step": "sharpS",
+      "input": "spassig, Spassvogel, Riesenspass, Heidenspass, Mordsspass, Fahrspass, Spielspass, Badespass, Ferienspassaktion, Durchgangsstrasse, Geschwindigkeitsstrasse, schliessen, Begrüssung",
+      "expected": "spaßig, Spaßvogel, Riesenspaß, Heidenspaß, Mordsspaß, Fahrspaß, Spielspaß, Badespaß, Ferienspaßaktion, Durchgangsstraße, Geschwindigkeitsstraße, schließen, Begrüßung"
+    },
+    {
       "id": "sharps-each-word",
       "step": "sharpS",
       "input": "Grüsse und Grüsse, draussen und draussen",
