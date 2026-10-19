@@ -542,7 +542,8 @@ sharps-leaves-compound-joints case keeps them out.
 Voice commands, decided by the maintainer: punctuation follows the macOS rules (tuned
 to Parakeet Ultra, which ends salutations and sign-offs with a full stop), and line
 breaks from a command at the start or end of a dictation stay on both platforms (#20;
-the released Mac 0.5.0 still trims them, the next Mac release keeps them).
+the released Mac 0.5.0 still trims them and cuts a final "..." on a short last line to
+".."; the next Mac release keeps both).
 This reverses the beta.6 change that kept explicit punctuation around short lines:
 "Das passt. Neue Zeile. Ich komme morgen vorbei." now gives "Das passt,\nIch komme
 morgen vorbei" on both. TransitionChecks records the two command cases as formatting
@@ -550,12 +551,15 @@ gaps for that reason. On the Mac, tidying and self-corrections keep a leading br
 
 The app targets .NET 10 (.NET 8 support ends 2026-11-10). The installer's
 [InstallDelete] removes files only the .NET 8 build installed. CI's "Verify update over
-the published beta.9" step installs the published beta.9 (pinned SHA-256) into the default
-folder, saves English settings with a replacement and a snippet, installs this build over
-it and requires: no file left that this build does not ship, every shipped file identical,
-the settings file untouched by the update, the app and the uninstall, and the updated
-app reporting model-ready with the English model those settings select. A real Windows
-PC has not run the update yet. The pinned WinForms/WPF notices follow the runtime
+the published beta.9" step installs the published beta.9 (pinned SHA-256) into a chosen
+folder with a space, saves settings with a replacement and a snippet, and installs this
+build over it without /DIR. It requires: the installer finds that folder (nothing lands in
+the default one), no file left that this build does not ship, every shipped file identical,
+the settings file untouched by the update, the app and the uninstall, and the updated app
+reporting model-ready with the model its settings select, first English, then German.
+Without a settings file the app picks English on a non-German Windows and German on a
+German one, and an unreadable file gives German, so only a file the app finds and reads
+passes both starts. A real Windows PC has not run the update yet. The pinned WinForms/WPF notices follow the runtime
 patch, so CI fails by design after each .NET patch until notices and pin are refreshed.
 
 ## 0.7.0-beta.10 release preparation (2026-10-19)
