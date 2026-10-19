@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 
 namespace Inlaut.App;
@@ -14,7 +15,9 @@ public class AppSettings
     public int DoubleTapWindowMs { get; set; } = 400;
     public bool UseClipboardInsertion { get; set; } = false;
     public bool VoiceCommands { get; set; } = true;
-    public bool SharpS { get; set; } = true;
+    // Swiss standard German writes ss. As on the Mac, the ß step starts off in
+    // Switzerland and Liechtenstein; a saved setting always wins.
+    public bool SharpS { get; set; } = RegionInfo.CurrentRegion.TwoLetterISORegionName is not ("CH" or "LI");
     public string MicrophoneId { get; set; } = "";
     public bool PlaySounds { get; set; }
     public bool LaunchAtLogin { get; set; }

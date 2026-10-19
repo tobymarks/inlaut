@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -5,7 +6,8 @@ namespace Inlaut.Core;
 
 public record Snippet(string Phrase, string Text)
 {
-    public static string Key(string text) => string.Join(" ", Regex.Matches(text.ToLowerInvariant().Replace("ß", "ss"), @"[\p{L}\p{N}]+")
+    // Composed first, as the Mac compares canonically equivalent text as equal.
+    public static string Key(string text) => string.Join(" ", Regex.Matches(text.Normalize(NormalizationForm.FormC).ToLowerInvariant().Replace("ß", "ss"), @"[\p{L}\p{N}]+")
         .Select(m => m.Value));
 }
 

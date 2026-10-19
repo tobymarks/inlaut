@@ -79,3 +79,5 @@ foreach (var (input, expected) in new[]
 if (commands.ProcessDictation("draussen neue Zeile füsse.") != "draußen\nFüße.")
     throw new Exception("Spelling after spoken line-break processing differs.");
 Console.WriteLine("PASS: German spelling at punctuation/Unicode/whitespace boundaries and after spoken line breaks; exceptions preserved");
+
+CorpusChecks.Run();

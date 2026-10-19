@@ -7,12 +7,14 @@ on:
       - '.github/workflows/windows.yml'
       - '.gitattributes'
       - 'global.json'
+      - 'TestData/**'
   pull_request:
     paths:
       - 'windows/**'
       - '.github/workflows/windows.yml'
       - '.gitattributes'
       - 'global.json'
+      - 'TestData/**'
   workflow_dispatch:
 
 permissions:
