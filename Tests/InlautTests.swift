@@ -206,6 +206,17 @@ final class TextProcessingTests: XCTestCase {
         XCTAssertEqual(TextPolish.tidy(mixed, languages: [.german, .english]), mixed)
         // A spoken line break at either end of a dictation stays (#20).
         XCTAssertEqual(TextPolish.tidy("\n\nÄhm, danke dir ähm\n", languages: german), "\n\nDanke dir\n")
+        // Also with the filler between the command and the edge.
+        let tidying = TextPipeline(languages: german, tidy: true)
+        XCTAssertEqual(tidying.dictation("Das ist der erste Absatz, neuer Absatz, ähm."), "Das ist der erste Absatz.\n\n")
+        XCTAssertEqual(tidying.dictation("Hallo, neue Zeile, ähm."), "Hallo,\n")
+        XCTAssertEqual(tidying.dictation("Ähm, neuer Absatz, danke dir."), "\n\nDanke dir")
+        XCTAssertEqual(tidying.dictation("Ähm, neue Zeile."), "\n")
+        XCTAssertEqual(tidying.dictation("Ähm."), "")
+        XCTAssertEqual(tidying.dictation("Gut. Ähm neuer Absatz danke dir."), "Gut.\n\nDanke dir")
+        XCTAssertEqual(tidying.dictation("Tobias! Ähm neuer Absatz"), "Tobias!\n\n")
+        XCTAssertEqual(tidying.dictation("Ich neue Zeile hm neuer Absatz"), "Ich\n\n")
+        XCTAssertEqual(tidying.dictation("Wir kommen hm? Äh. Hm? Ähm?"), "Wir kommen?")
     }
 
     func testCorrectionNeedsACorrectionWordAfterACommaAndSomethingOfTheSameKind() {

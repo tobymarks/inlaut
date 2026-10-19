@@ -198,24 +198,30 @@ enum TextPolish {
             guard let end = gap.lastIndex(where: { ".!?…:;".contains($0) || $0.isNewline }) else { return "" }
             return String(gap[...end])
         }
+        // What ended the sentence in front of the dropped words, and the line
+        // breaks said around them, at most a blank line (#20).
+        func joined(_ pieces: [String]) -> String {
+            let marks = (pieces.first { !$0.isEmpty } ?? "").filter { !$0.isNewline }
+            return marks + String(pieces.joined().filter(\.isNewline).prefix(2))
+        }
         var out = ""
         var cursor = text.startIndex
         var last: String?                                                  // the word before the gap
-        var pending: (first: String, later: String, capitalize: Bool)?    // gaps of the words dropped so far
+        var pending: (first: String, later: [String], capitalize: Bool)?  // gaps of the words dropped so far
         for (index, token) in tokens.enumerated() {
             let gap = String(text[cursor..<token.range.lowerBound])
             cursor = token.range.upperBound
             if drop.contains(index) {
-                pending = (pending?.first ?? gap, (pending.map { $0.later + structure(gap) } ?? ""),
+                pending = (pending?.first ?? gap, pending.map { $0.later + [structure(gap)] } ?? [],
                            (pending?.capitalize ?? false) || token.startsSentence)
                 continue
             }
             var word = String(text[token.range])
             if let dropped = pending {
-                let kept = [structure(dropped.first), dropped.later, structure(gap)].first { !$0.isEmpty } ?? ""
+                let kept = joined([structure(dropped.first)] + dropped.later + [structure(gap)])
                 if out.isEmpty {
                     // Line breaks before the first word are a spoken command (#20).
-                    out = String(dropped.first.filter(\.isNewline))
+                    out = String(kept.filter(\.isNewline))
                 } else if !kept.isEmpty {
                     out += kept + (kept.last!.isNewline ? "" : " ")
                 } else {
@@ -229,6 +235,9 @@ enum TextPolish {
             out += word
             last = token.word
         }
-        return out + text[cursor...]
+        guard let dropped = pending else { return out + text[cursor...] }
+        // Words dropped at the end leave what closed the text: "Absatz.\n\n", "Hallo,\n" (#20).
+        let tail = joined([structure(dropped.first)] + dropped.later + [String(text[cursor...])])
+        return out + (out.isEmpty ? String(tail.filter(\.isNewline)) : tail)
     }
 }
