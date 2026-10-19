@@ -8,7 +8,7 @@
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <RootNamespace>Inlaut.App</RootNamespace>
     <AssemblyName>Inlaut</AssemblyName>
-    <Version>0.7.0-beta.9</Version>
+    <Version>0.7.0-beta.10</Version>
   </PropertyGroup>
 
   <ItemGroup>

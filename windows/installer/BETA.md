@@ -1,6 +1,6 @@
 # Windows beta
 
-This is the public unsigned beta 0.7.0-beta.9, not a general production release.
+This is the public unsigned beta 0.7.0-beta.10, not a general production release.
 Download only from https://inlaut.de/windows (German) or
 https://inlaut.de/en/windows (English), which link to the project's GitHub release.
 Windows may display SmartScreen ("Windows protected your PC") or an unknown
@@ -101,8 +101,18 @@ Downloads/installations require a click. Secure in-app upgrades require a signed
 app, update helper and installer. This public unsigned beta intentionally refuses
 in-app update installation; download updates from the website instead. See
 UPDATES.md for future signed release qualification and the beta-to-stable procedure.
-Spoken line/paragraph commands now retain leading/trailing breaks. Punctuation
-around them follows the macOS rules: a full stop after a line of up to four words
-before a command becomes a comma (salutations, sign-offs), and a last line of up
-to four words gets no full stop (signatures). Automatic spacing/capitalization using preceding cursor text remains
+Spoken line/paragraph commands now retain leading/trailing breaks and explicit
+punctuation. Automatic spacing/capitalization using preceding cursor text remains
 under investigation; a new native two-dictation test suite documents the limits.
+
+### Beta.10 updates
+Text steps follow the macOS rules, checked against shared test cases on both
+platforms. Punctuation around voice commands changes from beta.6-9: a full stop
+after a line of up to four words before a command becomes a comma (salutations,
+sign-offs), a last line of up to four words gets no full stop (signatures), and a
+comma after a longer line becomes a full stop. The German ß correction knows all
+macOS rules, corrects every occurrence in a word, keeps SS in capitals and leaves
+compound joints such as "Einkaufspassage" alone. It starts off in Switzerland and
+Liechtenstein unless a saved setting says otherwise. Replacements treat ß and ss
+as the same in every Windows language. The app runs on .NET 10; updating over
+beta.9 removes files only the .NET 8 build needed.

@@ -541,13 +541,28 @@ sharps-leaves-compound-joints case keeps them out.
 
 Voice commands, decided by the maintainer: punctuation follows the macOS rules (tuned
 to Parakeet Ultra, which ends salutations and sign-offs with a full stop), and line
-breaks from a command at the start or end of a dictation stay on both platforms (#20).
+breaks from a command at the start or end of a dictation stay on both platforms (#20;
+the released Mac 0.5.0 still trims them, the next Mac release keeps them).
 This reverses the beta.6 change that kept explicit punctuation around short lines:
 "Das passt. Neue Zeile. Ich komme morgen vorbei." now gives "Das passt,\nIch komme
 morgen vorbei" on both. TransitionChecks records the two command cases as formatting
 gaps for that reason. On the Mac, tidying and self-corrections keep a leading break.
 
 The app targets .NET 10 (.NET 8 support ends 2026-11-10). The installer's
-[InstallDelete] removes files only the .NET 8 build installed; an upgrade over beta.9
-has not been run on Windows yet. The pinned WinForms/WPF notices follow the runtime
+[InstallDelete] removes files only the .NET 8 build installed. CI's "Verify update over
+the published beta.9" step installs the published beta.9 (pinned SHA-256) into the default
+folder, saves English settings with a replacement and a snippet, installs this build over
+it and requires: no file left that this build does not ship, every shipped file identical,
+the settings file untouched by the update, the app and the uninstall, and the updated
+app reporting model-ready with the English model those settings select. A real Windows
+PC has not run the update yet. The pinned WinForms/WPF notices follow the runtime
 patch, so CI fails by design after each .NET patch until notices and pin are refreshed.
+
+## 0.7.0-beta.10 release preparation (2026-10-19)
+
+The release commit bumps Inlaut.App.csproj, BETA.md, the READMEs, the site sources and
+site/docs/windows-beta-release.md to 0.7.0-beta.10 and adds release-notes/0.7.0-beta.10.md.
+As with beta.9, the site source already links the beta.10 asset; the GitHub prerelease
+and the site deployment are separate steps that need the maintainer's go, in the order
+of site/docs/windows-beta-release.md. Publish only the inlaut-windows-release artifact of
+the push run of the tagged commit (BUILD.txt names it), and only while that run is green.

@@ -4,11 +4,11 @@ The maintainer approved an unsigned public Windows beta on 2026-10-17 after the 
 
 ## Release configuration
 
-- Version: `0.7.0-beta.9`
-- GitHub prerelease tag: `windows-v0.7.0-beta.9`; do not mark it latest or replace the stable macOS release.
-- Installer: `https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.9/inlaut-0.7.0-beta.9-windows-x64-setup.exe`
+- Version: `0.7.0-beta.10`
+- GitHub prerelease tag: `windows-v0.7.0-beta.10`; do not mark it latest or replace the stable macOS release.
+- Installer: `https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.10/inlaut-0.7.0-beta.10-windows-x64-setup.exe`
 - Landing pages: `/windows` and `/en/windows`, linked throughout both language sites. Only these pages link directly to the EXE, so visitors see the unsigned-beta notice before downloading.
-- Download event: `download-windows`, with version `0.7.0-beta.9` and position `windows-download`.
+- Download event: `download-windows`, with version `0.7.0-beta.10` and position `windows-download`.
 
 ## Published guidance
 
