@@ -114,7 +114,7 @@
   <meta property="og:image:height" content="672">
   <meta property="og:image:alt" content="inlaut: Your voice. Straight to text. Dictation, locally on your Mac.">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="/style.css?v=windows-platforms2">
+  <link rel="stylesheet" href="/style.css?v=said1">
   <script defer src="https://analytics.inlaut.de/script.js" data-website-id="9bad3c0b-4c57-4cd6-a1e9-fea54ea4d005"></script>
   <script src="/lang-switch.js" defer></script>
   <script type="application/ld+json" id="faq-schema">
@@ -302,6 +302,31 @@
 
     <div class="wrap"><div class="principles" aria-label="The essentials"><span>No cloud.</span><span>No account.</span><span>Your words stay with you.</span></div></div>
 
+    <section class="wrap said-written" id="before-after" aria-labelledby="said-title">
+      <div class="section-heading"><h2 id="said-title">Said. Written.</h2><p>Speech sounds different from writing. Three examples: what you say and what ends up in the text field.</p></div>
+      <div class="said-grid">
+        <article class="said-card">
+          <h3>Fillers and repeats</h3>
+          <p class="said-spoken"><span class="said-label">Said</span><del>Uh,</del> <del>I’ll send you,</del> I’ll send you the quote tomorrow morning.</p>
+          <p class="said-text"><span class="said-label">In the text field</span>I’ll send you the quote tomorrow morning.</p>
+          <p class="said-note">Setting “Tidy up dictations”</p>
+        </article>
+        <article class="said-card">
+          <h3>Self-corrections</h3>
+          <p class="said-spoken"><span class="said-label">Said</span>Let’s talk <del>on Monday, no,</del> on Tuesday at ten.</p>
+          <p class="said-text"><span class="said-label">In the text field</span>Let’s talk on Tuesday at ten.</p>
+          <p class="said-note">“Resolve self-corrections (beta)”. Apple Intelligence checks on your Mac whether it really was a correction.</p>
+        </article>
+        <article class="said-card">
+          <h3>Paragraphs as you speak</h3>
+          <p class="said-spoken"><span class="said-label">Said</span>Hi Sarah, <span class="said-cmd">new paragraph</span>, attached is the quote for the new kitchen. <span class="said-cmd">New paragraph</span>, best regards, <span class="said-cmd">new line</span>, Mehmet Yilmaz.</p>
+          <p class="said-text"><span class="said-label">In the text field</span>Hi Sarah,<br><br>Attached is the quote for the new kitchen.<br><br>Best regards,<br>Mehmet Yilmaz</p>
+          <p class="said-note">Always on, in German “neue Zeile” and “neuer Absatz”</p>
+        </article>
+      </div>
+      <p class="said-footnote">inlaut only deletes words you said and adds line breaks. It never rewrites or adds anything. Tidying and self-corrections are off until you turn them on.</p>
+    </section>
+
     <section class="wrap features-section" aria-labelledby="features-title">
       <div class="section-heading"><h2 id="features-title">Room for your thoughts.</h2><p>inlaut stays in the background. And it’s there when you have something to say.</p></div>
       <div class="features">
@@ -409,6 +434,7 @@
           </article>
       </div>
       <p class="persona-note">The people are fictional examples. Their images are AI-generated and labeled “AI”.</p>
+      <p class="usecase-more">Learn more: <a href="/en/dictate-emails">Dictate emails</a> <span aria-hidden="true">·</span> <a href="/en/dictate-prompts">Prompts for AI assistants</a> <span aria-hidden="true">·</span> <a href="/en/audio-to-text">Convert audio to text</a></p>
     </section>
 
     <section class="wrap faq" id="faq" aria-labelledby="faq-title">

@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://inlaut.de/</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/"/>
@@ -20,7 +20,7 @@
   </url>
   <url>
     <loc>https://inlaut.de/en</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/"/>
@@ -133,4 +133,46 @@
   </url>
   <url><loc>https://inlaut.de/windows</loc><lastmod>2026-10-18</lastmod><xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/windows"/><xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/windows"/></url>
   <url><loc>https://inlaut.de/en/windows</loc><lastmod>2026-10-18</lastmod><xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/windows"/><xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/windows"/></url>
+  <url>
+    <loc>https://inlaut.de/e-mails-diktieren</loc>
+    <lastmod>2026-10-20</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/e-mails-diktieren"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/dictate-emails"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/e-mails-diktieren"/>
+  </url>
+  <url>
+    <loc>https://inlaut.de/en/dictate-emails</loc>
+    <lastmod>2026-10-20</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/e-mails-diktieren"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/dictate-emails"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/e-mails-diktieren"/>
+  </url>
+  <url>
+    <loc>https://inlaut.de/prompts-diktieren</loc>
+    <lastmod>2026-10-20</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/prompts-diktieren"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/dictate-prompts"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/prompts-diktieren"/>
+  </url>
+  <url>
+    <loc>https://inlaut.de/en/dictate-prompts</loc>
+    <lastmod>2026-10-20</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/prompts-diktieren"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/dictate-prompts"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/prompts-diktieren"/>
+  </url>
+  <url>
+    <loc>https://inlaut.de/audio-in-text</loc>
+    <lastmod>2026-10-20</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/audio-in-text"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/audio-to-text"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/audio-in-text"/>
+  </url>
+  <url>
+    <loc>https://inlaut.de/en/audio-to-text</loc>
+    <lastmod>2026-10-20</lastmod>
+    <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/audio-in-text"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/audio-to-text"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/audio-in-text"/>
+  </url>
 </urlset>
