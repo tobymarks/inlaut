@@ -26,7 +26,7 @@ The app and website use the **Sprachimpuls / Petrol & Mint** brand kit, with nat
 
 ## Download for macOS
 
-[Download inlaut 0.5.0](https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0-en.dmg) ([German disk image](https://github.com/tobymarks/inlaut/releases/download/v0.5.0/Inlaut-0.5.0.dmg)) for Apple Silicon and macOS 26 or later. Open the DMG, drag inlaut onto the Applications folder, then open inlaut from Applications. You can eject the disk image after copying. Both the app and the DMG are Developer ID signed and notarized by Apple.
+[Download inlaut 0.5.1](https://github.com/tobymarks/inlaut/releases/download/v0.5.1/Inlaut-0.5.1-en.dmg) ([German disk image](https://github.com/tobymarks/inlaut/releases/download/v0.5.1/Inlaut-0.5.1.dmg)) for Apple Silicon and macOS 26 or later. Open the DMG, drag inlaut onto the Applications folder, then open inlaut from Applications. You can eject the disk image after copying. Both the app and the DMG are Developer ID signed and notarized by Apple.
 
 Or with Homebrew:
 

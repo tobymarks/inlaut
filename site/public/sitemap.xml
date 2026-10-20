@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://inlaut.de/</loc>
-    <lastmod>2026-10-19</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/"/>
@@ -20,7 +20,7 @@
   </url>
   <url>
     <loc>https://inlaut.de/en</loc>
-    <lastmod>2026-10-19</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/"/>
@@ -71,7 +71,7 @@
   </url>
   <url>
     <loc>https://inlaut.de/unternehmen</loc>
-    <lastmod>2026-10-19</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/unternehmen"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/business"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/unternehmen"/>
@@ -80,7 +80,7 @@
   </url>
   <url>
     <loc>https://inlaut.de/en/business</loc>
-    <lastmod>2026-10-19</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/unternehmen"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/business"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/unternehmen"/>
@@ -116,7 +116,7 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/superwhisper-alternative"/>
   </url>
   <url>
-    <loc>https://inlaut.de/kanzleien-praxen</loc><lastmod>2026-10-19</lastmod>
+    <loc>https://inlaut.de/kanzleien-praxen</loc><lastmod>2026-10-20</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/kanzleien-praxen" />
     <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/legal-healthcare" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/kanzleien-praxen" />
@@ -124,13 +124,13 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://inlaut.de/en/legal-healthcare</loc><lastmod>2026-10-19</lastmod>
+    <loc>https://inlaut.de/en/legal-healthcare</loc><lastmod>2026-10-20</lastmod>
     <xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/kanzleien-praxen" />
     <xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/legal-healthcare" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://inlaut.de/kanzleien-praxen" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url><loc>https://inlaut.de/windows</loc><lastmod>2026-10-19</lastmod><xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/windows"/><xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/windows"/></url>
-  <url><loc>https://inlaut.de/en/windows</loc><lastmod>2026-10-19</lastmod><xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/windows"/><xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/windows"/></url>
+  <url><loc>https://inlaut.de/windows</loc><lastmod>2026-10-20</lastmod><xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/windows"/><xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/windows"/></url>
+  <url><loc>https://inlaut.de/en/windows</loc><lastmod>2026-10-20</lastmod><xhtml:link rel="alternate" hreflang="de" href="https://inlaut.de/windows"/><xhtml:link rel="alternate" hreflang="en" href="https://inlaut.de/en/windows"/></url>
 </urlset>

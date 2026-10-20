@@ -9,6 +9,18 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <description>Neue Versionen von inlaut für macOS.</description>
         <language>de</language>
         <item>
+            <title>0.5.1</title>
+            <pubDate>Tue, 20 Oct 2026 11:13:39 +0200</pubDate>
+            <link>https://inlaut.de</link>
+            <sparkle:version>7</sparkle:version>
+            <sparkle:shortVersionString>0.5.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <sparkle:releaseNotesLink xml:lang="de" sparkle:edSignature="1+dDzItXvVlHTZvD/Py7caz68O7RYrDGTElJDdjIL2GPtpGlXN0YHzQJKizvMAARwROOaJTY1zmnWcqgDQ2nDg==" sparkle:length="1111">https://inlaut.de/updates/notes/Inlaut-0.5.1.de.html</sparkle:releaseNotesLink>
+            <sparkle:releaseNotesLink xml:lang="en" sparkle:edSignature="RyqSH04a7Ys3DK9dGF3XpPZ990l28xj5jsBV2AOClFnK8sq0Q5DKiGN5wfjaa1yG9UuefMo6GQR0VZ4glUMiBg==" sparkle:length="1052">https://inlaut.de/updates/notes/Inlaut-0.5.1.en.html</sparkle:releaseNotesLink>
+            <enclosure url="https://github.com/tobymarks/inlaut/releases/download/v0.5.1/Inlaut-0.5.1.zip" length="6645304" type="application/octet-stream" sparkle:edSignature="Zz6Ty0QZu3e7xV5lph+KGH0TNXKlIK0mtflFLAv5dR2EGYtSkQFT+2Vhb08B7Wef1AJeD8d8AcKPbYcdFXH9Cg=="/>
+        </item>
+        <item>
             <title>0.5.0</title>
             <pubDate>Tue, 13 Oct 2026 00:35:13 +0200</pubDate>
             <link>https://inlaut.de</link>
@@ -32,21 +44,9 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
             <sparkle:releaseNotesLink xml:lang="en" sparkle:edSignature="rlE7KmzqlzSNy5yTairIbYE0ihtj+S1JTC8u9X/b0mnrqVPOP+aWwuTcSXZ3nuPMHwJB8zscqG3GBvE/dGK4Bg==" sparkle:length="1140">https://inlaut.de/updates/notes/Inlaut-0.4.0.en.html</sparkle:releaseNotesLink>
             <enclosure url="https://github.com/tobymarks/inlaut/releases/download/v0.4.0/Inlaut-0.4.0.zip" length="6586074" type="application/octet-stream" sparkle:edSignature="QW7ONBhIvF2W3E8H4bMcXsdseEHEIdo+8Fc7WMe0XLrwPht0nWGt4QCnQn0NucHHo0bDFo1g/oLiCz9tjuVCCQ=="/>
         </item>
-        <item>
-            <title>0.3.0</title>
-            <pubDate>Sat, 10 Oct 2026 07:38:26 +0200</pubDate>
-            <link>https://inlaut.de</link>
-            <sparkle:version>4</sparkle:version>
-            <sparkle:shortVersionString>0.3.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
-            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <sparkle:releaseNotesLink xml:lang="de" sparkle:edSignature="/BCgITtt0rPB08fpgL9oknVlHhAgRLplo2RyXCttZCxr/JydN4ZnA+53ADZcadxsRrEbPxVHH2IbTnJgEiufAQ==" sparkle:length="1413">https://inlaut.de/updates/notes/Inlaut-0.3.0.de.html</sparkle:releaseNotesLink>
-            <sparkle:releaseNotesLink xml:lang="en" sparkle:edSignature="LoNklHA7tD5MGHsOv5IVQ4MEqL1/DR3tQcIEBp063LnOjPEPLjSsUGrsRA6qoSxBxbbG2WBIfDqr8i49oEVFBw==" sparkle:length="1277">https://inlaut.de/updates/notes/Inlaut-0.3.0.en.html</sparkle:releaseNotesLink>
-            <enclosure url="https://github.com/tobymarks/inlaut/releases/download/v0.3.0/Inlaut-0.3.0.zip" length="6531018" type="application/octet-stream" sparkle:edSignature="wSSCPn6V4FBWK7GTo8afPKcEYfhze2yjK4DKa2QC5nYcV7pIlXQ+X8k9IaciOm8dJ0P05qqSZ5QrzVRWCd74Ag=="/>
-        </item>
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: 9BUvob9mR3HQRbeusOg4g69pI0FTP4QBWs6ZR0kZNn5HYrfCcadbVsMjpNA5oZZYyOGLSC0P7gABWyDP7IyDCw==
+edSignature: F+EpX/y0o0tirbGn3keOP+Gd1VRsec4NAhmeLLjQFjNC/0IqJJqw0De1f8qi0/4b86mdOiODThPSLIWY4VfyAA==
 length: 4349
 -->

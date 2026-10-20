@@ -1,7 +1,7 @@
 # inlaut
 
-> inlaut ist eine kostenlose Open-Source-Diktier-App für Mac und Windows. Sprache wird lokal auf dem jeweiligen Computer erkannt, ohne Cloud-Konto. macOS 0.5.0 ist für Apple Silicon ab macOS 26 verfügbar; Windows 0.7.0-beta.10 ist eine unsignierte Beta für Windows 10/11 x64. Funktionsumfang, Modelle und Installationswege unterscheiden sich.
-> English summary: inlaut is a free, open-source dictation app for Mac and Windows. Speech recognition runs locally on each computer, without a cloud account. macOS 0.5.0 requires Apple silicon and macOS 26 or later. Windows 0.7.0-beta.10 is an unsigned beta for Windows 10/11 x64. Mixed German/English dictation, Apple speech recognition, Apple Intelligence corrections and file transcription are Mac features; Windows offers separately selected German or English dictation. Details: https://inlaut.de/en and https://inlaut.de/en/windows
+> inlaut ist eine kostenlose Open-Source-Diktier-App für Mac und Windows. Sprache wird lokal auf dem jeweiligen Computer erkannt, ohne Cloud-Konto. macOS 0.5.1 ist für Apple Silicon ab macOS 26 verfügbar; Windows 0.7.0-beta.10 ist eine unsignierte Beta für Windows 10/11 x64. Funktionsumfang, Modelle und Installationswege unterscheiden sich.
+> English summary: inlaut is a free, open-source dictation app for Mac and Windows. Speech recognition runs locally on each computer, without a cloud account. macOS 0.5.1 requires Apple silicon and macOS 26 or later. Windows 0.7.0-beta.10 is an unsigned beta for Windows 10/11 x64. Mixed German/English dictation, Apple speech recognition, Apple Intelligence corrections and file transcription are Mac features; Windows offers separately selected German or English dictation. Details: https://inlaut.de/en and https://inlaut.de/en/windows
 
 ## Gemeinsam auf Mac und Windows
 
@@ -12,7 +12,7 @@
 - Normales Diktieren erzeugt keinen gespeicherten Audio- oder Textverlauf. Einstellungen, eigene Ersetzungen und Textbausteine werden lokal gespeichert. Die unten genannten Windows-Testaufnahmen sind eine ausdrücklich aktivierte Ausnahme.
 - Typische Nutzung: Mails, Angebote, Tickets, Commit-Messages, Notizen, Manuskripte und Prompts. Keine Smartphone-App, keine native Linux-App und keine Teamverwaltung.
 
-## macOS 0.5.0
+## macOS 0.5.1
 
 - Voraussetzung: Mac mit Apple Silicon, macOS 26 oder neuer. App und DMG sind mit Developer ID signiert und von Apple notarisiert.
 - Sprachen: Deutsch, Englisch und beide gemischt in einem Diktat. Einstellung Deutsch / English / Deutsch + English.
@@ -57,7 +57,7 @@
 - [inlaut für Kanzleien und Praxen](https://inlaut.de/kanzleien-praxen): Lokale Spracherkennung für Rechtsanwälte, Notare, Steuerberater und Ärzte ohne Cloud (§ 203 StGB, Art. 9 DSGVO, Open-Source-Zukunftssicherheit)
 - [inlaut for legal and healthcare](https://inlaut.de/en/legal-healthcare): the same page in English
 - [Quellcode auf GitHub](https://github.com/tobymarks/inlaut): README, Releases, Roadmap (Issues)
-- [Veröffentlichte macOS-Version 0.5.0](https://github.com/tobymarks/inlaut/releases/tag/v0.5.0)
+- [Veröffentlichte macOS-Version 0.5.1](https://github.com/tobymarks/inlaut/releases/tag/v0.5.1)
 
 ## Optional
 
