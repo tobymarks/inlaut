@@ -223,6 +223,9 @@ final class AppState {
     var snippets: [Snippet] {
         didSet { save(snippets, "snippets") }
     }
+    var appRules: [AppRule] {
+        didSet { save(appRules, "appRules") }
+    }
     var indicatorPosition: IndicatorPosition {
         didSet {
             UserDefaults.standard.set(indicatorPosition.rawValue, forKey: "indicatorPosition")
@@ -276,6 +279,8 @@ final class AppState {
     private var transcription: Task<Void, Never>?
     private var dictationID: UUID?
     private var pasteTarget: TextInserter.Target?
+    /// The app in front when the take started; its rules apply (#17).
+    private var dictationApp: String?
     private let log = Logger(subsystem: "de.tobymarks.inlaut", category: "app")
 
     /// Shorter takes are treated as an accidental tap and dropped.
@@ -317,6 +322,8 @@ final class AppState {
             .flatMap { try? JSONDecoder().decode([Replacement].self, from: $0) } ?? []
         snippets = defaults.data(forKey: "snippets")
             .flatMap { try? JSONDecoder().decode([Snippet].self, from: $0) } ?? []
+        appRules = defaults.data(forKey: "appRules")
+            .flatMap { try? JSONDecoder().decode([AppRule].self, from: $0) } ?? []
         indicatorPosition = IndicatorPosition(rawValue: defaults.string(forKey: "indicatorPosition") ?? "") ?? .bottomCenter
         indicator.position = indicatorPosition
 
@@ -755,6 +762,7 @@ final class AppState {
         }
         do {
             pasteTarget = TextInserter.captureTarget()
+            dictationApp = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
             let device = Microphones.resolve(microphone)
             self.session = try ManagedSession.start(engine: engine) { try recorder.start(into: $0, device: device) }
             dictationID = UUID()
@@ -784,6 +792,8 @@ final class AppState {
     private func stopAndTranscribe() {
         guard let session, let id = dictationID, status == .recording else { return }
         let target = pasteTarget
+        var pipeline = textPipeline
+        pipeline.appRule = appRules.rule(for: dictationApp)
         status = .transcribing
         indicator.showTranscribing()
 
@@ -818,7 +828,7 @@ final class AppState {
                 guard dictationID == id else { return }
                 // Length and timing only — the dictated text is never logged.
                 log.notice("\(take.seconds, format: .fixed(precision: 1))s audio → \(raw.count) chars in \(Date().timeIntervalSince(started), format: .fixed(precision: 2))s")
-                let text = await textPipeline.dictation(raw) { await CorrectionJudge.confirm($0) }
+                let text = await pipeline.dictation(raw) { await CorrectionJudge.confirm($0) }
                 guard dictationID == id else { return }
                 guard !text.isEmpty else {
                     status = .ready

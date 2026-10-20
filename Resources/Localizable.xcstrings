@@ -1966,6 +1966,76 @@
           }
         }
       }
+    },
+    "Add App …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App hinzufügen …"
+          }
+        }
+      }
+    },
+    "Choose …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auswählen …"
+          }
+        }
+      }
+    },
+    "For apps where a finished sentence is wrong, such as Terminal, a code editor or a chat. Applies to the app in front when you start dictating; snippets stay as written.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für Apps, in denen ein fertiger Satz stört, etwa Terminal, ein Code-Editor oder ein Chat. Gilt für die App im Vordergrund, wenn du das Diktat startest; Snippets bleiben, wie sie geschrieben sind."
+          }
+        }
+      }
+    },
+    "No capital letter at the start": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Großbuchstabe am Anfang"
+          }
+        }
+      }
+    },
+    "No full stop at the end": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Punkt am Ende"
+          }
+        }
+      }
+    },
+    "Per-App Rules": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Regeln pro App"
+          }
+        }
+      }
+    },
+    "Remove %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ entfernen"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -45,6 +45,7 @@ targets:
       - Sources/SharpS.swift
       - Sources/Snippets.swift
       - Sources/TextPipeline.swift
+      - Sources/AppRules.swift
       - Sources/TextPolish.swift
       - Sources/CancellationFlag.swift
       - Sources/Recorder.swift
