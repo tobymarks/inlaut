@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
@@ -108,6 +109,7 @@ public class FluentForm : Form
 
 public class FluentButton : Button
 {
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool Accent { get; set; }
     private bool _hover, _pressed;
     public FluentButton()

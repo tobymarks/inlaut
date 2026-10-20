@@ -38,9 +38,9 @@ Setup downloads the speech model (around 630 MB) and guides you through micropho
 
 ## Windows beta
 
-[Download inlaut 0.7.0-beta.9 for Windows x64](https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.9/inlaut-0.7.0-beta.9-windows-x64-setup.exe). This is an **unsigned beta** for Windows 10/11, with German and English dictation and independently selectable interface language. Windows may show SmartScreen or an unknown-publisher warning. Read the [installation guidance and limitations](https://inlaut.de/en/windows) before installing; some device policies can block unsigned apps entirely.
+[Download inlaut 0.7.0-beta.10 for Windows x64](https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.10/inlaut-0.7.0-beta.10-windows-x64-setup.exe). This is an **unsigned beta** for Windows 10/11, with German and English dictation and independently selectable interface language. Windows may show SmartScreen or an unknown-publisher warning. Read the [installation guidance and limitations](https://inlaut.de/en/windows) before installing; some device policies can block unsigned apps entirely.
 
-Close inlaut before installing. Updates are **manual downloads from the website**: this beta cannot install updates through the signed in-app update mechanism. Both speech models are bundled and run locally. Windows 11/device compatibility and recognition quality still need broader testing; mixed-language dictation is Mac-only. [Release notes and SHA-256 checksum](https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.9) · [Windows source and build instructions](windows/README.md).
+Close inlaut before installing. Updates are **manual downloads from the website**: this beta cannot install updates through the signed in-app update mechanism. Both speech models are bundled and run locally. Windows 11/device compatibility and recognition quality still need broader testing; mixed-language dictation is Mac-only. [Release notes and SHA-256 checksum](https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.10) · [Windows source and build instructions](windows/README.md).
 
 Direct input leaves your clipboard untouched. If you enable clipboard insertion, the dictation replaces the previous clipboard contents and remains there until you copy something else.
 

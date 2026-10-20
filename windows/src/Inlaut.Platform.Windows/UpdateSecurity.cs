@@ -20,7 +20,9 @@ public static class UpdateSecurity
         {
             int result = WinVerifyTrust(new IntPtr(-1), ref action, ref data);
             if (result != 0) throw new InvalidOperationException("Die Windows-Signatur konnte nicht bestätigt werden. Installation abgebrochen.");
+#pragma warning disable SYSLIB0057 // X509CertificateLoader cannot read the Authenticode signer of a signed file.
             using var certificate = new X509Certificate2(X509Certificate.CreateFromSignedFile(path));
+#pragma warning restore SYSLIB0057
             return certificate.GetCertHashString(HashAlgorithmName.SHA256);
         }
         finally

@@ -46,12 +46,19 @@ enum VoiceCommands {
             cursor = match.range.location + match.range.length
         }
         var last = capitalized(ns.substring(from: cursor).trimmingCharacters(in: .whitespaces))
-        if wordCount(last) <= shortLine, last.hasSuffix(".") { last.removeLast() }  // signature
+        // A signature ("Tobias.") gets no full stop; an ellipsis stays whole.
+        if wordCount(last) <= shortLine, last.hasSuffix("."), !last.hasSuffix("..") { last.removeLast() }
         out += last
         // Two commands in a row must not stack up more than one blank line.
         while out.contains("\n\n\n") { out = out.replacingOccurrences(of: "\n\n\n", with: "\n\n") }
-        return out.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Line breaks at either end stay: a command at the start or end of a
+        // dictation applies next to the cursor (#20).
+        return out.trimmingCharacters(in: edgeSpaces)
     }
+
+    /// What a dictation loses at either end. Line breaks stay, so a spoken
+    /// command can start or end the text.
+    static let edgeSpaces = CharacterSet(charactersIn: " \t\r")
 
     private static func finish(_ raw: String, punctuationBefore: String, capitalize: Bool) -> String {
         var line = raw.trimmingCharacters(in: .whitespaces)

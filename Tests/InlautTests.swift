@@ -50,6 +50,28 @@ final class TextInserterTests: XCTestCase {
         XCTAssertEqual(board.string(forType: .string), "Neue Kopie")
     }
 
+    func testSpokenBreaksAtTheEdgesReachTheField() async throws {
+        // A dictation that starts or ends with a voice command breaks the line
+        // next to the cursor (#20); here pasted into an AppKit text view.
+        let pipeline = TextPipeline(languages: [.german])
+        for (before, spoken, after) in [
+            ("Erster Absatz.", "neuer Absatz das ist der zweite Absatz.", "Erster Absatz.\n\nDas ist der zweite Absatz."),
+            ("Erster Absatz.", "neue Zeile", "Erster Absatz.\n"),
+            ("", "Hier endet die erste Zeile neuer Absatz", "Hier endet die erste Zeile\n\n"),
+        ] {
+            let board = NSPasteboard.withUniqueName()
+            defer { board.releaseGlobally() }
+            let field = NSTextView()
+            field.string = before
+            field.setSelectedRange(NSRange(location: (before as NSString).length, length: 0))
+            var env = environment(board)
+            env.postPaste = { field.readSelection(from: board, type: .string) }
+            let result = try await TextInserter.insert(pipeline.dictation(spoken), pasteboard: board, environment: env)
+            XCTAssertEqual(result, .inserted)
+            XCTAssertEqual(field.string, after, spoken)
+        }
+    }
+
     func testChangedTargetDoesNotPaste() async throws {
         let board = NSPasteboard.withUniqueName()
         defer { board.releaseGlobally() }
@@ -182,6 +204,19 @@ final class TextProcessingTests: XCTestCase {
         // "um" is German, repeated articles are grammar, and clean text is not touched.
         let mixed = "Das sind die, die das wollen, und wir treffen uns um zehn Uhr auf inlaut.de, Version 3.2."
         XCTAssertEqual(TextPolish.tidy(mixed, languages: [.german, .english]), mixed)
+        // A spoken line break at either end of a dictation stays (#20).
+        XCTAssertEqual(TextPolish.tidy("\n\nÄhm, danke dir ähm\n", languages: german), "\n\nDanke dir\n")
+        // Also with the filler between the command and the edge.
+        let tidying = TextPipeline(languages: german, tidy: true)
+        XCTAssertEqual(tidying.dictation("Das ist der erste Absatz, neuer Absatz, ähm."), "Das ist der erste Absatz.\n\n")
+        XCTAssertEqual(tidying.dictation("Hallo, neue Zeile, ähm."), "Hallo,\n")
+        XCTAssertEqual(tidying.dictation("Ähm, neuer Absatz, danke dir."), "\n\nDanke dir")
+        XCTAssertEqual(tidying.dictation("Ähm, neue Zeile."), "\n")
+        XCTAssertEqual(tidying.dictation("Ähm."), "")
+        XCTAssertEqual(tidying.dictation("Gut. Ähm neuer Absatz danke dir."), "Gut.\n\nDanke dir")
+        XCTAssertEqual(tidying.dictation("Tobias! Ähm neuer Absatz"), "Tobias!\n\n")
+        XCTAssertEqual(tidying.dictation("Ich neue Zeile hm neuer Absatz"), "Ich\n\n")
+        XCTAssertEqual(tidying.dictation("Wir kommen hm? Äh. Hm? Ähm?"), "Wir kommen?")
     }
 
     func testCorrectionNeedsACorrectionWordAfterACommaAndSomethingOfTheSameKind() {
@@ -215,6 +250,8 @@ final class TextProcessingTests: XCTestCase {
         let first = await TextPolish.resolve(text, languages: both) { $0.spoken.contains("Mittwoch") }
         XCTAssertEqual(first, "Hallo Frau Becker,\n\nwir liefern am Donnerstag. Das kostet vierzig Euro, nee, fünfzig Euro.\n\nViele Grüße")
         XCTAssertEqual(TextPolish.sentences(of: text).joined(), text)
+        let leading = await TextPolish.resolve("\nBis Freitag, nein, bis Donnerstag.", languages: both) { _ in true }
+        XCTAssertEqual(leading, "\nBis Donnerstag.")
         XCTAssertTrue(TextPolish.mayContainCorrection(text, languages: both))
         XCTAssertFalse(TextPolish.mayContainCorrection("Nein, das geht nicht.", languages: both))
     }

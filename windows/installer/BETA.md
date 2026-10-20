@@ -1,6 +1,6 @@
 # Windows beta
 
-This is the public unsigned beta 0.7.0-beta.9, not a general production release.
+This is the public unsigned beta 0.7.0-beta.10, not a general production release.
 Download only from https://inlaut.de/windows (German) or
 https://inlaut.de/en/windows (English), which link to the project's GitHub release.
 Windows may display SmartScreen ("Windows protected your PC") or an unknown
@@ -74,7 +74,7 @@ validate Windows 11 and additional DPI configurations; arrange trusted code
 signing and establish an update/recovery policy. A successful build alone does
 not establish these acceptance criteria.
 
-Build on Windows with .NET 8 and Inno Setup 6:
+Build on Windows with .NET 10 and Inno Setup 6:
 
 ```powershell
 ./windows/installer/Build-Beta.ps1 -OutputDirectory ./publish/beta -CompilerPath 'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
@@ -104,3 +104,20 @@ UPDATES.md for future signed release qualification and the beta-to-stable proced
 Spoken line/paragraph commands now retain leading/trailing breaks and explicit
 punctuation. Automatic spacing/capitalization using preceding cursor text remains
 under investigation; a new native two-dictation test suite documents the limits.
+
+### Beta.10 updates
+Text steps follow the rules of the next macOS release, checked against shared test
+cases on both platforms. Punctuation around voice commands changes from beta.6-9:
+a full stop after a line of up to four words before a command becomes a comma
+(salutations, sign-offs), a last line of up to four words gets no full stop
+(signatures), a comma after a longer line becomes a full stop, a semicolon is
+dropped, and a line without punctuation no longer gets a full stop. The German ß
+correction knows all macOS rules, corrects every occurrence in a word, keeps SS in
+capitals and no longer changes compound joints such as "Gleistrasse" (beta.9:
+"Gleistraße"). It is off for new installations in Switzerland and Liechtenstein;
+existing installations keep their saved value. Replacements treat ß and ss as the
+same, and replacements and voice commands ignore case the same way in every
+Windows language (under Turkish, words differing only in I/i used to be missed).
+The app runs on .NET 10; updating over beta.9 removes files only the .NET 8 build
+needed. macOS 0.5.0 still changes ß at compound joints, trims command line breaks
+at either end and shortens a final "..." on a short last line to "..".

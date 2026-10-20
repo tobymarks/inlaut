@@ -4,9 +4,9 @@ Native, hochperformante On-Device-Diktier-App für Windows 10 & 11 ohne Cloud-Zw
 
 Für die Fortsetzung der Entwicklung direkt unter Windows: [HANDOFF.md](HANDOFF.md).
 
-## Öffentliche Beta 0.7.0-beta.9
+## Öffentliche Beta 0.7.0-beta.10
 
-[Windows-Installer herunterladen](https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.9/inlaut-0.7.0-beta.9-windows-x64-setup.exe)
+[Windows-Installer herunterladen](https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.10/inlaut-0.7.0-beta.10-windows-x64-setup.exe)
 für Windows 10/11 x64. Deutsch und Englisch sind mit getrennten lokalen Modellen
 enthalten; Diktat- und Oberflächensprache lassen sich unabhängig einstellen.
 Sprachwechsel benötigen einen Neustart. Gemischtsprachiges Diktieren ist Mac-only.
@@ -20,7 +20,7 @@ können die Installation vollständig blockieren.
 inlaut vor der Installation über das Tray-Menü beenden. Updates werden manuell
 von der Website heruntergeladen und installiert; der signierte In-App-Updater
 kann diese unsignierte Beta nicht aktualisieren. Einstellungen bleiben bei einer
-Neuinstallation erhalten. [Release und Prüfsumme](https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.9).
+Neuinstallation erhalten. [Release und Prüfsumme](https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.10).
 
 Bekannte Grenzen: Leise Sprache kann abgeschnitten werden; Leerzeichen und
 Großschreibung zwischen getrennten Diktaten benötigen mitunter Korrekturen.
@@ -152,8 +152,8 @@ von jeweils ungefähr 1 MB werden aufbewahrt und können jederzeit gelöscht wer
 * **`Inlaut.Platform.Windows`**:
   * `SherpaEngine`: Lokale Inferenz mit FastConformer / Parakeet Modellen auf CPU oder DirectML via `sherpa-onnx`.
   * `TextInserter`: ursprüngliche Unicode-Ausgabe für den CLI-Prototyp und Vergleichstests. Die Tray-App verwendet standardmäßig `DirectTextInserter`; `ClipboardTextInserter` bleibt als auswählbarer Vergleichsmodus erhalten.
-* **`Inlaut.Core`** (.NET 8):
-  * Plattformunabhängige Textlogik (`SharpS`, `VoiceCommands`, `Replacements`, `TextPipeline`), identisch zur macOS-Version.
+* **`Inlaut.Core`** (.NET 10):
+  * Plattformunabhängige Textlogik (`SharpS`, `VoiceCommands`, `Replacements`, `TextPipeline`). ß-Regeln, Ersetzungen (ß und ss gelten als gleich, unabhängig von der Windows-Sprache) und das Erkennen von Textbausteinen folgen dem Mac, ebenso die ß-Voreinstellung (in der Schweiz und Liechtenstein aus). Den Text eines Textbausteins fügt Windows unverändert ein; der Mac-Editor schneidet Leerzeichen und Zeilenumbrüche am Anfang und Ende ab. Sprachbefehle setzen Satzzeichen wie auf dem Mac, und ein Befehl am Anfang oder Ende eines Diktats behält seinen Zeilenumbruch. Beide Plattformen prüfen gemeinsame Fälle aus [`TestData/text-pipeline.json`](../TestData/text-pipeline.json). Der veröffentlichte Mac 0.5.0 entfernt Zeilenumbrüche am Rand noch, kürzt ein „...“ am Ende einer kurzen letzten Zeile nach einem Befehl auf „..“ und ändert ß auch an Wortfugen („Einkaufspaßage“); das behebt erst die nächste Mac-Version. Aufräumen und Selbstkorrekturen gibt es nur auf dem Mac.
 
 ## Regressionstests
 

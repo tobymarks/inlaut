@@ -44,13 +44,20 @@ enum SharpS {
         Rule("draußen", .word),
         Rule("äuß"),                         // äußern, äußerst, Äußerung
         // Nouns
-        Rule("straße"),                      // Straßen, Hauptstraße
+        Rule("straße", unless: ["gleistrass", "keitstrass"]),  // Hauptstraße – not Gleis|trasse
         Rule("fuß", unless: ["fussel"]),     // Fußball, barfuß
         Rule("füße", .word),                 // not the town Füssen
         Rule("gruß"),
-        Rule("grüß"),                        // grüßen, Grüße
-        Rule("spaß"),
-        Rule("späß"),
+        Rule("grüß", unless: ["rüssel"]),    // grüßen, Grüße – not Saug|rüssel
+        Rule("spaß", .start),                // spaßig, Spaßvogel – not Gesundheits|pass, Einkaufs|passage
+        Rule("späß", .start),
+        Rule("riesenspaß"),                  // X|spaß and Xs|pass look alike, so only the usual compounds
+        Rule("heidenspaß"),
+        Rule("mordsspaß"),
+        Rule("fahrspaß"),
+        Rule("spielspaß"),
+        Rule("badespaß"),
+        Rule("ferienspaß"),
         Rule("maßnahm"),
         Rule("maßstab"),
         Rule("maßgeb"),                      // maßgeblich, maßgebend
@@ -65,7 +72,7 @@ enum SharpS {
         Rule("stöß"),
         Rule("reißverschluss"),              // reiß alone would hit Preis|senkung
         // Verbs with a long vowel before the ß
-        Rule("ließ"),                        // ließ, schließen, fließend, verließ
+        Rule("ließ", unless: ["vliess"]),    // ließ, schließen, fließend, verließ – not Vlies|stoff
         Rule("hieß"),                        // hieß, schießen
         Rule("gieß"),
         Rule("genieß"),
