@@ -12,13 +12,15 @@ struct TextPipeline: Sendable {
     var corrections = false
     var replacements: [Replacement] = []
     var snippets: [Snippet] = []
+    /// The rules of the app being dictated into (#17), applied last.
+    var appRule: AppRule?
 
     /// A dictation. A snippet's phrase on its own inserts the snippet as it
     /// was written; anything else gets voice commands, tidying, ß and replacements.
     func dictation(_ raw: String) -> String {
         if raw.allSatisfy(\.isWhitespace) { return "" }
         if let snippet = snippets.match(raw) { return snippet }
-        return corrected(tidied(raw)).trimmingCharacters(in: VoiceCommands.edgeSpaces)
+        return finished(corrected(tidied(raw)))
     }
 
     /// The same, and a slip the speaker took back goes too if `confirm` agrees.
@@ -27,7 +29,12 @@ struct TextPipeline: Sendable {
         if let snippet = snippets.match(raw) { return snippet }
         var text = tidied(raw)
         if tidy, corrections { text = await TextPolish.resolve(text, languages: languages, confirm: confirm) }
-        return corrected(text).trimmingCharacters(in: VoiceCommands.edgeSpaces)
+        return finished(corrected(text))
+    }
+
+    private func finished(_ text: String) -> String {
+        let text = text.trimmingCharacters(in: VoiceCommands.edgeSpaces)
+        return appRule?.apply(to: text) ?? text
     }
 
     private func tidied(_ raw: String) -> String {

@@ -238,6 +238,37 @@ final class TextProcessingTests: XCTestCase {
         XCTAssertNil(TextPolish.correction(in: "Let's meet at two, I mean at three.", languages: [.german]))
     }
 
+    func testAppRulesDropTheFullStopAndTheCapitalOnly() {
+        let terminal = AppRule(bundleID: "com.apple.Terminal", name: "Terminal")
+        XCTAssertEqual(terminal.apply(to: "Git status zeigen."), "git status zeigen")
+        XCTAssertEqual(terminal.apply(to: "Erster Satz. Zweiter Satz.\n\n"), "erster Satz. Zweiter Satz\n\n")
+        for kept in ["Wirklich?", "Warte...", "Und dann …", "Los!"] {
+            XCTAssertEqual(AppRule.droppingTrailingPeriod(kept), kept)
+        }
+        for kept in ["DAM prüfen", "iPhone laden", "McKinsey anrufen", "I think so", "I'm in", "“Hallo”", "\n"] {
+            XCTAssertEqual(AppRule.lowercasingStart(kept), kept)
+        }
+        XCTAssertEqual(AppRule.lowercasingStart("\nÄnderung"), "\nänderung")
+        var onlyPeriod = terminal
+        onlyPeriod.noCapitalStart = false
+        XCTAssertEqual(onlyPeriod.apply(to: "Passt."), "Passt")
+        XCTAssertEqual([terminal].rule(for: "com.apple.Terminal"), terminal)
+        XCTAssertNil([terminal].rule(for: "com.apple.mail"))
+        XCTAssertNil([terminal].rule(for: nil))
+    }
+
+    func testPipelineAppliesTheAppRuleLastButNotToSnippets() async {
+        var pipeline = TextPipeline(languages: [.german],
+                                    replacements: [Replacement(from: "Status", to: "STATUS.")],
+                                    snippets: [Snippet(phrase: "Signatur", text: "Viele Grüße.")])
+        pipeline.appRule = AppRule(bundleID: "com.apple.Terminal", name: "Terminal")
+        XCTAssertEqual(pipeline.dictation("Zeig mir den Status"), "zeig mir den STATUS")
+        XCTAssertEqual(pipeline.dictation("Signatur."), "Viele Grüße.")
+        let confirmed = await pipeline.dictation("Das ist gross, neue Zeile.") { _ in true }
+        XCTAssertEqual(confirmed, "das ist groß,\n")
+        XCTAssertEqual(pipeline.transcript("Das bleibt."), "Das bleibt.")
+    }
+
     func testTidyDropsCommasThatOnlyFramedAFiller() {
         let german: Set<SpokenLanguage> = [.german]
         XCTAssertEqual(TextPolish.tidy("Das Meeting ist, äh, um zehn.", languages: german), "Das Meeting ist um zehn.")

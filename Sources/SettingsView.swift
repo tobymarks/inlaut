@@ -128,6 +128,15 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
 
+                Section {
+                    AppRulesField(rules: $state.appRules)
+                } header: {
+                    Text("Per-App Rules")
+                } footer: {
+                    Text("For apps where a finished sentence is wrong, such as Terminal, a code editor or a chat. Applies to the app in front when you start dictating; snippets stay as written.")
+                        .foregroundStyle(.secondary)
+                }
+
                 UpdateSettingsView(updater: state.updater)
 
                 Section {
