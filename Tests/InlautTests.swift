@@ -238,6 +238,47 @@ final class TextProcessingTests: XCTestCase {
         XCTAssertNil(TextPolish.correction(in: "Let's meet at two, I mean at three.", languages: [.german]))
     }
 
+    func testTidyDropsCommasThatOnlyFramedAFiller() {
+        let german: Set<SpokenLanguage> = [.german]
+        XCTAssertEqual(TextPolish.tidy("Das Meeting ist, äh, um zehn.", languages: german), "Das Meeting ist um zehn.")
+        XCTAssertEqual(TextPolish.tidy("Ich hoffe, dass das Update, äh, heute Abend live geht.", languages: german),
+                       "Ich hoffe, dass das Update heute Abend live geht.")
+        // A restart with a word just said and an aside that goes on keep their comma (#30).
+        XCTAssertEqual(TextPolish.tidy("Ich brauch das bis Freitag, äh, bis Donnerstag.", languages: german),
+                       "Ich brauch das bis Freitag, bis Donnerstag.")
+        XCTAssertEqual(TextPolish.tidy("Das ist, ähm, sagen wir, schwierig.", languages: german), "Das ist, sagen wir, schwierig.")
+        XCTAssertEqual(TextPolish.tidy("Ich war bei, äh, Anna.", languages: german), "Ich war bei Anna.")
+        XCTAssertEqual(TextPolish.tidy("We meet, uh, at ten.", languages: [.english]), "We meet at ten.")
+    }
+
+    func testCorrectionsKnowNumbersMonthsAndWeekdaysWithoutTheTagger() {
+        let both: Set<SpokenLanguage> = [.german, .english]
+        XCTAssertEqual(TextPolish.correction(in: "Bitte bestell zwanzig, nein, dreißig Stück.", languages: both)?.shorter,
+                       "Bitte bestell dreißig Stück.")
+        XCTAssertEqual(TextPolish.correction(in: "Please order twenty, no, thirty pieces.", languages: both)?.shorter,
+                       "Please order thirty pieces.")
+        XCTAssertEqual(TextPolish.correction(in: "Wir liefern am Mittwoch, nein, Donnerstag.", languages: both)?.shorter,
+                       "Wir liefern am Donnerstag.")
+        XCTAssertNil(TextPolish.correction(in: "Wir liefern am Mittwoch, nein, Oktober.", languages: both))
+        for word in ["dreiundzwanzig", "zweitausend", "siebzehn", "sechzig", "dreissig", "twelve", "42"] {
+            XCTAssertEqual(TextPolish.WordKind(word), .number, word)
+        }
+        for word in ["einzig", "sieb", "und", "einen", "achtung", "september"] {
+            XCTAssertNotEqual(TextPolish.WordKind(word), .number, word)
+        }
+    }
+
+    func testTheDotOfADateEndsNoSentence() async {
+        let both: Set<SpokenLanguage> = [.german, .english]
+        let date = "Der Termin ist am 12. September, nein, am 12. Oktober."
+        XCTAssertEqual(TextPolish.sentences(of: date), [date])
+        XCTAssertEqual(TextPolish.correction(in: date, languages: both)?.shorter, "Der Termin ist am 12. Oktober.")
+        XCTAssertEqual(TextPolish.sentences(of: "Das sind 42. Danach ist Schluss.").count, 2)
+        XCTAssertEqual(TextPolish.tidy("Am 3. äh Mai geht es los.", languages: [.german]), "Am 3. Mai geht es los.")
+        let resolved = await TextPolish.resolve("Am 12. September, nein, am 13. September. Gut.", languages: both) { _ in true }
+        XCTAssertEqual(resolved, "Am 13. September. Gut.")
+    }
+
     func testResolveTakesOnlyConfirmedCorrectionsAndKeepsTheRest() async {
         let both: Set<SpokenLanguage> = [.german, .english]
         let text = "Hallo Frau Becker,\n\nwir liefern am Mittwoch, nein, am Donnerstag. Das kostet vierzig Euro, nee, fünfzig Euro.\n\nViele Grüße"
