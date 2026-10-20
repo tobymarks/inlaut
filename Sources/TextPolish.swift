@@ -50,7 +50,8 @@ enum TextPolish {
             }
             if !skipped { position += 1 }
         }
-        return removing(drop, from: tokens, in: text).trimmingCharacters(in: .whitespaces)
+        let fillerIndices = Set(tokens.indices.filter { fillers.contains(tokens[$0].word) })
+        return removing(drop, from: tokens, in: text, fillers: fillerIndices).trimmingCharacters(in: .whitespaces)
     }
 
     // MARK: - Self-corrections
@@ -101,11 +102,64 @@ enum TextPolish {
     private static let replaceable: Set<NLTag> = [.noun, .number, .adjective, .personalName, .placeName, .organizationName]
 
     private static func sameKind(_ first: Token, _ second: Token, in sentence: String) -> Bool {
+        // Numbers, months and weekdays are known here; NLTagger tags them
+        // differently from one macOS version to the next (#22, #30).
+        if let firstKind = WordKind(first.word), let secondKind = WordKind(second.word) {
+            return firstKind == secondKind
+        }
         let tagger = NLTagger(tagSchemes: [.nameTypeOrLexicalClass])
         tagger.string = sentence
         let kinds = [first, second].map { tagger.tag(at: $0.range.lowerBound, unit: .word, scheme: .nameTypeOrLexicalClass).0 }
         guard let kind = kinds[0], kind == kinds[1] else { return false }
         return replaceable.contains(kind)
+    }
+
+    /// Kinds of words that can stand in for each other in a correction
+    /// without asking NLTagger.
+    enum WordKind: Equatable {
+        case number, month, weekday
+
+        init?(_ word: String) {
+            if word.contains(where: \.isNumber) || Self.isNumberWord(word) { self = .number }
+            else if Self.months.contains(word) { self = .month }
+            else if Self.weekdays.contains(word) { self = .weekday }
+            else { return nil }
+        }
+
+        static let months: Set<String> = [
+            "januar", "jänner", "februar", "märz", "april", "mai", "juni", "juli", "august",
+            "september", "oktober", "november", "dezember",
+            "january", "february", "march", "may", "june", "july", "october", "december",
+        ]
+        private static let weekdays: Set<String> = [
+            "montag", "dienstag", "mittwoch", "donnerstag", "freitag", "samstag", "sonnabend", "sonntag",
+            "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
+        ]
+        /// Pieces German and English number words are written from: "dreiundzwanzig", "zweitausend".
+        private static let germanParts = [
+            "ein", "eins", "eine", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "zehn",
+            "elf", "zwölf", "sech", "sieb", "zwanzig", "dreißig", "dreissig", "vierzig", "fünfzig", "sechzig",
+            "siebzig", "achtzig", "neunzig", "hundert", "tausend", "und",
+        ]
+        private static let englishWords: Set<String> = [
+            "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
+            "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty", "thirty",
+            "forty", "fifty", "sixty", "seventy", "eighty", "ninety", "hundred", "thousand",
+        ]
+
+        static func isNumberWord(_ word: String) -> Bool {
+            if englishWords.contains(word) { return true }
+            guard !["und", "sieb", "sech"].contains(word), word.count <= 40 else { return false }
+            // Whether the word splits completely into the pieces above.
+            let characters = Array(word)
+            var reachable = [true] + Array(repeating: false, count: characters.count)
+            for start in characters.indices where reachable[start] {
+                for part in germanParts where characters[start...].starts(with: part) {
+                    reachable[start + part.count] = true
+                }
+            }
+            return reachable[characters.count] && !word.hasPrefix("und") && !word.hasSuffix("und")
+        }
     }
 
     /// Resolves the self-corrections `confirm` agrees with, sentence by sentence.
@@ -172,8 +226,13 @@ enum TextPolish {
                         && (text[text.index(after: end)].isLetter || text[text.index(after: end)].isNumber)) {
                 end = text.index(after: end)
             }
-            tokens.append(Token(word: text[index..<end].lowercased(), range: index..<end,
-                                startsSentence: tokens.isEmpty || gap.contains { ".!?".contains($0) || $0.isNewline },
+            let word = text[index..<end].lowercased()
+            // "am 12. September", "der 3. von fünf": the dot of a day or an ordinal ends no sentence.
+            let ordinal = gap.hasPrefix(".") && gap.dropFirst().allSatisfy { $0 == " " } && gap.count > 1
+                && tokens.last.map { $0.word.count <= 2 && $0.word.allSatisfy(\.isNumber) } == true
+                && (text[index].isLowercase || WordKind.months.contains(word))
+            tokens.append(Token(word: word, range: index..<end,
+                                startsSentence: tokens.isEmpty || !ordinal && gap.contains { ".!?".contains($0) || $0.isNewline },
                                 afterComma: gap.contains(",")))
             gap = Substring()
             index = end
@@ -190,13 +249,21 @@ enum TextPolish {
     /// Takes the words out. What ended a sentence or broke a line in front of
     /// them stays; a comma stays only if it stood in front of them ("Freitag,
     /// äh, bis Donnerstag"), and a sentence that now starts with another word
-    /// gets its capital letter.
-    private static func removing(_ drop: Set<Int>, from tokens: [Token], in text: String) -> String {
+    /// gets its capital letter. Commas that only framed a filler go with it
+    /// ("ist, äh, um zehn" → "ist um zehn", #30) unless the speaker starts
+    /// over with a word just said ("bis Freitag, äh, bis") or an aside goes on
+    /// ("ist, ähm, sagen wir, schwierig").
+    private static func removing(_ drop: Set<Int>, from tokens: [Token], in text: String,
+                                 fillers: Set<Int> = []) -> String {
         guard !drop.isEmpty else { return text }
         func structure(_ gap: String) -> String {
             // Everything up to the last sentence mark or line break: "," + line breaks, "." …
             guard let end = gap.lastIndex(where: { ".!?…:;".contains($0) || $0.isNewline }) else { return "" }
             return String(gap[...end])
+        }
+        // The dot of a dropped day or ordinal went with it: "am 12. September, nein, …".
+        func structure(_ gap: String, before token: Token) -> String {
+            !token.startsSentence && gap.trimmingCharacters(in: .whitespaces) == "." ? "" : structure(gap)
         }
         // What ended the sentence in front of the dropped words, and the line
         // breaks said around them, at most a blank line (#20).
@@ -206,26 +273,29 @@ enum TextPolish {
         }
         var out = ""
         var cursor = text.startIndex
-        var last: String?                                                  // the word before the gap
-        var pending: (first: String, later: [String], capitalize: Bool)?  // gaps of the words dropped so far
+        var recent: [String] = []                                          // the last words kept
+        var pending: (first: String, later: [String], capitalize: Bool, fillers: Bool)?  // gaps of the words dropped so far
         for (index, token) in tokens.enumerated() {
             let gap = String(text[cursor..<token.range.lowerBound])
             cursor = token.range.upperBound
             if drop.contains(index) {
-                pending = (pending?.first ?? gap, pending.map { $0.later + [structure(gap)] } ?? [],
-                           (pending?.capitalize ?? false) || token.startsSentence)
+                pending = (pending?.first ?? gap, pending.map { $0.later + [structure(gap, before: token)] } ?? [],
+                           (pending?.capitalize ?? false) || token.startsSentence,
+                           (pending?.fillers ?? true) && fillers.contains(index))
                 continue
             }
             var word = String(text[token.range])
             if let dropped = pending {
-                let kept = joined([structure(dropped.first)] + dropped.later + [structure(gap)])
+                let kept = joined([structure(dropped.first)] + dropped.later + [structure(gap, before: token)])
                 if out.isEmpty {
                     // Line breaks before the first word are a spoken command (#20).
                     out = String(kept.filter(\.isNewline))
                 } else if !kept.isEmpty {
                     out += kept + (kept.last!.isNewline ? "" : " ")
                 } else {
-                    out += dropped.first.contains(",") && !joining.contains(last ?? "") ? ", " : " "
+                    let framed = dropped.fillers && gap.contains(",") && !recent.contains(token.word)
+                        && !tokens[(index + 1)..<min(index + 3, tokens.count)].contains(where: \.afterComma)
+                    out += dropped.first.contains(",") && !joining.contains(recent.last ?? "") && !framed ? ", " : " "
                 }
                 if dropped.capitalize { word = word.prefix(1).uppercased() + word.dropFirst() }
                 pending = nil
@@ -233,7 +303,7 @@ enum TextPolish {
                 out += gap
             }
             out += word
-            last = token.word
+            recent = Array((recent + [token.word]).suffix(4))
         }
         guard let dropped = pending else { return out + text[cursor...] }
         // Words dropped at the end leave what closed the text: "Absatz.\n\n", "Hallo,\n" (#20).
