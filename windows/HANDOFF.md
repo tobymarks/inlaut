@@ -542,8 +542,8 @@ sharps-leaves-compound-joints case keeps them out.
 Voice commands, decided by the maintainer: punctuation follows the macOS rules (tuned
 to Parakeet Ultra, which ends salutations and sign-offs with a full stop), and line
 breaks from a command at the start or end of a dictation stay on both platforms (#20;
-the released Mac 0.5.0 still trims them and cuts a final "..." on a short last line to
-".."; the next Mac release keeps both).
+Mac 0.5.0 still trimmed them and cut a final "..." on a short last line to "..";
+Mac 0.5.1, released 2026-10-20, keeps both).
 This reverses the beta.6 change that kept explicit punctuation around short lines:
 "Das passt. Neue Zeile. Ich komme morgen vorbei." now gives "Das passt,\nIch komme
 morgen vorbei" on both. TransitionChecks records the two command cases as formatting

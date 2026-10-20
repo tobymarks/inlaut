@@ -106,7 +106,7 @@ punctuation. Automatic spacing/capitalization using preceding cursor text remain
 under investigation; a new native two-dictation test suite documents the limits.
 
 ### Beta.10 updates
-Text steps follow the rules of the next macOS release, checked against shared test
+Text steps follow the rules of macOS 0.5.1, released the same day, checked against shared test
 cases on both platforms. Punctuation around voice commands changes from beta.6-9:
 a full stop after a line of up to four words before a command becomes a comma
 (salutations, sign-offs), a last line of up to four words gets no full stop
@@ -119,5 +119,5 @@ existing installations keep their saved value. Replacements treat ß and ss as t
 same, and replacements and voice commands ignore case the same way in every
 Windows language (under Turkish, words differing only in I/i used to be missed).
 The app runs on .NET 10; updating over beta.9 removes files only the .NET 8 build
-needed. macOS 0.5.0 still changes ß at compound joints, trims command line breaks
-at either end and shortens a final "..." on a short last line to "..".
+needed. macOS 0.5.0 still changed ß at compound joints, trimmed command line breaks
+at either end and shortened a final "..." on a short last line to "..".
