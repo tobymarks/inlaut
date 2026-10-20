@@ -52,6 +52,12 @@
 - [inlaut as a Superwhisper alternative](https://inlaut.de/en/superwhisper-alternative): the same page in English
 - [Diktierfunktion am Mac einrichten und Fehler beheben](https://inlaut.de/diktierfunktion-mac): Anleitung zum Diktat von macOS mit Checkliste und Apple-Quellen
 - [Mac dictation: how to set it up and fix it](https://inlaut.de/en/mac-dictation): the same guide in English
+- [E-Mails diktieren am Mac](https://inlaut.de/e-mails-diktieren): Anrede, Absätze und Gruß per Sprachbefehl, Textbausteine, Ersetzungen für Namen
+- [Dictate emails on a Mac](https://inlaut.de/en/dictate-emails): the same page in English
+- [Prompts diktieren](https://inlaut.de/prompts-diktieren): Prompts für ChatGPT, Claude, Cursor und Terminal sprechen; Deutsch mit englischen Fachbegriffen; was lokal bleibt
+- [Dictate prompts](https://inlaut.de/en/dictate-prompts): the same page in English
+- [Audio in Text umwandeln am Mac](https://inlaut.de/audio-in-text): Dateien lokal transkribieren, Formate, Tempo, Zeitmarken, Grenzen (keine Sprechererkennung)
+- [Convert audio to text on a Mac](https://inlaut.de/en/audio-to-text): the same page in English
 - [inlaut im Unternehmen](https://inlaut.de/unternehmen): Datenflüsse, Netzwerkverbindungen, DSGVO, IT-Sicherheit, Verteilung und was inlaut nicht bietet
 - [inlaut at work](https://inlaut.de/en/business): the same page in English
 - [inlaut für Kanzleien und Praxen](https://inlaut.de/kanzleien-praxen): Lokale Spracherkennung für Rechtsanwälte, Notare, Steuerberater und Ärzte ohne Cloud (§ 203 StGB, Art. 9 DSGVO, Open-Source-Zukunftssicherheit)
