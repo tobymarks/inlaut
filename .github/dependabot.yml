@@ -1,0 +1,20 @@
+# Pull requests for outdated dependencies (#28). Monthly and grouped, so a
+# solo maintainer gets at most one PR per ecosystem. The Swift packages are
+# left out on purpose: FluidAudio and Sparkle are pinned to exact versions
+# that are checked against the model files and the update feed by hand.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+  - package-ecosystem: nuget
+    directory: /windows
+    schedule:
+      interval: monthly
+    groups:
+      nuget:
+        patterns: ["*"]
