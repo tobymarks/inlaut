@@ -1,0 +1,636 @@
+{
+  "about": [
+    "Shared cases for the text pipeline of the Mac app (Sources/*.swift) and the Windows app (windows/src/Inlaut.Core).",
+    "Tests/TextPipelineCorpusTests.swift and windows/tests/Inlaut.CoreSmoke run every case.",
+    "step: \"dictation\" (default) runs the whole pipeline after a dictation: a snippet, else voice commands, ß and replacements. \"voiceCommands\" and \"sharpS\" run one step.",
+    "languages (required for dictation and voiceCommands): \"german\" and/or \"english\", the languages being dictated. voiceCommands and sharpS default to true; replacements and snippets use the rules-file format.",
+    "expected must hold on both platforms. Where they differ on purpose or pending a decision, \"mac\" and \"windows\" replace it and \"differences\" names the known reasons below.",
+    "When a change makes both platforms agree, replace \"mac\" and \"windows\" with \"expected\". Both runners reject unknown keys, keys the step does not use, equal mac and windows values and unused differences."
+  ],
+  "differences": {},
+  "cases": [
+    {
+      "id": "sharps-compounds",
+      "step": "sharpS",
+      "input": "Viele Grüsse aus der Hauptstrasse, das ist ausserdem regelmässig ein grosser Spass.",
+      "expected": "Viele Grüße aus der Hauptstraße, das ist außerdem regelmäßig ein großer Spaß."
+    },
+    {
+      "id": "sharps-verbs",
+      "step": "sharpS",
+      "input": "Er weiss, was die Massnahme heisst; schliesslich fliesst es draussen.",
+      "expected": "Er weiß, was die Maßnahme heißt; schließlich fließt es draußen."
+    },
+    {
+      "id": "sharps-anchors",
+      "step": "sharpS",
+      "input": "Fussball, Weisswein, Eiweiss, Aussendienst, Reissverschluss",
+      "expected": "Fußball, Weißwein, Eiweiß, Außendienst, Reißverschluss"
+    },
+    {
+      "id": "sharps-leaves-ambiguous-words",
+      "step": "sharpS",
+      "input": "Masse Busse floss Schloss muss dass Fluss Strass STRASSE Füssen Fussel Hinweisschild Preissenkung Kreissäge aussenden Aussendung Weissagung Ausstellung Eissorte Blossom",
+      "expected": "Masse Busse floss Schloss muss dass Fluss Strass STRASSE Füssen Fussel Hinweisschild Preissenkung Kreissäge aussenden Aussendung Weissagung Ausstellung Eissorte Blossom"
+    },
+    {
+      "id": "sharps-anchors-keep-ss",
+      "step": "sharpS",
+      "input": "Aussenkung aussenken Hausservice Haussenwand Hausserie Draussensitzen",
+      "expected": "Aussenkung aussenken Hausservice Haussenwand Hausserie Draussensitzen"
+    },
+    {
+      "id": "sharps-every-rule",
+      "step": "sharpS",
+      "input": "Grösse, bloss, heiss, Süssigkeiten, Fleiss, gemäss, mässig, schweissen, äussern, Füsse, Gruss, Spass, Spässe, Massnahmen, Massstab, massgeblich, massgeschneidert, Masseinheit, Ausmass, Übermass, Gefäss, Spiess, Sosse, Anstoss, Zusammenstösse, Reissverschluss, liess, hiess, giessen, geniessen, beissen",
+      "expected": "Größe, bloß, heiß, Süßigkeiten, Fleiß, gemäß, mäßig, schweißen, äußern, Füße, Gruß, Spaß, Späße, Maßnahmen, Maßstab, maßgeblich, maßgeschneidert, Maßeinheit, Ausmaß, Übermaß, Gefäß, Spieß, Soße, Anstoß, Zusammenstöße, Reißverschluss, ließ, hieß, gießen, genießen, beißen"
+    },
+    {
+      "id": "sharps-capitals-keep-ss",
+      "step": "sharpS",
+      "input": "GROSS STRASSE Gruss GRUSS SPASS",
+      "expected": "GROSS STRASSE Gruß GRUSS SPASS"
+    },
+    {
+      "id": "sharps-every-occurrence",
+      "step": "sharpS",
+      "input": "Fussgängerstrasse Grossstrasse grossgrüssen Strassenstrasse",
+      "expected": "Fußgängerstraße Großstraße großgrüßen Straßenstraße"
+    },
+    {
+      "id": "sharps-leaves-compound-joints",
+      "step": "sharpS",
+      "input": "Einkaufspassage Buspassagier Johannespassion Zugangspasswort Gesundheitspass Tagespass Gebirgspässe Vliesstoff Gleistrasse Hochgeschwindigkeitstrasse Saugrüssel trespass dispassionate",
+      "expected": "Einkaufspassage Buspassagier Johannespassion Zugangspasswort Gesundheitspass Tagespass Gebirgspässe Vliesstoff Gleistrasse Hochgeschwindigkeitstrasse Saugrüssel trespass dispassionate"
+    },
+    {
+      "id": "sharps-spass-compounds",
+      "step": "sharpS",
+      "input": "spassig, Spassvogel, Riesenspass, Heidenspass, Mordsspass, Fahrspass, Spielspass, Badespass, Ferienspassaktion, Durchgangsstrasse, Geschwindigkeitsstrasse, schliessen, Begrüssung",
+      "expected": "spaßig, Spaßvogel, Riesenspaß, Heidenspaß, Mordsspaß, Fahrspaß, Spielspaß, Badespaß, Ferienspaßaktion, Durchgangsstraße, Geschwindigkeitsstraße, schließen, Begrüßung"
+    },
+    {
+      "id": "sharps-each-word",
+      "step": "sharpS",
+      "input": "Grüsse und Grüsse, draussen und draussen",
+      "expected": "Grüße und Grüße, draußen und draußen"
+    },
+    {
+      "id": "sharps-short-words",
+      "step": "sharpS",
+      "input": "Fuss, Ass, Bass, muss, Kuss",
+      "expected": "Fuß, Ass, Bass, muss, Kuss"
+    },
+    {
+      "id": "sharps-boundary-full-stop",
+      "step": "sharpS",
+      "input": "draussen.",
+      "expected": "draußen."
+    },
+    {
+      "id": "sharps-boundary-brackets-quotes",
+      "step": "sharpS",
+      "input": "(Füsse), »draussen«!",
+      "expected": "(Füße), »draußen«!"
+    },
+    {
+      "id": "sharps-boundary-whitespace",
+      "step": "sharpS",
+      "input": "draussen\tfüsse\r\naussen",
+      "expected": "draußen\tfüße\r\naußen"
+    },
+    {
+      "id": "sharps-boundary-edges",
+      "step": "sharpS",
+      "input": "  draussen  füsse\n",
+      "expected": "  draußen  füße\n"
+    },
+    {
+      "id": "sharps-boundary-exceptions",
+      "step": "sharpS",
+      "input": "aussenden Fussel Grossist blossom weissagen",
+      "expected": "aussenden Fussel Grossist blossom weissagen"
+    },
+    {
+      "id": "sharps-boundary-symbols",
+      "step": "sharpS",
+      "input": "🦶 Füsse — draussen…",
+      "expected": "🦶 Füße — draußen…"
+    },
+    {
+      "id": "sharps-boundary-unicode-letters",
+      "step": "sharpS",
+      "input": "draussén drausseń x𝐀aussen 𝐀draussen",
+      "expected": "draussén draußeń x𝐀aussen 𝐀draussen"
+    },
+    {
+      "id": "commands-salutation-paragraph",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Hallo Frau Becker, neuer Absatz, vielen Dank für Ihre Nachricht.",
+      "expected": "Hallo Frau Becker,\n\nVielen Dank für Ihre Nachricht."
+    },
+    {
+      "id": "commands-no-command",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Das bleibt unverändert.",
+      "expected": "Das bleibt unverändert."
+    },
+    {
+      "id": "commands-stacked-breaks",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Hallo, neue Zeile, neuer Absatz, Tobias.",
+      "expected": "Hallo,\n\nTobias"
+    },
+    {
+      "id": "commands-english-ultra-commas",
+      "step": "voiceCommands",
+      "languages": [
+        "english"
+      ],
+      "input": "Hi Sarah, new paragraph, thanks for the quick reply. I will send the file tomorrow. New paragraph. Best regards, new line, Tobias.",
+      "expected": "Hi Sarah,\n\nThanks for the quick reply. I will send the file tomorrow.\n\nBest regards,\nTobias"
+    },
+    {
+      "id": "commands-english-ultra-full-stops",
+      "step": "voiceCommands",
+      "languages": [
+        "english"
+      ],
+      "input": "Hi Sarah, new paragraph, thanks for the quick reply. I will send the file tomorrow. New paragraph. Best regards. New line. Tobias.",
+      "expected": "Hi Sarah,\n\nThanks for the quick reply. I will send the file tomorrow.\n\nBest regards,\nTobias"
+    },
+    {
+      "id": "commands-german-ultra-full-stops",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Hallo Frau Becker. Neuer Absatz. Vielen Dank für Ihre Nachricht von gestern. Neuer Absatz. Viele Grüße. Neue Zeile. Tobias.",
+      "expected": "Hallo Frau Becker,\n\nVielen Dank für Ihre Nachricht von gestern.\n\nViele Grüße,\nTobias"
+    },
+    {
+      "id": "commands-question-stays",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Alles klar? Neue Zeile. Danke!",
+      "expected": "Alles klar?\nDanke!"
+    },
+    {
+      "id": "commands-english-lowercase-commas",
+      "step": "voiceCommands",
+      "languages": [
+        "english"
+      ],
+      "input": "Hi Sarah, new paragraph, thanks for the quick reply, I will send the file tomorrow, new paragraph, best regards, new line, tobias.",
+      "expected": "Hi Sarah,\n\nThanks for the quick reply, I will send the file tomorrow.\n\nBest regards,\nTobias"
+    },
+    {
+      "id": "commands-without-punctuation",
+      "step": "voiceCommands",
+      "languages": [
+        "english"
+      ],
+      "input": "First point new line second point",
+      "expected": "First point\nSecond point"
+    },
+    {
+      "id": "commands-english-in-german-mode",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Hi Sarah, new paragraph, thanks for the quick reply, I will send the file tomorrow, new paragraph, best regards, new line, tobias.",
+      "expected": "Hi Sarah, new paragraph, thanks for the quick reply, I will send the file tomorrow, new paragraph, best regards, new line, tobias."
+    },
+    {
+      "id": "commands-german-in-english-mode",
+      "step": "voiceCommands",
+      "languages": [
+        "english"
+      ],
+      "input": "Hallo, neue Zeile, Tobias",
+      "expected": "Hallo, neue Zeile, Tobias"
+    },
+    {
+      "id": "commands-bilingual",
+      "step": "voiceCommands",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "input": "Hallo Sarah, new line, viele Grüße, neue Zeile, Tobias",
+      "expected": "Hallo Sarah,\nViele Grüße,\nTobias"
+    },
+    {
+      "id": "commands-capital-letters",
+      "step": "voiceCommands",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "input": "Hallo Sarah, NEW LINE, viele Grüße, NEUE ZEILE, Tobias",
+      "expected": "Hallo Sarah,\nViele Grüße,\nTobias"
+    },
+    {
+      "id": "commands-long-line-without-punctuation",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Das ist ein langer Satz ohne Komma neue Zeile zweiter Satz",
+      "expected": "Das ist ein langer Satz ohne Komma\nZweiter Satz"
+    },
+    {
+      "id": "commands-long-line-comma",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Das ist ein langer Satz mit Komma danach, neue Zeile, zweiter Satz",
+      "expected": "Das ist ein langer Satz mit Komma danach.\nZweiter Satz"
+    },
+    {
+      "id": "commands-short-sentence-full-stop",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Das passt. Neue Zeile. Ich komme morgen vorbei.",
+      "expected": "Das passt,\nIch komme morgen vorbei"
+    },
+    {
+      "id": "commands-semicolon",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Erstens die Miete für den Oktober; neue Zeile; zweitens der Strom",
+      "expected": "Erstens die Miete für den Oktober\nZweitens der Strom"
+    },
+    {
+      "id": "commands-ellipsis",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Ich weiß nicht so genau, was ich sagen soll... neuer Absatz Vielleicht morgen.",
+      "expected": "Ich weiß nicht so genau, was ich sagen soll.\n\nVielleicht morgen"
+    },
+    {
+      "id": "commands-signature-keeps-ellipsis",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Bis dann, neue Zeile, vielleicht morgen...",
+      "expected": "Bis dann,\nVielleicht morgen..."
+    },
+    {
+      "id": "commands-comma-and-full-stop",
+      "step": "voiceCommands",
+      "languages": [
+        "german"
+      ],
+      "input": "Hallo Frau Becker,. neue Zeile Danke",
+      "expected": "Hallo Frau Becker,\nDanke"
+    },
+    {
+      "id": "dictation-commands-and-breaks",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "input": "Erste Zeile neue Zeile zweite Zeile neuer Absatz letzter Absatz",
+      "expected": "Erste Zeile\nZweite Zeile\n\nLetzter Absatz"
+    },
+    {
+      "id": "dictation-only-new-line",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "input": "neue Zeile",
+      "expected": "\n"
+    },
+    {
+      "id": "dictation-only-new-paragraph",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "input": "neuer Absatz",
+      "expected": "\n\n"
+    },
+    {
+      "id": "dictation-leading-command",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "input": "neue Zeile Zweite Zeile.",
+      "expected": "\nZweite Zeile"
+    },
+    {
+      "id": "dictation-explicit-full-stop",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "input": "Hallo. neuer Absatz Danke.",
+      "expected": "Hallo,\n\nDanke"
+    },
+    {
+      "id": "dictation-trailing-command",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "input": "Ende neue Zeile",
+      "expected": "Ende\n"
+    },
+    {
+      "id": "dictation-english-commands",
+      "languages": [
+        "english"
+      ],
+      "input": "First line new line second line new paragraph last paragraph",
+      "expected": "First line\nSecond line\n\nLast paragraph"
+    },
+    {
+      "id": "dictation-english-keeps-ss",
+      "languages": [
+        "english"
+      ],
+      "input": "gross",
+      "expected": "gross"
+    },
+    {
+      "id": "dictation-english-ignores-german-commands",
+      "languages": [
+        "english"
+      ],
+      "input": "neue Zeile",
+      "expected": "neue Zeile"
+    },
+    {
+      "id": "dictation-sharps-after-commands",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "input": "draussen neue Zeile füsse.",
+      "expected": "draußen\nFüße"
+    },
+    {
+      "id": "dictation-edge-spaces",
+      "languages": [
+        "german"
+      ],
+      "input": "  draussen  füsse\n",
+      "expected": "draußen  füße\n"
+    },
+    {
+      "id": "dictation-only-spaces",
+      "languages": [
+        "german"
+      ],
+      "input": "   ",
+      "expected": ""
+    },
+    {
+      "id": "dictation-snippet-inserted-as-written",
+      "languages": [
+        "german"
+      ],
+      "replacements": [
+        {
+          "from": "Tobias",
+          "to": "Toby"
+        }
+      ],
+      "snippets": [
+        {
+          "phrase": "Signatur",
+          "text": "Gruss, neue Zeile\nTobias"
+        }
+      ],
+      "input": "Signatur.",
+      "expected": "Gruss, neue Zeile\nTobias"
+    },
+    {
+      "id": "dictation-snippet-ignores-case-punctuation-and-ss",
+      "languages": [
+        "german"
+      ],
+      "snippets": [
+        {
+          "phrase": "meine Grüße",
+          "text": "Viele Grüße\nTobias Marks"
+        }
+      ],
+      "input": " Meine Grüsse. ",
+      "expected": "Viele Grüße\nTobias Marks"
+    },
+    {
+      "id": "dictation-snippet-ignores-commas",
+      "languages": [
+        "german"
+      ],
+      "snippets": [
+        {
+          "phrase": "meine Grüße",
+          "text": "Viele Grüße\nTobias Marks"
+        }
+      ],
+      "input": "Meine, Grüße!",
+      "expected": "Viele Grüße\nTobias Marks"
+    },
+    {
+      "id": "dictation-snippet-needs-whole-dictation",
+      "languages": [
+        "german"
+      ],
+      "snippets": [
+        {
+          "phrase": "meine Grüße",
+          "text": "Viele Grüße\nTobias Marks"
+        }
+      ],
+      "input": "Schick ihr meine Grüsse.",
+      "expected": "Schick ihr meine Grüße."
+    },
+    {
+      "id": "dictation-snippet-needs-words",
+      "languages": [
+        "german"
+      ],
+      "snippets": [
+        {
+          "phrase": "…",
+          "text": "leer"
+        }
+      ],
+      "input": "...",
+      "expected": "..."
+    },
+    {
+      "id": "dictation-replacement-after-commands-and-sharps",
+      "languages": [
+        "german"
+      ],
+      "replacements": [
+        {
+          "from": "Tobias",
+          "to": "Toby"
+        }
+      ],
+      "snippets": [
+        {
+          "phrase": "Signatur",
+          "text": "Gruss, neue Zeile\nTobias"
+        }
+      ],
+      "input": "Gruss, neue Zeile, Tobias",
+      "expected": "Gruß,\nToby"
+    },
+    {
+      "id": "dictation-steps-off",
+      "languages": [
+        "german"
+      ],
+      "voiceCommands": false,
+      "sharpS": false,
+      "replacements": [
+        {
+          "from": "Tobias",
+          "to": "Toby"
+        }
+      ],
+      "input": "Gruss, neue Zeile, Tobias",
+      "expected": "Gruss, neue Zeile, Toby"
+    },
+    {
+      "id": "dictation-replacement-whole-words-literal",
+      "languages": [
+        "german"
+      ],
+      "replacements": [
+        {
+          "from": "Dum",
+          "to": "DAM"
+        },
+        {
+          "from": "Preis",
+          "to": "$5\\Stück"
+        }
+      ],
+      "input": "Dum, Dummer und dum. Preis!",
+      "expected": "DAM, Dummer und DAM. $5\\Stück!"
+    },
+    {
+      "id": "dictation-longer-replacement-wins",
+      "languages": [
+        "german"
+      ],
+      "replacements": [
+        {
+          "from": "Müller",
+          "to": "Miller"
+        },
+        {
+          "from": "Meyle und Müller",
+          "to": "Firma"
+        }
+      ],
+      "input": "Meyle und Müller und Müller",
+      "expected": "Firma und Miller"
+    },
+    {
+      "id": "dictation-replacement-overrides-sharps",
+      "languages": [
+        "german"
+      ],
+      "replacements": [
+        {
+          "from": "Straße",
+          "to": "Strasse"
+        }
+      ],
+      "input": "Hauptstrasse und Strasse",
+      "expected": "Hauptstraße und Strasse"
+    },
+    {
+      "id": "dictation-replacement-matches-ss-after-sharps",
+      "languages": [
+        "german"
+      ],
+      "replacements": [
+        {
+          "from": "Strasse",
+          "to": "Str"
+        }
+      ],
+      "input": "Wir treffen uns in der Strasse.",
+      "expected": "Wir treffen uns in der Str."
+    },
+    {
+      "id": "dictation-replacement-sharp-s-matches-ss",
+      "languages": [
+        "german"
+      ],
+      "sharpS": false,
+      "replacements": [
+        {
+          "from": "Straße",
+          "to": "Str"
+        }
+      ],
+      "input": "Strasse und STRASSE",
+      "expected": "Str und Str"
+    },
+    {
+      "id": "dictation-replacement-ignores-case",
+      "languages": [
+        "english"
+      ],
+      "replacements": [
+        {
+          "from": "Gitlab",
+          "to": "GitLab"
+        }
+      ],
+      "input": "Push it to GITLAB and gitlab",
+      "expected": "Push it to GitLab and GitLab"
+    },
+    {
+      "id": "dictation-plain-text-preserved",
+      "languages": [
+        "german"
+      ],
+      "voiceCommands": false,
+      "sharpS": false,
+      "input": "100000 Euro. Warte... Jaaa! Grüße, Straße, Öl?\n\nZeile zwei",
+      "expected": "100000 Euro. Warte... Jaaa! Grüße, Straße, Öl?\n\nZeile zwei"
+    },
+    {
+      "id": "dictation-neutral-sentences",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "input": "Das ist ein ganz normaler Satz ohne Besonderheiten. Wir treffen uns morgen um zehn Uhr im Büro.",
+      "expected": "Das ist ein ganz normaler Satz ohne Besonderheiten. Wir treffen uns morgen um zehn Uhr im Büro."
+    }
+  ]
+}
