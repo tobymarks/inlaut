@@ -12,9 +12,9 @@ It copies the original license and available third-party notice files from these
 restored packages into `<package>/<version>/`, and records their exact versions and
 NuGet source links in the installed `nuget-packages.json`:
 
-- [NAudio 2.2.1](https://www.nuget.org/packages/NAudio/2.2.1), including its
-  Asio, Core, Midi, Wasapi, WinForms and WinMM assemblies (MIT; Mark Heath).
-  Since .NET 10 the Microsoft.Win32.Registry, System.Security.AccessControl and
+- [System.Numerics.Tensors](https://www.nuget.org/packages/System.Numerics.Tensors),
+  which NAudio.Core 3 depends on (MIT and its included third-party notices).
+- The packages NAudio asks for: since .NET 10 the Microsoft.Win32.Registry, System.Security.AccessControl and
   System.Security.Principal.Windows packages NAudio asks for are no longer
   restored: the shared framework contains them, so their assemblies and notices
   come with the runtime packages below. Packaging fails if they reappear as packages.
@@ -31,6 +31,13 @@ No license file is downloaded during packaging. A missing package/license or a
 runtime/dependency upgrade requiring refreshed upstream notices fails packaging.
 
 ## Pinned upstream originals
+
+The NAudio 3.3.0 NuGet packages (NAudio, Core, Midi, Wasapi, WinMM; MIT, Mark Heath)
+declare MIT only in their nuspec and ship no license file. The license is the
+upstream original from the `v3.3.0` tag,
+[`naudio/NAudio@4f8889e`](https://github.com/naudio/NAudio/tree/4f8889e2bd34c3978a25652c6c172fa1502ccba3);
+`nuget-packages.json` lists every restored NAudio package with it. Packaging fails
+for any other NAudio version until this file is refreshed.
 
 The sherpa-onnx 1.13.8 NuGet packages declare Apache-2.0 but do not ship the license
 text. Its package repository commit is
@@ -54,6 +61,7 @@ When dependencies change, update these files and provenance together.
 
 | Installed file | Exact source |
 | --- | --- |
+| `naudio/LICENSE` | [upstream original](https://raw.githubusercontent.com/naudio/NAudio/4f8889e2bd34c3978a25652c6c172fa1502ccba3/LICENSE) |
 | `sherpa-onnx/LICENSE` | [upstream original](https://raw.githubusercontent.com/k2-fsa/sherpa-onnx/dc5583f49917e4c95f6e7d862bb378e4ed5e9076/LICENSE) |
 | `onnxruntime/LICENSE` | [upstream original](https://raw.githubusercontent.com/microsoft/onnxruntime/33ca9628233dc8f002435e868d4c2e9f82766ca1/LICENSE) |
 | `onnxruntime/ThirdPartyNotices.txt` | [upstream original](https://raw.githubusercontent.com/microsoft/onnxruntime/33ca9628233dc8f002435e868d4c2e9f82766ca1/ThirdPartyNotices.txt) |

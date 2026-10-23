@@ -51,6 +51,11 @@ Type: filesandordirs; Name: "{app}\licenses\Microsoft.WindowsDesktop.App.Runtime
 Type: filesandordirs; Name: "{app}\licenses\Microsoft.Win32.Registry"
 Type: filesandordirs; Name: "{app}\licenses\System.Security.AccessControl"
 Type: filesandordirs; Name: "{app}\licenses\System.Security.Principal.Windows"
+; NAudio 2 up to 0.7.0-beta.10 shipped Asio and WinForms assemblies and its own
+; license file; NAudio 3's license now lives in licenses\naudio (deleted first, then installed).
+Type: files; Name: "{app}\NAudio.Asio.dll"
+Type: files; Name: "{app}\NAudio.WinForms.dll"
+Type: filesandordirs; Name: "{app}\licenses\NAudio"
 Type: files; Name: "{app}\cs\*.resources.dll"
 Type: files; Name: "{app}\de\*.resources.dll"
 Type: files; Name: "{app}\es\*.resources.dll"

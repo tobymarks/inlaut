@@ -1,5 +1,10 @@
 [
   {
+    "file": "naudio/LICENSE",
+    "url": "https://raw.githubusercontent.com/naudio/NAudio/4f8889e2bd34c3978a25652c6c172fa1502ccba3/LICENSE",
+    "sha256": "e518e168af44d37da3de236e719c986169e47b46b90e37c1355056175744e037"
+  },
+  {
     "file": "sherpa-onnx/LICENSE",
     "url": "https://raw.githubusercontent.com/k2-fsa/sherpa-onnx/dc5583f49917e4c95f6e7d862bb378e4ed5e9076/LICENSE",
     "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
