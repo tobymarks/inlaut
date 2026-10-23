@@ -60,7 +60,7 @@ public class AudioRecorder : IDisposable
                     float[] levels = new float[1024];
                     float peak = 0;
                     int read;
-                    while ((read = provider.Read(levels, 0, levels.Length)) > 0)
+                    while ((read = provider.Read(levels)) > 0)
                         for (int i = 0; i < read; i++) peak = Math.Max(peak, Math.Abs(levels[i]));
                     CurrentLevel = Math.Clamp(peak, 0, 1);
                 }
@@ -105,7 +105,7 @@ public class AudioRecorder : IDisposable
         var result = new List<float>();
         float[] block = new float[4096];
         int read;
-        while ((read = samples.Read(block, 0, block.Length)) > 0) result.AddRange(block.Take(read));
+        while ((read = samples.Read(block)) > 0) result.AddRange(block.Take(read));
         return result.ToArray();
     }
 
@@ -123,17 +123,17 @@ public class AudioRecorder : IDisposable
     private sealed class MonoProvider(ISampleProvider source) : ISampleProvider
     {
         public WaveFormat WaveFormat { get; } = WaveFormat.CreateIeeeFloatWaveFormat(source.WaveFormat.SampleRate, 1);
-        public int Read(float[] buffer, int offset, int count)
+        public int Read(Span<float> buffer)
         {
             int channels = source.WaveFormat.Channels;
-            float[] input = new float[count * channels];
-            int read = source.Read(input, 0, input.Length);
+            float[] input = new float[buffer.Length * channels];
+            int read = source.Read(input);
             int frames = read / channels;
             for (int i = 0; i < frames; i++)
             {
                 float value = 0;
                 for (int c = 0; c < channels; c++) value += input[i * channels + c];
-                buffer[offset + i] = value / channels;
+                buffer[i] = value / channels;
             }
             return frames;
         }
