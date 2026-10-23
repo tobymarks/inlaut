@@ -55,9 +55,20 @@ function Copy-PackageNotices([string]$Id, [string]$PackageVersion, [bool]$Requir
     foreach ($file in $files) { Copy-Item -LiteralPath $file.FullName -Destination $target }
     $packagedNotices.Add([ordered]@{ package = $Id; version = $PackageVersion; source = "https://www.nuget.org/packages/$Id/$PackageVersion" })
 }
-$keys = @($assets.libraries.Keys | Where-Object { $_ -like 'NAudio/*' })
-if ($keys.Count -ne 1) { throw 'Expected one resolved NAudio package for license inclusion.' }
-Copy-PackageNotices 'NAudio' ($keys[0].Split('/')[1])
+# NAudio 3 declares MIT only in its nuspec and ships no license file; the pinned
+# upstream original is windows/licenses/naudio/LICENSE. Record every NAudio package.
+$naudio = @($assets.libraries.Keys | Where-Object { $_ -like 'NAudio*/*' })
+if (-not ($naudio -contains 'NAudio/3.3.0') -or @($naudio | Where-Object { $_ -notlike '*/3.3.0' }).Count -gt 0) {
+    throw 'Refresh windows/licenses/naudio for the new NAudio version.'
+}
+foreach ($key in $naudio) {
+    $id, $packageVersion = $key.Split('/')
+    $packagedNotices.Add([ordered]@{ package = $id; version = $packageVersion; source = "https://www.nuget.org/packages/$id/$packageVersion"; license = 'naudio/LICENSE' })
+}
+# NAudio.Core 3 depends on System.Numerics.Tensors, which ships its own notices.
+foreach ($key in @($assets.libraries.Keys | Where-Object { $_ -like 'System.Numerics.Tensors/*' })) {
+    Copy-PackageNotices 'System.Numerics.Tensors' ($key.Split('/')[1]) $true
+}
 # .NET 10 prunes these NAudio dependencies because the shared framework contains them;
 # their notices come with the runtime packages below. A package version would need its own.
 foreach ($id in @('Microsoft.Win32.Registry', 'System.Security.AccessControl', 'System.Security.Principal.Windows')) {
