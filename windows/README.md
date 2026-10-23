@@ -4,9 +4,9 @@ Native, hochperformante On-Device-Diktier-App für Windows 10 & 11 ohne Cloud-Zw
 
 Für die Fortsetzung der Entwicklung direkt unter Windows: [HANDOFF.md](HANDOFF.md).
 
-## Öffentliche Beta 0.7.0-beta.10
+## Öffentliche Beta 0.7.0-beta.11
 
-[Windows-Installer herunterladen](https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.10/inlaut-0.7.0-beta.10-windows-x64-setup.exe)
+[Windows-Installer herunterladen](https://github.com/tobymarks/inlaut/releases/download/windows-v0.7.0-beta.11/inlaut-0.7.0-beta.11-windows-x64-setup.exe)
 für Windows 10/11 x64. Deutsch und Englisch sind mit getrennten lokalen Modellen
 enthalten; Diktat- und Oberflächensprache lassen sich unabhängig einstellen.
 Sprachwechsel benötigen einen Neustart. Gemischtsprachiges Diktieren ist Mac-only.
@@ -20,7 +20,7 @@ können die Installation vollständig blockieren.
 inlaut vor der Installation über das Tray-Menü beenden. Updates werden manuell
 von der Website heruntergeladen und installiert; der signierte In-App-Updater
 kann diese unsignierte Beta nicht aktualisieren. Einstellungen bleiben bei einer
-Neuinstallation erhalten. [Release und Prüfsumme](https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.10).
+Neuinstallation erhalten. [Release und Prüfsumme](https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.11).
 
 Bekannte Grenzen: Leise Sprache kann abgeschnitten werden; Leerzeichen und
 Großschreibung zwischen getrennten Diktaten benötigen mitunter Korrekturen.
