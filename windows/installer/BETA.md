@@ -1,6 +1,6 @@
 # Windows beta
 
-This is the public unsigned beta 0.7.0-beta.10, not a general production release.
+This is the public unsigned beta 0.7.0-beta.11, not a general production release.
 Download only from https://inlaut.de/windows (German) or
 https://inlaut.de/en/windows (English), which link to the project's GitHub release.
 Windows may display SmartScreen ("Windows protected your PC") or an unknown
@@ -121,3 +121,9 @@ Windows language (under Turkish, words differing only in I/i used to be missed).
 The app runs on .NET 10; updating over beta.9 removes files only the .NET 8 build
 needed. macOS 0.5.0 still changed ß at compound joints, trimmed command line breaks
 at either end and shortened a final "..." on a short last line to "..".
+
+### Beta.11 updates
+The audio library NAudio moves from 2.2.1 to 3.3.0; recording, dictation and text
+rules are meant to behave as in beta.10. NAudio 3 no longer ships its Asio and
+WinForms assemblies, which inlaut never used; updating removes them. This build was
+checked by CI only, not on a real Windows PC or with a real microphone.

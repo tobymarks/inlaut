@@ -1,7 +1,7 @@
 # inlaut
 
-> inlaut ist eine kostenlose Open-Source-Diktier-App für Mac und Windows. Sprache wird lokal auf dem jeweiligen Computer erkannt, ohne Cloud-Konto. macOS 0.5.1 ist für Apple Silicon ab macOS 26 verfügbar; Windows 0.7.0-beta.10 ist eine unsignierte Beta für Windows 10/11 x64. Funktionsumfang, Modelle und Installationswege unterscheiden sich.
-> English summary: inlaut is a free, open-source dictation app for Mac and Windows. Speech recognition runs locally on each computer, without a cloud account. macOS 0.5.1 requires Apple silicon and macOS 26 or later. Windows 0.7.0-beta.10 is an unsigned beta for Windows 10/11 x64. Mixed German/English dictation, Apple speech recognition, Apple Intelligence corrections and file transcription are Mac features; Windows offers separately selected German or English dictation. Details: https://inlaut.de/en and https://inlaut.de/en/windows
+> inlaut ist eine kostenlose Open-Source-Diktier-App für Mac und Windows. Sprache wird lokal auf dem jeweiligen Computer erkannt, ohne Cloud-Konto. macOS 0.5.1 ist für Apple Silicon ab macOS 26 verfügbar; Windows 0.7.0-beta.11 ist eine unsignierte Beta für Windows 10/11 x64. Funktionsumfang, Modelle und Installationswege unterscheiden sich.
+> English summary: inlaut is a free, open-source dictation app for Mac and Windows. Speech recognition runs locally on each computer, without a cloud account. macOS 0.5.1 requires Apple silicon and macOS 26 or later. Windows 0.7.0-beta.11 is an unsigned beta for Windows 10/11 x64. Mixed German/English dictation, Apple speech recognition, Apple Intelligence corrections and file transcription are Mac features; Windows offers separately selected German or English dictation. Details: https://inlaut.de/en and https://inlaut.de/en/windows
 
 ## Gemeinsam auf Mac und Windows
 
@@ -23,7 +23,7 @@
 - „Diktate aufräumen“ entfernt optional Fülllaute und versehentliche Wiederholungen. „Selbstkorrekturen auflösen“ ist eine optionale Beta-Funktion: Apples lokales Sprachmodell bestätigt Korrekturen wie „am Montag, nein, am Dienstag“. Es wird kein Text in die Cloud gesendet und nicht mit KI umformuliert.
 - Signierte Updates über Sparkle: tägliche automatische Prüfung abschaltbar; Download und Installation auf Anforderung.
 
-## Windows 0.7.0-beta.10
+## Windows 0.7.0-beta.11
 
 - Voraussetzung: Windows 10 oder 11 auf Intel-/AMD-PCs mit x64-Prozessor. Frühe Beta; Windows-11-Abnahme, zusätzliche Bildschirmkonfigurationen, Standby und physisches Mikrofon-Ab-/Anstecken benötigen weitere Tests. Keine native ARM-Version.
 - App und EXE-Installer sind unsigniert. SmartScreen kann warnen und einen unbekannten Herausgeber anzeigen. Smart App Control oder Organisationsrichtlinien können die Installation blockieren. Installationshinweise: https://inlaut.de/windows und https://inlaut.de/en/windows
@@ -34,7 +34,7 @@
 - „Letztes Diktat“ hält den letzten erkannten Text im Arbeitsspeicher bereit. Diagnoseprotokolle enthalten technische Metadaten. Ausdrücklich aktivierte Testaufnahmen speichern Audio und Text für bis zu zehn Diktate lokal. Fehlerberichte werden lokal geprüft; eine Übergabe an GitHub erfordert Bestätigung. Kein automatischer Upload.
 - Bekannte Grenzen: Leise Sprache und Wörter am Aufnahmebeginn/-ende können verloren gehen. Zwischen getrennten Diktaten können Abstände oder die Großschreibung fehlen. Diktierte Texte prüfen. Details: https://github.com/tobymarks/inlaut/issues/20 und https://github.com/tobymarks/inlaut/issues/23
 - Keine Apple-Spracherkennung, Apple-Intelligence-Korrekturen oder Datei-Transkription. Keine zugesicherte Erkennungs- oder Funktionsgleichheit mit der Mac-App.
-- Release und Prüfsumme: https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.10
+- Release und Prüfsumme: https://github.com/tobymarks/inlaut/releases/tag/windows-v0.7.0-beta.11
 
 ## Links
 

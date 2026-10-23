@@ -570,3 +570,15 @@ As with beta.9, the site source already links the beta.10 asset; the GitHub prer
 and the site deployment are separate steps that need the maintainer's go, in the order
 of site/docs/windows-beta-release.md. Publish only the inlaut-windows-release artifact of
 the push run of the tagged commit (BUILD.txt names it), and only while that run is green.
+
+## 0.7.0-beta.11 release (2026-10-23)
+
+Maintenance release for NAudio 3.3.0 (Dependabot #33). NAudio 3 replaced
+`ISampleProvider.Read(float[], int, int)` with `Read(Span<float>)` (AudioRecorder's mono
+downmix), ships no license file (pinned upstream original in licenses/naudio, verified by
+Build-Beta.ps1, which now fails for any other NAudio version) and dropped the Asio and
+WinForms assemblies (removed by `[InstallDelete]`). `WasapiCapture` is marked obsolete in
+favour of `WasapiRecorder`; it still works and was left as is. The maintainer had no
+Windows PC: the release was checked by CI only, without a real microphone. NAudio 3.0
+had a `WdlResamplingSampleProvider` regression fixed in 3.1; the 16 kHz conversion is
+covered by the UI smoke tests with WAVs, not by live capture.
