@@ -245,16 +245,55 @@ final class TextProcessingTests: XCTestCase {
         for kept in ["Wirklich?", "Warte...", "Und dann …", "Los!"] {
             XCTAssertEqual(AppRule.droppingTrailingPeriod(kept), kept)
         }
-        for kept in ["DAM prüfen", "iPhone laden", "McKinsey anrufen", "I think so", "I'm in", "“Hallo”", "\n"] {
+        for kept in ["DAM prüfen", "iPhone laden", "McKinsey anrufen", "I think so", "I'm in", "“Hallo”", "\n",
+                     "E-Mail ist raus", "S-Bahn fällt aus", "E2E-Tests laufen", "H2O", "U.S. stocks are up"] {
             XCTAssertEqual(AppRule.lowercasingStart(kept), kept)
         }
         XCTAssertEqual(AppRule.lowercasingStart("\nÄnderung"), "\nänderung")
+        XCTAssertEqual(AppRule.lowercasingStart("Hallo, wie geht's?"), "hallo, wie geht's?")
+        XCTAssertEqual(AppRule.lowercasingStart("E-mail ist raus"), "e-mail ist raus")
         var onlyPeriod = terminal
         onlyPeriod.noCapitalStart = false
         XCTAssertEqual(onlyPeriod.apply(to: "Passt."), "Passt")
         XCTAssertEqual([terminal].rule(for: "com.apple.Terminal"), terminal)
         XCTAssertNil([terminal].rule(for: "com.apple.mail"))
         XCTAssertNil([terminal].rule(for: nil))
+    }
+
+    func testAppRulesKeepAbbreviationsAndTheUsersOwnSpelling() {
+        let chat = AppRule(bundleID: "com.apple.MobileSMS", name: "Messages")
+        for kept in ["Bring was mit, z.B.", "Bring was mit, z. B.", "See you at 9 a.m.", "Made in the U.S.A.", "Das gilt i. d. R."] {
+            XCTAssertEqual(AppRule.droppingTrailingPeriod(kept), kept)
+        }
+        // Two short sentences or a short domain are no abbreviation.
+        for (text, dropped) in [("Ich bin gleich da. Ok.", "Ich bin gleich da. Ok"), ("Ich weiß es. Ja.", "Ich weiß es. Ja"),
+                                ("Meyle GmbH & Co. KG.", "Meyle GmbH & Co. KG"), ("Schau auf x.ai.", "Schau auf x.ai")] {
+            XCTAssertEqual(AppRule.droppingTrailingPeriod(text), dropped)
+        }
+        // Read fine without the dot, like a chat would write them.
+        XCTAssertEqual(AppRule.droppingTrailingPeriod("Äpfel, Birnen usw."), "Äpfel, Birnen usw")
+        XCTAssertEqual(AppRule.droppingTrailingPeriod("Wir sehen uns am 12."), "Wir sehen uns am 12")
+        XCTAssertEqual(AppRule.droppingTrailingPeriod("Schau auf example.com."), "Schau auf example.com")
+        XCTAssertEqual(AppRule.droppingTrailingPeriod("Das ist Plan B."), "Das ist Plan B")
+        XCTAssertEqual(AppRule.droppingTrailingPeriod("Version 2.4."), "Version 2.4")
+        // The start is lowercased unless it is the user's own replacement.
+        XCTAssertEqual(chat.apply(to: "Kubernetes neu starten.", keeping: ["Kubernetes"]), "Kubernetes neu starten")
+        XCTAssertEqual(chat.apply(to: "Kuchen ist fertig.", keeping: ["Kubernetes"]), "kuchen ist fertig")
+        XCTAssertEqual(chat.apply(to: "Max kommt.", keeping: ["Max Mustermann"]), "max kommt")
+        XCTAssertEqual(chat.apply(to: "Maxi kommt.", keeping: ["Max"]), "maxi kommt")
+        XCTAssertEqual(chat.apply(to: "\nMax kommt.", keeping: ["Max", ""]), "\nMax kommt")
+        XCTAssertEqual(chat.apply(to: "Acme Inc.", keeping: ["Acme Inc."]), "Acme Inc")
+        XCTAssertEqual(chat.apply(to: "Kubernetes neu starten.", keeping: [" Kubernetes "]), "Kubernetes neu starten")
+    }
+
+    func testSavedAppRulesSurviveMissingAndUnknownKeys() throws {
+        let saved = Data(#"[{"bundleID":"com.apple.Terminal","name":"Terminal","noCapitalStart":false},"#.utf8)
+            + Data(#"{"bundleID":"com.apple.mail","name":"Mail","noTrailingPeriod":false,"later":1}]"#.utf8)
+        let rules = try JSONDecoder().decode([AppRule].self, from: saved)
+        XCTAssertEqual(rules, [AppRule(bundleID: "com.apple.Terminal", name: "Terminal", noTrailingPeriod: true, noCapitalStart: false),
+                               AppRule(bundleID: "com.apple.mail", name: "Mail", noTrailingPeriod: false, noCapitalStart: true)])
+        let again = try JSONDecoder().decode([AppRule].self, from: JSONEncoder().encode(rules))
+        XCTAssertEqual(again, rules)
     }
 
     func testPipelineAppliesTheAppRuleLastButNotToSnippets() async {

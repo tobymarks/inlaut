@@ -14,7 +14,7 @@ static class CorpusChecks
     {
         ["sharpS"] = [],
         ["voiceCommands"] = ["languages"],
-        ["dictation"] = ["languages", "voiceCommands", "sharpS", "replacements", "snippets"],
+        ["dictation"] = ["languages", "voiceCommands", "sharpS", "replacements", "snippets", "appRule"],
     };
 
     public static void Run()
@@ -108,6 +108,8 @@ static class CorpusChecks
             case "voiceCommands":
                 return VoiceCommands.Apply(input, languages);
             default:
+                // Windows has no per-app rules (#17), so a case with one names the difference.
+                CheckAppRule(id, item);
                 var pipeline = new TextPipeline
                 {
                     Languages = languages,
@@ -132,6 +134,15 @@ static class CorpusChecks
             JsonValueKind.False => false,
             _ => throw new Exception($"{id}: {name} is true or false")
         };
+    }
+
+    private static void CheckAppRule(string id, JsonElement item)
+    {
+        if (!item.TryGetProperty("appRule", out var rule)) return;
+        if (rule.ValueKind != JsonValueKind.Object
+            || !rule.EnumerateObject().Select(p => p.Name).ToHashSet().SetEquals(["noTrailingPeriod", "noCapitalStart"])
+            || rule.EnumerateObject().Any(p => p.Value.ValueKind is not (JsonValueKind.True or JsonValueKind.False)))
+            throw new Exception($"{id}: appRule has exactly noTrailingPeriod and noCapitalStart, each true or false");
     }
 
     private static IEnumerable<string[]> Rules(string id, JsonElement item, string name, string first, string second)
