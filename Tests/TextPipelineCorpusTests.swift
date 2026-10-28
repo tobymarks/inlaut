@@ -9,7 +9,7 @@ final class TextPipelineCorpusTests: XCTestCase {
     private static let stepKeys: [String: Set<String>] = [
         "sharpS": [],
         "voiceCommands": ["languages"],
-        "dictation": ["languages", "voiceCommands", "sharpS", "replacements", "snippets"],
+        "dictation": ["languages", "voiceCommands", "sharpS", "replacements", "snippets", "appRule"],
     ]
 
     func testSharedCases() throws {
@@ -71,11 +71,12 @@ final class TextPipelineCorpusTests: XCTestCase {
                 .map { Replacement(from: $0["from"] ?? "", to: $0["to"] ?? "") }
             let snippets = try rules(item["snippets"], id: id, keys: ["phrase", "text"])
                 .map { Snippet(phrase: $0["phrase"] ?? "", text: $0["text"] ?? "") }
-            let pipeline = TextPipeline(languages: languages,
+            var pipeline = TextPipeline(languages: languages,
                                         voiceCommands: try flag(item["voiceCommands"], id: id),
                                         sharpS: try flag(item["sharpS"], id: id),
                                         replacements: replacements,
                                         snippets: snippets)
+            pipeline.appRule = try appRule(item["appRule"], id: id)
             return pipeline.dictation(input)
         }
     }
@@ -83,6 +84,14 @@ final class TextPipelineCorpusTests: XCTestCase {
     private func flag(_ value: Any?, id: String) throws -> Bool {
         guard let value else { return true }
         return try XCTUnwrap(value as? Bool, "\(id): voiceCommands and sharpS are true or false")
+    }
+
+    private func appRule(_ value: Any?, id: String) throws -> AppRule? {
+        guard let value else { return nil }
+        let rule = try XCTUnwrap(value as? [String: Bool], "\(id): appRule is an object of true or false")
+        XCTAssertEqual(Set(rule.keys), ["noTrailingPeriod", "noCapitalStart"], "\(id): appRule has exactly noTrailingPeriod and noCapitalStart")
+        return AppRule(bundleID: "corpus", name: "corpus",
+                       noTrailingPeriod: rule["noTrailingPeriod"] ?? false, noCapitalStart: rule["noCapitalStart"] ?? false)
     }
 
     private func rules(_ value: Any?, id: String, keys: Set<String>) throws -> [[String: String]] {

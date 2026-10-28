@@ -12,31 +12,74 @@ struct AppRule: Codable, Hashable, Identifiable {
     var id: String { bundleID }
 
     /// The last step of a dictation. Snippets never get here: they are
-    /// inserted as written.
-    func apply(to text: String) -> String {
+    /// inserted as written, and so is a start that is one of `written`, the
+    /// user's own replacements.
+    func apply(to text: String, keeping written: [String] = []) -> String {
         var text = text
+        let asWritten = Self.starts(text, withOneOf: written)
         if noTrailingPeriod { text = Self.droppingTrailingPeriod(text) }
-        if noCapitalStart { text = Self.lowercasingStart(text) }
+        if noCapitalStart, !asWritten { text = Self.lowercasingStart(text) }
         return text
     }
 
     /// One final "." goes, also before line breaks said at the end; "…",
-    /// "...", "?" and "!" stay.
+    /// "...", "?" and "!" stay, and so does the dot that ends "z.B.",
+    /// "z. B." or "9 a.m.".
     static func droppingTrailingPeriod(_ text: String) -> String {
         guard let last = text.lastIndex(where: { !$0.isWhitespace }), text[last] == "." else { return text }
-        if last > text.startIndex, ".".contains(text[text.index(before: last)]) { return text }
-        return String(text[..<last]) + text[text.index(after: last)...]
+        let before = text[..<last]
+        if before.last == "." || endsInAbbreviation(before) { return text }
+        return String(before) + text[text.index(after: last)...]
+    }
+
+    /// Whether the last word is an abbreviation of single letters ("z.B",
+    /// "e.g", "a.m", "U.S.A") or the last letter of one written with spaces
+    /// ("z. B", "d. h"). Words like "usw" or "etc" read fine without their
+    /// dot, and "Ich bin da. Ok", "x.ai" or "2.4" are no abbreviations.
+    private static func endsInAbbreviation(_ text: Substring) -> Bool {
+        let words = text.split(whereSeparator: \.isWhitespace)
+        guard let word = words.last else { return false }
+        let letter = { (part: Substring) in part.count == 1 && part.allSatisfy(\.isLetter) }
+        let parts = word.split(separator: ".", omittingEmptySubsequences: false)
+        if parts.count > 1 { return parts.allSatisfy(letter) }
+        guard words.count > 1, letter(word) else { return false }
+        let previous = words[words.count - 2]
+        return previous.last == "." && letter(previous.dropLast())
+    }
+
+    /// Whether the text starts with one of `words` as a whole word, written
+    /// exactly like that.
+    private static func starts(_ text: String, withOneOf words: [String]) -> Bool {
+        let text = text.drop { $0.isWhitespace }
+        return words.contains { word in
+            let word = word.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !word.isEmpty, text.hasPrefix(word) else { return false }
+            let next = text.dropFirst(word.count).first
+            return !(next?.isLetter ?? false) && !(next?.isNumber ?? false)
+        }
     }
 
     /// The first word in lower case, unless it is written like a name of
-    /// its own: "DAM", "iPhone", "McKinsey", "I", "I'm".
+    /// its own: "DAM", "iPhone", "McKinsey", "E-Mail", "U.S.", "I", "I'm".
     static func lowercasingStart(_ text: String) -> String {
         guard let start = text.firstIndex(where: { !$0.isWhitespace }), text[start].isUppercase else { return text }
-        let word = text[start...].prefix { $0.isLetter || $0 == "'" || $0 == "’" }
+        let word = text[start...].prefix { !$0.isWhitespace }
         let letters = word.filter(\.isLetter)
         if letters.dropFirst().contains(where: \.isUppercase) { return text }
         if word.prefix(while: \.isLetter) == "I" { return text }
         return String(text[..<start]) + text[start].lowercased() + text[text.index(after: start)...]
+    }
+}
+
+extension AppRule {
+    /// Saved rules keep working when a later version adds a switch: a missing
+    /// one takes its default instead of failing the whole list on load.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        bundleID = try container.decode(String.self, forKey: .bundleID)
+        name = try container.decode(String.self, forKey: .name)
+        noTrailingPeriod = try container.decodeIfPresent(Bool.self, forKey: .noTrailingPeriod) ?? true
+        noCapitalStart = try container.decodeIfPresent(Bool.self, forKey: .noCapitalStart) ?? true
     }
 }
 

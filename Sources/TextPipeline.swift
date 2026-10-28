@@ -34,7 +34,7 @@ struct TextPipeline: Sendable {
 
     private func finished(_ text: String) -> String {
         let text = text.trimmingCharacters(in: VoiceCommands.edgeSpaces)
-        return appRule?.apply(to: text) ?? text
+        return appRule?.apply(to: text, keeping: replacements.map(\.to)) ?? text
     }
 
     private func tidied(_ raw: String) -> String {

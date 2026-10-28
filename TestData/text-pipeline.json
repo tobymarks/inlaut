@@ -2,12 +2,15 @@
   "about": [
     "Shared cases for the text pipeline of the Mac app (Sources/*.swift) and the Windows app (windows/src/Inlaut.Core).",
     "Tests/TextPipelineCorpusTests.swift and windows/tests/Inlaut.CoreSmoke run every case.",
-    "step: \"dictation\" (default) runs the whole pipeline after a dictation: a snippet, else voice commands, ß and replacements. \"voiceCommands\" and \"sharpS\" run one step.",
+    "step: \"dictation\" (default) runs the whole pipeline after a dictation: a snippet, else voice commands, ß, replacements and an optional appRule (the rules of the app in front, #17). \"voiceCommands\" and \"sharpS\" run one step.",
     "languages (required for dictation and voiceCommands): \"german\" and/or \"english\", the languages being dictated. voiceCommands and sharpS default to true; replacements and snippets use the rules-file format.",
+    "appRule (dictation only): {\"noTrailingPeriod\": bool, \"noCapitalStart\": bool}, both required.",
     "expected must hold on both platforms. Where they differ on purpose or pending a decision, \"mac\" and \"windows\" replace it and \"differences\" names the known reasons below.",
     "When a change makes both platforms agree, replace \"mac\" and \"windows\" with \"expected\". Both runners reject unknown keys, keys the step does not use, equal mac and windows values and unused differences."
   ],
-  "differences": {},
+  "differences": {
+    "app-rules-mac-only": "Per-app rules (#17) exist only on the Mac; Windows pastes the text as the pipeline wrote it."
+  },
   "cases": [
     {
       "id": "sharps-compounds",
@@ -631,6 +634,111 @@
       ],
       "input": "Das ist ein ganz normaler Satz ohne Besonderheiten. Wir treffen uns morgen um zehn Uhr im Büro.",
       "expected": "Das ist ein ganz normaler Satz ohne Besonderheiten. Wir treffen uns morgen um zehn Uhr im Büro."
+    },
+    {
+      "id": "app-rule-chat-style",
+      "languages": [
+        "german"
+      ],
+      "appRule": {
+        "noTrailingPeriod": true,
+        "noCapitalStart": true
+      },
+      "input": "Git status zeigen.",
+      "mac": "git status zeigen",
+      "windows": "Git status zeigen.",
+      "differences": [
+        "app-rules-mac-only"
+      ]
+    },
+    {
+      "id": "app-rule-only-full-stop",
+      "languages": [
+        "german"
+      ],
+      "appRule": {
+        "noTrailingPeriod": true,
+        "noCapitalStart": false
+      },
+      "input": "Erster Satz. Zweiter Satz.",
+      "mac": "Erster Satz. Zweiter Satz",
+      "windows": "Erster Satz. Zweiter Satz.",
+      "differences": [
+        "app-rules-mac-only"
+      ]
+    },
+    {
+      "id": "app-rule-keeps-abbreviation-dots",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "appRule": {
+        "noTrailingPeriod": true,
+        "noCapitalStart": true
+      },
+      "input": "Bring was mit, z. B. Obst, z.B.",
+      "mac": "bring was mit, z. B. Obst, z.B.",
+      "windows": "Bring was mit, z. B. Obst, z.B.",
+      "differences": [
+        "app-rules-mac-only"
+      ]
+    },
+    {
+      "id": "app-rule-keeps-a-replacement-at-the-start",
+      "languages": [
+        "german"
+      ],
+      "appRule": {
+        "noTrailingPeriod": true,
+        "noCapitalStart": true
+      },
+      "replacements": [
+        {
+          "from": "Kubernetis",
+          "to": "Kubernetes"
+        }
+      ],
+      "input": "Kubernetis neu starten.",
+      "mac": "Kubernetes neu starten",
+      "windows": "Kubernetes neu starten.",
+      "differences": [
+        "app-rules-mac-only"
+      ]
+    },
+    {
+      "id": "app-rule-not-for-snippets",
+      "languages": [
+        "german"
+      ],
+      "appRule": {
+        "noTrailingPeriod": true,
+        "noCapitalStart": true
+      },
+      "snippets": [
+        {
+          "phrase": "Signatur",
+          "text": "Viele Grüße."
+        }
+      ],
+      "input": "Signatur.",
+      "expected": "Viele Grüße."
+    },
+    {
+      "id": "app-rule-short-reply-is-no-abbreviation",
+      "languages": [
+        "german"
+      ],
+      "appRule": {
+        "noTrailingPeriod": true,
+        "noCapitalStart": true
+      },
+      "input": "E-Mail ist raus. Ok.",
+      "mac": "E-Mail ist raus. Ok",
+      "windows": "E-Mail ist raus. Ok.",
+      "differences": [
+        "app-rules-mac-only"
+      ]
     }
   ]
 }
