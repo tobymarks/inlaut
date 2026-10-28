@@ -22,8 +22,8 @@ NuGet source links in the installed `nuget-packages.json`:
   (MIT and its included third-party notices).
 - [Microsoft.WindowsDesktop.App.Runtime.win-x64](https://www.nuget.org/packages/Microsoft.WindowsDesktop.App.Runtime.win-x64)
   (MIT); the WPF and WinForms third-party notices absent from that package are
-  preserved below from the source commit of the 10.0.13 runtime packages,
-  [`dotnet/dotnet@4099f83`](https://github.com/dotnet/dotnet/tree/4099f83977f4d29604a9aeb971fb0a7bc1d5f699)
+  preserved below from the source commit of the 10.0.14 runtime packages,
+  [`dotnet/dotnet@0427b9a`](https://github.com/dotnet/dotnet/tree/0427b9abbead3fa64c6655eb4290c537397131fa)
   (the `<repository>` commit in both runtime packages' nuspec).
 
 Both the app and its self-contained update helper use the same .NET runtime.
@@ -65,8 +65,8 @@ When dependencies change, update these files and provenance together.
 | `sherpa-onnx/LICENSE` | [upstream original](https://raw.githubusercontent.com/k2-fsa/sherpa-onnx/dc5583f49917e4c95f6e7d862bb378e4ed5e9076/LICENSE) |
 | `onnxruntime/LICENSE` | [upstream original](https://raw.githubusercontent.com/microsoft/onnxruntime/33ca9628233dc8f002435e868d4c2e9f82766ca1/LICENSE) |
 | `onnxruntime/ThirdPartyNotices.txt` | [upstream original](https://raw.githubusercontent.com/microsoft/onnxruntime/33ca9628233dc8f002435e868d4c2e9f82766ca1/ThirdPartyNotices.txt) |
-| `windowsdesktop-wpf/THIRD-PARTY-NOTICES.TXT` | [upstream original](https://raw.githubusercontent.com/dotnet/dotnet/4099f83977f4d29604a9aeb971fb0a7bc1d5f699/src/wpf/THIRD-PARTY-NOTICES.TXT) |
-| `windowsdesktop-winforms/THIRD-PARTY-NOTICES.TXT` | [upstream original](https://raw.githubusercontent.com/dotnet/dotnet/4099f83977f4d29604a9aeb971fb0a7bc1d5f699/src/winforms/THIRD-PARTY-NOTICES.TXT) |
+| `windowsdesktop-wpf/THIRD-PARTY-NOTICES.TXT` | [upstream original](https://raw.githubusercontent.com/dotnet/dotnet/0427b9abbead3fa64c6655eb4290c537397131fa/src/wpf/THIRD-PARTY-NOTICES.TXT) |
+| `windowsdesktop-winforms/THIRD-PARTY-NOTICES.TXT` | [upstream original](https://raw.githubusercontent.com/dotnet/dotnet/0427b9abbead3fa64c6655eb4290c537397131fa/src/winforms/THIRD-PARTY-NOTICES.TXT) |
 | `kaldi-native-fbank/LICENSE` | [upstream original](https://raw.githubusercontent.com/csukuangfj/kaldi-native-fbank/b09e686fe2084732ddd30d1ef80acfc0f13eaf01/LICENSE) |
 | `kaldi-decoder/LICENSE` | [upstream original](https://raw.githubusercontent.com/k2-fsa/kaldi-decoder/62fda2d74246a90db9570e46fb16b012f813fae7/LICENSE) |
 | `kaldifst/LICENSE` | [upstream original](https://raw.githubusercontent.com/k2-fsa/kaldifst/ab5bdd013bdf13921e6aeee77db5722ebf9955fb/LICENSE) |
