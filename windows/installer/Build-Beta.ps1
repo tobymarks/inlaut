@@ -86,7 +86,7 @@ $frameworks = @($runtime.runtimeOptions.includedFrameworks)
 foreach ($name in @('Microsoft.NETCore.App', 'Microsoft.WindowsDesktop.App')) {
     $framework = @($frameworks | Where-Object name -eq $name)
     if ($framework.Count -ne 1) { throw "Published runtime version missing: $name" }
-    if ($name -eq 'Microsoft.WindowsDesktop.App' -and $framework[0].version -ne '10.0.13') {
+    if ($name -eq 'Microsoft.WindowsDesktop.App' -and $framework[0].version -ne '10.0.14') {
         throw 'Refresh the pinned WPF/WinForms notices in windows/licenses for the new WindowsDesktop runtime.'
     }
     Copy-PackageNotices "$name.Runtime.win-x64" $framework[0].version ($name -eq 'Microsoft.NETCore.App')
