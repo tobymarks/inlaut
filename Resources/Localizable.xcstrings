@@ -1992,7 +1992,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Für Apps, in denen ein fertiger Satz stört, etwa Terminal, ein Code-Editor oder ein Chat. Gilt für die App im Vordergrund, wenn du das Diktat startest; Snippets bleiben, wie sie geschrieben sind."
+            "value": "Für Apps, in denen ein fertiger Satz stört, etwa Terminal, ein Code-Editor oder ein Chat. Gilt für die App im Vordergrund, wenn du das Diktat startest; Textbausteine bleiben, wie sie geschrieben sind."
           }
         }
       }

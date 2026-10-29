@@ -50,8 +50,7 @@ enum TextPolish {
             }
             if !skipped { position += 1 }
         }
-        let fillerIndices = Set(tokens.indices.filter { fillers.contains(tokens[$0].word) })
-        return removing(drop, from: tokens, in: text, fillers: fillerIndices).trimmingCharacters(in: .whitespaces)
+        return removing(drop, from: tokens, in: text).trimmingCharacters(in: .whitespaces)
     }
 
     // MARK: - Self-corrections
@@ -249,12 +248,11 @@ enum TextPolish {
     /// Takes the words out. What ended a sentence or broke a line in front of
     /// them stays; a comma stays only if it stood in front of them ("Freitag,
     /// äh, bis Donnerstag"), and a sentence that now starts with another word
-    /// gets its capital letter. Commas that only framed a filler go with it
-    /// ("ist, äh, um zehn" → "ist um zehn", #30) unless the speaker starts
-    /// over with a word just said ("bis Freitag, äh, bis") or an aside goes on
-    /// ("ist, ähm, sagen wir, schwierig").
-    private static func removing(_ drop: Set<Int>, from tokens: [Token], in text: String,
-                                 fillers: Set<Int> = []) -> String {
+    /// gets its capital letter. Around a filler that means "ist, äh, um zehn"
+    /// keeps a comma too many: dropping both commas there (#30) also deleted
+    /// commas the sentence needs ("Ich glaube, äh, dass", "Hallo Anna, ähm,
+    /// wie") in two of three realistic sentences, which is worse.
+    private static func removing(_ drop: Set<Int>, from tokens: [Token], in text: String) -> String {
         guard !drop.isEmpty else { return text }
         func structure(_ gap: String) -> String {
             // Everything up to the last sentence mark or line break: "," + line breaks, "." …
@@ -273,15 +271,14 @@ enum TextPolish {
         }
         var out = ""
         var cursor = text.startIndex
-        var recent: [String] = []                                          // the last words kept
-        var pending: (first: String, later: [String], capitalize: Bool, fillers: Bool)?  // gaps of the words dropped so far
+        var last: String?                                                  // the word before the gap
+        var pending: (first: String, later: [String], capitalize: Bool)?  // gaps of the words dropped so far
         for (index, token) in tokens.enumerated() {
             let gap = String(text[cursor..<token.range.lowerBound])
             cursor = token.range.upperBound
             if drop.contains(index) {
                 pending = (pending?.first ?? gap, pending.map { $0.later + [structure(gap, before: token)] } ?? [],
-                           (pending?.capitalize ?? false) || token.startsSentence,
-                           (pending?.fillers ?? true) && fillers.contains(index))
+                           (pending?.capitalize ?? false) || token.startsSentence)
                 continue
             }
             var word = String(text[token.range])
@@ -293,9 +290,7 @@ enum TextPolish {
                 } else if !kept.isEmpty {
                     out += kept + (kept.last!.isNewline ? "" : " ")
                 } else {
-                    let framed = dropped.fillers && gap.contains(",") && !recent.contains(token.word)
-                        && !tokens[(index + 1)..<min(index + 3, tokens.count)].contains(where: \.afterComma)
-                    out += dropped.first.contains(",") && !joining.contains(recent.last ?? "") && !framed ? ", " : " "
+                    out += dropped.first.contains(",") && !joining.contains(last ?? "") ? ", " : " "
                 }
                 if dropped.capitalize { word = word.prefix(1).uppercased() + word.dropFirst() }
                 pending = nil
@@ -303,7 +298,7 @@ enum TextPolish {
                 out += gap
             }
             out += word
-            recent = Array((recent + [token.word]).suffix(4))
+            last = token.word
         }
         guard let dropped = pending else { return out + text[cursor...] }
         // Words dropped at the end leave what closed the text: "Absatz.\n\n", "Hallo,\n" (#20).
