@@ -308,17 +308,23 @@ final class TextProcessingTests: XCTestCase {
         XCTAssertEqual(pipeline.transcript("Das bleibt."), "Das bleibt.")
     }
 
-    func testTidyDropsCommasThatOnlyFramedAFiller() {
-        let german: Set<SpokenLanguage> = [.german]
-        XCTAssertEqual(TextPolish.tidy("Das Meeting ist, äh, um zehn.", languages: german), "Das Meeting ist um zehn.")
-        XCTAssertEqual(TextPolish.tidy("Ich hoffe, dass das Update, äh, heute Abend live geht.", languages: german),
-                       "Ich hoffe, dass das Update heute Abend live geht.")
-        // A restart with a word just said and an aside that goes on keep their comma (#30).
+    func testTidyKeepsTheCommaInFrontOfAFiller() {
+        let german: Set<SpokenLanguage> = [.german], english: Set<SpokenLanguage> = [.english]
+        // Most commas in front of a filler belong to the sentence. Dropping them as well (#30)
+        // was wrong in two of three realistic sentences, so "ist, äh, um zehn" keeps one too many.
+        XCTAssertEqual(TextPolish.tidy("Ich glaube, äh, dass das stimmt.", languages: german), "Ich glaube, dass das stimmt.")
+        XCTAssertEqual(TextPolish.tidy("Hallo Anna, ähm, wie geht es dir?", languages: german), "Hallo Anna, wie geht es dir?")
+        XCTAssertEqual(TextPolish.tidy("Thomas, äh, kannst du das übernehmen?", languages: german), "Thomas, kannst du das übernehmen?")
+        XCTAssertEqual(TextPolish.tidy("Wir brauchen mehr Zeit, äh, um das zu testen.", languages: german),
+                       "Wir brauchen mehr Zeit, um das zu testen.")
         XCTAssertEqual(TextPolish.tidy("Ich brauch das bis Freitag, äh, bis Donnerstag.", languages: german),
                        "Ich brauch das bis Freitag, bis Donnerstag.")
         XCTAssertEqual(TextPolish.tidy("Das ist, ähm, sagen wir, schwierig.", languages: german), "Das ist, sagen wir, schwierig.")
+        XCTAssertEqual(TextPolish.tidy("Yes, uh, that works.", languages: english), "Yes, that works.")
+        XCTAssertEqual(TextPolish.tidy("If you come, uh, bring cake.", languages: english), "If you come, bring cake.")
+        // A comma after a word that only leads on belonged to the filler.
         XCTAssertEqual(TextPolish.tidy("Ich war bei, äh, Anna.", languages: german), "Ich war bei Anna.")
-        XCTAssertEqual(TextPolish.tidy("We meet, uh, at ten.", languages: [.english]), "We meet at ten.")
+        XCTAssertEqual(TextPolish.tidy("Danke für, äh, die Hilfe.", languages: german), "Danke für die Hilfe.")
     }
 
     func testCorrectionsKnowNumbersMonthsAndWeekdaysWithoutTheTagger() {
