@@ -56,6 +56,11 @@ Type: filesandordirs; Name: "{app}\licenses\System.Security.Principal.Windows"
 Type: files; Name: "{app}\NAudio.Asio.dll"
 Type: files; Name: "{app}\NAudio.WinForms.dll"
 Type: filesandordirs; Name: "{app}\licenses\NAudio"
+; sherpa-onnx 2.0 no longer builds in espeak-ng, piper-phonemize and cargs; their
+; notices were installed up to 0.7.0-beta.11.
+Type: filesandordirs; Name: "{app}\licenses\espeak-ng"
+Type: filesandordirs; Name: "{app}\licenses\piper-phonemize"
+Type: filesandordirs; Name: "{app}\licenses\cargs"
 Type: files; Name: "{app}\cs\*.resources.dll"
 Type: files; Name: "{app}\de\*.resources.dll"
 Type: files; Name: "{app}\es\*.resources.dll"
