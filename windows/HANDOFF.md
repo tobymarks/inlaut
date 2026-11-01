@@ -153,7 +153,7 @@ next to the test executable. Never commit real user recordings or transcripts.
 3. Enable test captures and record short/long German sentences, pauses, umlauts, numbers
    and technical terms. Compare captured audio, raw text and processed text before
    changing model/preprocessing. Current model is German FastConformer Transducer INT8,
-   sherpa-onnx 1.13.8, modified beam search, CPU (2–4 threads in the app).
+   sherpa-onnx 2.0.1, modified beam search, CPU (2–4 threads in the app).
 4. Investigate clipboard-free insertion against Notepad and another target, without
    regressing the currently functioning complete-sentence insertion.
 
@@ -582,3 +582,17 @@ favour of `WasapiRecorder`; it still works and was left as is. The maintainer ha
 Windows PC: the release was checked by CI only, without a real microphone. NAudio 3.0
 had a `WdlResamplingSampleProvider` regression fixed in 3.1; the 16 kHz conversion is
 covered by the UI smoke tests with WAVs, not by live capture.
+
+## sherpa-onnx 2.0.1 (2026-11-01)
+
+Dependabot #40 moved sherpa-onnx from 1.13.8 to 2.0.1. The bundled `onnxruntime.dll` is
+byte-identical (ONNX Runtime 1.28.2). The C# fields inlaut sets (transducer files,
+decoding method, feature config, `Result.Text`) are unchanged; 2.0 adds an HLG decoder
+block to `OfflineRecognizerConfig` that stays empty by default. `SherpaOnnxCreate*` now
+returns NULL instead of letting a C++ exception escape, but the C# wrapper does not check
+it, so a model that fails to load still ends the process as before (ModelManager checks
+size and SHA-256 of every model file first). sherpa 2.0 dropped espeak-ng,
+piper-phonemize and cargs from its build and added utf8proc, so licenses/ follows
+(`[InstallDelete]` removes the old notice folders on update). The maintainer had no
+Windows PC: checked by CI only (English model inference, update over beta.9 with model
+load), not with a real microphone; the next beta is tested by its users.

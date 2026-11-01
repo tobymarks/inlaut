@@ -78,7 +78,7 @@ foreach ($id in @('Microsoft.Win32.Registry', 'System.Security.AccessControl', '
 }
 # These upstream snapshots supplement the licenses absent from the sherpa NuGet
 # packages. A dependency upgrade must refresh the matching source notices too.
-if (-not $assets.libraries.ContainsKey('org.k2fsa.sherpa.onnx/1.13.8')) {
+if (-not $assets.libraries.ContainsKey('org.k2fsa.sherpa.onnx/2.0.1')) {
     throw 'Refresh windows/licenses for the new sherpa-onnx/ONNX Runtime version.'
 }
 $runtime = Get-Content -LiteralPath (Join-Path $payload 'Inlaut.runtimeconfig.json') -Raw | ConvertFrom-Json
