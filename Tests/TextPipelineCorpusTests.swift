@@ -9,7 +9,7 @@ final class TextPipelineCorpusTests: XCTestCase {
     private static let stepKeys: [String: Set<String>] = [
         "sharpS": [],
         "voiceCommands": ["languages"],
-        "dictation": ["languages", "voiceCommands", "sharpS", "replacements", "snippets", "appRule"],
+        "dictation": ["languages", "voiceCommands", "sharpS", "replacements", "snippets", "appRule", "formatting"],
     ]
 
     func testSharedCases() throws {
@@ -74,6 +74,7 @@ final class TextPipelineCorpusTests: XCTestCase {
             var pipeline = TextPipeline(languages: languages,
                                         voiceCommands: try flag(item["voiceCommands"], id: id),
                                         sharpS: try flag(item["sharpS"], id: id),
+                                        formatting: try flag(item["formatting"], id: id, default: false),
                                         replacements: replacements,
                                         snippets: snippets)
             pipeline.appRule = try appRule(item["appRule"], id: id)
@@ -81,9 +82,9 @@ final class TextPipelineCorpusTests: XCTestCase {
         }
     }
 
-    private func flag(_ value: Any?, id: String) throws -> Bool {
-        guard let value else { return true }
-        return try XCTUnwrap(value as? Bool, "\(id): voiceCommands and sharpS are true or false")
+    private func flag(_ value: Any?, id: String, default fallback: Bool = true) throws -> Bool {
+        guard let value else { return fallback }
+        return try XCTUnwrap(value as? Bool, "\(id): voiceCommands, sharpS and formatting are true or false")
     }
 
     private func appRule(_ value: Any?, id: String) throws -> AppRule? {

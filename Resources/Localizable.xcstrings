@@ -2036,6 +2036,46 @@
           }
         }
       }
+    },
+    "Numbers as digits": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zahlen als Ziffern"
+          }
+        }
+      }
+    },
+    "“zwanzig Prozent” becomes “20 %”, “am zwölften Oktober” becomes “am 12. Oktober”. Numbers without a unit stay as spoken.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus „zwanzig Prozent“ wird „20 %“, aus „am zwölften Oktober“ wird „am 12. Oktober“. Zahlen ohne Einheit bleiben, wie gesprochen."
+          }
+        }
+      }
+    },
+    "“twenty percent” becomes “20%”, “October twelfth” becomes “October 12”. Numbers without a unit stay as spoken.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus „twenty percent“ wird „20%“, aus „October twelfth“ wird „October 12“. Zahlen ohne Einheit bleiben, wie gesprochen."
+          }
+        }
+      }
+    },
+    "“zwanzig Prozent” becomes “20 %”, “October twelfth” becomes “October 12”. Numbers without a unit stay as spoken.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus „zwanzig Prozent“ wird „20 %“, aus „October twelfth“ wird „October 12“. Zahlen ohne Einheit bleiben, wie gesprochen."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

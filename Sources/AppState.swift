@@ -65,6 +65,14 @@ enum DictationLanguage: String, CaseIterable, Identifiable {
         }
     }
 
+    var formattingHelp: String {
+        switch self {
+        case .german: String(localized: "“zwanzig Prozent” becomes “20 %”, “am zwölften Oktober” becomes “am 12. Oktober”. Numbers without a unit stay as spoken.")
+        case .english: String(localized: "“twenty percent” becomes “20%”, “October twelfth” becomes “October 12”. Numbers without a unit stay as spoken.")
+        case .bilingual: String(localized: "“zwanzig Prozent” becomes “20 %”, “October twelfth” becomes “October 12”. Numbers without a unit stay as spoken.")
+        }
+    }
+
     /// The interface follows German or English; bilingual keeps whatever the
     /// interface currently is.
     var interfaceLanguage: String? {
@@ -217,6 +225,10 @@ final class AppState {
     var resolveCorrections: Bool {
         didSet { UserDefaults.standard.set(resolveCorrections, forKey: "resolveCorrections") }
     }
+    /// "zwanzig Prozent" → "20 %", "am zwölften Oktober" → "am 12. Oktober" (#16).
+    var smartFormatting: Bool {
+        didSet { UserDefaults.standard.set(smartFormatting, forKey: "smartFormatting") }
+    }
     var replacements: [Replacement] {
         didSet { save(replacements, "replacements") }
     }
@@ -318,6 +330,7 @@ final class AppState {
         sharpS = defaults.object(forKey: "sharpS") as? Bool ?? !["CH", "LI"].contains(Locale.current.region?.identifier)
         tidyDictations = defaults.bool(forKey: "tidyDictations")
         resolveCorrections = defaults.bool(forKey: "resolveCorrections")
+        smartFormatting = defaults.bool(forKey: "smartFormatting")
         replacements = defaults.data(forKey: "replacements")
             .flatMap { try? JSONDecoder().decode([Replacement].self, from: $0) } ?? []
         snippets = defaults.data(forKey: "snippets")
@@ -668,7 +681,7 @@ final class AppState {
     /// The text settings as they are now.
     var textPipeline: TextPipeline {
         TextPipeline(languages: language.spoken, voiceCommands: voiceCommands, sharpS: sharpS,
-                     tidy: tidyDictations, corrections: resolveCorrections,
+                     tidy: tidyDictations, corrections: resolveCorrections, formatting: smartFormatting,
                      replacements: replacements, snippets: snippets)
     }
 

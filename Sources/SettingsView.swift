@@ -89,6 +89,10 @@ struct SettingsView: View {
                             Text("Writes unambiguous words such as Straße, groß or Grüße with ß.")
                         }
                     }
+                    Toggle(isOn: $state.smartFormatting) {
+                        Text("Numbers as digits")
+                        Text(state.language.formattingHelp)
+                    }
                     Toggle(isOn: $state.tidyDictations) {
                         Text("Tidy up dictations")
                         Text("Leaves out filler sounds such as “ähm” or “uh” and words you said twice by accident.")
