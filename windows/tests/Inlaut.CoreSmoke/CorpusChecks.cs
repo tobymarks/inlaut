@@ -14,7 +14,7 @@ static class CorpusChecks
     {
         ["sharpS"] = [],
         ["voiceCommands"] = ["languages"],
-        ["dictation"] = ["languages", "voiceCommands", "sharpS", "replacements", "snippets", "appRule"],
+        ["dictation"] = ["languages", "voiceCommands", "sharpS", "replacements", "snippets", "appRule", "formatting"],
     };
 
     public static void Run()
@@ -110,6 +110,8 @@ static class CorpusChecks
             default:
                 // Windows has no per-app rules (#17), so a case with one names the difference.
                 CheckAppRule(id, item);
+                // Windows has no number formatting (#16) either; the flag is checked, not applied.
+                _ = Flag(id, item, "formatting");
                 var pipeline = new TextPipeline
                 {
                     Languages = languages,

@@ -47,6 +47,7 @@ targets:
       - Sources/TextPipeline.swift
       - Sources/AppRules.swift
       - Sources/TextPolish.swift
+      - Sources/SmartFormatting.swift
       - Sources/CancellationFlag.swift
       - Sources/Recorder.swift
       - Sources/Microphone.swift

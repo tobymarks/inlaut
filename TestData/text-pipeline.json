@@ -2,14 +2,15 @@
   "about": [
     "Shared cases for the text pipeline of the Mac app (Sources/*.swift) and the Windows app (windows/src/Inlaut.Core).",
     "Tests/TextPipelineCorpusTests.swift and windows/tests/Inlaut.CoreSmoke run every case.",
-    "step: \"dictation\" (default) runs the whole pipeline after a dictation: a snippet, else voice commands, ß, replacements and an optional appRule (the rules of the app in front, #17). \"voiceCommands\" and \"sharpS\" run one step.",
+    "step: \"dictation\" (default) runs the whole pipeline after a dictation: a snippet, else voice commands, number formatting (\"formatting\": true, off by default, #16), ß, replacements and an optional appRule (the rules of the app in front, #17). \"voiceCommands\" and \"sharpS\" run one step.",
     "languages (required for dictation and voiceCommands): \"german\" and/or \"english\", the languages being dictated. voiceCommands and sharpS default to true; replacements and snippets use the rules-file format.",
     "appRule (dictation only): {\"noTrailingPeriod\": bool, \"noCapitalStart\": bool}, both required.",
     "expected must hold on both platforms. Where they differ on purpose or pending a decision, \"mac\" and \"windows\" replace it and \"differences\" names the known reasons below.",
     "When a change makes both platforms agree, replace \"mac\" and \"windows\" with \"expected\". Both runners reject unknown keys, keys the step does not use, equal mac and windows values and unused differences."
   ],
   "differences": {
-    "app-rules-mac-only": "Per-app rules (#17) exist only on the Mac; Windows pastes the text as the pipeline wrote it."
+    "app-rules-mac-only": "Per-app rules (#17) exist only on the Mac; Windows pastes the text as the pipeline wrote it.",
+    "formatting-mac-only": "Number formatting (#16) exists only on the Mac so far; Windows leaves numbers as the recogniser wrote them."
   },
   "cases": [
     {
@@ -738,6 +739,239 @@
       "windows": "E-Mail ist raus. Ok.",
       "differences": [
         "app-rules-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-de-money",
+      "languages": [
+        "german"
+      ],
+      "formatting": true,
+      "input": "Das Angebot liegt bei dreiundzwanzig Euro fünfzig pro Stück, der Kaffee kostet 3,80 Euro, das Wasser zwei Euro.",
+      "mac": "Das Angebot liegt bei 23,50 € pro Stück, der Kaffee kostet 3,80 €, das Wasser 2 €.",
+      "windows": "Das Angebot liegt bei dreiundzwanzig Euro fünfzig pro Stück, der Kaffee kostet 3,80 Euro, das Wasser zwei Euro.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-de-money-large",
+      "languages": [
+        "german"
+      ],
+      "formatting": true,
+      "input": "Die Rechnung über 1250 Euro ist offen, eingeplant sind vier Komma fünf Millionen Euro und zwanzig Euro und fünfzig Cent.",
+      "mac": "Die Rechnung über 1.250 € ist offen, eingeplant sind 4,5 Millionen Euro und 20,50 €.",
+      "windows": "Die Rechnung über 1250 Euro ist offen, eingeplant sind vier Komma fünf Millionen Euro und zwanzig Euro und fünfzig Cent.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-de-percent-units",
+      "languages": [
+        "german"
+      ],
+      "formatting": true,
+      "input": "Der Umsatz ist um drei Komma fünf Prozent gestiegen, das Paket wiegt zwei Komma fünf Kilo und die Strecke ist fünf Kilometer lang.",
+      "mac": "Der Umsatz ist um 3,5 % gestiegen, das Paket wiegt 2,5 kg und die Strecke ist 5 km lang.",
+      "windows": "Der Umsatz ist um drei Komma fünf Prozent gestiegen, das Paket wiegt zwei Komma fünf Kilo und die Strecke ist fünf Kilometer lang.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-de-counted-units",
+      "languages": [
+        "german"
+      ],
+      "formatting": true,
+      "input": "Der Bildschirm ist siebenundzwanzig Zoll groß und sechzig Zentimeter breit, die Datei hat dreihundert Megabyte.",
+      "mac": "Der Bildschirm ist 27 Zoll groß und 60 cm breit, die Datei hat 300 MB.",
+      "windows": "Der Bildschirm ist siebenundzwanzig Zoll groß und sechzig Zentimeter breit, die Datei hat dreihundert Megabyte.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-de-dates",
+      "languages": [
+        "german"
+      ],
+      "formatting": true,
+      "input": "Die Messe war vom dritten bis fünften März, der Vertrag läuft bis zum einunddreißigten Dezember zweitausendsiebenundzwanzig.",
+      "mac": "Die Messe war vom 3. bis 5. März, der Vertrag läuft bis zum 31. Dezember 2027.",
+      "windows": "Die Messe war vom dritten bis fünften März, der Vertrag läuft bis zum einunddreißigten Dezember zweitausendsiebenundzwanzig.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-de-times",
+      "languages": [
+        "german"
+      ],
+      "formatting": true,
+      "input": "Der Call beginnt um 14.30 Uhr, der Termin um vierzehn Uhr dreißig und ich bin ab neun Uhr im Büro.",
+      "mac": "Der Call beginnt um 14:30 Uhr, der Termin um 14:30 Uhr und ich bin ab 9 Uhr im Büro.",
+      "windows": "Der Call beginnt um 14.30 Uhr, der Termin um vierzehn Uhr dreißig und ich bin ab neun Uhr im Büro.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-de-labels-years",
+      "languages": [
+        "german"
+      ],
+      "formatting": true,
+      "input": "Wir sind in Version zwei Punkt vier auf der Seite siebzehn, im Jahr neunzehnhundertneunundneunzig war das anders.",
+      "mac": "Wir sind in Version 2.4 auf der Seite 17, im Jahr 1999 war das anders.",
+      "windows": "Wir sind in Version zwei Punkt vier auf der Seite siebzehn, im Jahr neunzehnhundertneunundneunzig war das anders.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-de-keeps-spoken",
+      "languages": [
+        "german"
+      ],
+      "formatting": true,
+      "input": "Wir sehen uns um halb drei oder Viertel nach acht, ich habe drei Fragen, wir machen das eins nach dem anderen und haben zweihunderttausend Produkte in zwölf Sprachen.",
+      "expected": "Wir sehen uns um halb drei oder Viertel nach acht, ich habe drei Fragen, wir machen das eins nach dem anderen und haben zweihunderttausend Produkte in zwölf Sprachen."
+    },
+    {
+      "id": "formatting-de-keeps-nouns-and-articles",
+      "languages": [
+        "german"
+      ],
+      "formatting": true,
+      "input": "Um sieben Uhr drei Leute, eine Uhr für einen Euro, achten Sie auf den Mai.",
+      "mac": "Um 7 Uhr drei Leute, eine Uhr für einen Euro, achten Sie auf den Mai.",
+      "windows": "Um sieben Uhr drei Leute, eine Uhr für einen Euro, achten Sie auf den Mai.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-en-money",
+      "languages": [
+        "english"
+      ],
+      "formatting": true,
+      "input": "That costs twenty three dollars fifty, the offer is 23 euro and fifty cents and we budgeted one point five million dollars.",
+      "mac": "That costs $23.50, the offer is €23.50 and we budgeted $1.5 million.",
+      "windows": "That costs twenty three dollars fifty, the offer is 23 euro and fifty cents and we budgeted one point five million dollars.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-en-percent-units",
+      "languages": [
+        "english"
+      ],
+      "formatting": true,
+      "input": "Revenue went up by three point five percent, the route is five kilometres long and the file is three hundred MB.",
+      "mac": "Revenue went up by 3.5%, the route is 5 km long and the file is 300 MB.",
+      "windows": "Revenue went up by three point five percent, the route is five kilometres long and the file is three hundred MB.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-en-dates",
+      "languages": [
+        "english"
+      ],
+      "formatting": true,
+      "input": "Let's meet on October twelfth. The contract runs until December thirty-first, twenty-twenty-seven.",
+      "mac": "Let's meet on October 12. The contract runs until December 31, 2027.",
+      "windows": "Let's meet on October twelfth. The contract runs until December thirty-first, twenty-twenty-seven.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-en-times",
+      "languages": [
+        "english"
+      ],
+      "formatting": true,
+      "input": "The call starts at two thirty p.m. Then I'm in the office from nine a.m. tomorrow.",
+      "mac": "The call starts at 2:30 pm. Then I'm in the office from 9 am tomorrow.",
+      "windows": "The call starts at two thirty p.m. Then I'm in the office from nine a.m. tomorrow.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-en-time-ends-dictation",
+      "languages": [
+        "english"
+      ],
+      "formatting": true,
+      "input": "The call starts at two thirty p.m.",
+      "mac": "The call starts at 2:30 pm.",
+      "windows": "The call starts at two thirty p.m.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-en-labels",
+      "languages": [
+        "english"
+      ],
+      "formatting": true,
+      "input": "We are on version two point four, page seventeen.",
+      "mac": "We are on version 2.4, page 17.",
+      "windows": "We are on version two point four, page seventeen.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-en-keeps-spoken",
+      "languages": [
+        "english"
+      ],
+      "formatting": true,
+      "input": "See you at half past two. I have three questions and one suggestion, one of these days, the first time, until three, a four oh four and two hundred thousand products.",
+      "expected": "See you at half past two. I have three questions and one suggestion, one of these days, the first time, until three, a four oh four and two hundred thousand products."
+    },
+    {
+      "id": "formatting-mixed-per-sentence",
+      "languages": [
+        "german",
+        "english"
+      ],
+      "formatting": true,
+      "input": "Wir haben dafür zwanzig Prozent eingeplant. The conversion rate is twenty percent.",
+      "mac": "Wir haben dafür 20 % eingeplant. The conversion rate is 20%.",
+      "windows": "Wir haben dafür zwanzig Prozent eingeplant. The conversion rate is twenty percent.",
+      "differences": [
+        "formatting-mac-only"
+      ]
+    },
+    {
+      "id": "formatting-before-replacements",
+      "languages": [
+        "german"
+      ],
+      "formatting": true,
+      "replacements": [
+        {
+          "from": "20 %",
+          "to": "zwanzig Prozent"
+        }
+      ],
+      "input": "Wir liegen bei zwanzig Prozent und fünf Kilometer.",
+      "mac": "Wir liegen bei zwanzig Prozent und 5 km.",
+      "windows": "Wir liegen bei zwanzig Prozent und fünf Kilometer.",
+      "differences": [
+        "formatting-mac-only"
       ]
     }
   ]

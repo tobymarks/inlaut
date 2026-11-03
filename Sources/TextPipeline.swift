@@ -10,17 +10,20 @@ struct TextPipeline: Sendable {
     var tidy = false
     /// Self-corrections are offered to whoever confirms them; needs `tidy`.
     var corrections = false
+    /// Numbers next to a unit as digits: "zwanzig Prozent" → "20 %" (#16).
+    var formatting = false
     var replacements: [Replacement] = []
     var snippets: [Snippet] = []
     /// The rules of the app being dictated into (#17), applied last.
     var appRule: AppRule?
 
     /// A dictation. A snippet's phrase on its own inserts the snippet as it
-    /// was written; anything else gets voice commands, tidying, ß and replacements.
+    /// was written; anything else gets voice commands, tidying, number
+    /// formatting, ß and replacements.
     func dictation(_ raw: String) -> String {
         if raw.allSatisfy(\.isWhitespace) { return "" }
         if let snippet = snippets.match(raw) { return snippet }
-        return finished(corrected(tidied(raw)))
+        return finished(corrected(formatted(tidied(raw))))
     }
 
     /// The same, and a slip the speaker took back goes too if `confirm` agrees.
@@ -29,7 +32,13 @@ struct TextPipeline: Sendable {
         if let snippet = snippets.match(raw) { return snippet }
         var text = tidied(raw)
         if tidy, corrections { text = await TextPolish.resolve(text, languages: languages, confirm: confirm) }
-        return finished(corrected(text))
+        return finished(corrected(formatted(text)))
+    }
+
+    /// After tidying and self-corrections, which read numbers as words too;
+    /// before replacements, so a replacement can still override it.
+    private func formatted(_ text: String) -> String {
+        formatting ? SmartFormatting.apply(to: text, languages: languages) : text
     }
 
     private func finished(_ text: String) -> String {
