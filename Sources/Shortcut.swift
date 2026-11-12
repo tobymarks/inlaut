@@ -89,10 +89,13 @@ final class HotKey {
         }, specs.count, &specs, Unmanaged.passUnretained(self).toOpaque(), &handlerRef)
     }
 
-    func register(_ shortcut: Shortcut) {
+    /// False if macOS refused the combination; nothing would happen on a press then.
+    @discardableResult
+    func register(_ shortcut: Shortcut) -> Bool {
         unregister()
         let id = EventHotKeyID(signature: OSType(0x4454_4154), id: 1)  // "DTAT"
-        RegisterEventHotKey(shortcut.keyCode, shortcut.modifiers, id, GetApplicationEventTarget(), 0, &hotKeyRef)
+        let status = RegisterEventHotKey(shortcut.keyCode, shortcut.modifiers, id, GetApplicationEventTarget(), 0, &hotKeyRef)
+        return status == noErr && hotKeyRef != nil
     }
 
     func unregister() {

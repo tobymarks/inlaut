@@ -674,6 +674,16 @@
         }
       }
     },
+    "macOS did not accept this shortcut – choose another one in Settings.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS hat dieses Tastenkürzel nicht angenommen – wähle in den Einstellungen ein anderes."
+          }
+        }
+      }
+    },
     "Microphone": {
       "localizations": {
         "de": {
