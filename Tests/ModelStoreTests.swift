@@ -54,4 +54,19 @@ final class ModelStoreTests: XCTestCase {
         XCTAssertEqual(try ModelStore.sha256(of: file),
                        "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
     }
+
+    /// Fetches 23 MB from Hugging Face, so it only runs when asked to:
+    /// `TEST_RUNNER_INLAUT_NETWORK_TESTS=1 xcodebuild … test`.
+    @MainActor
+    func testInterruptedDownloadContinues() async throws {
+        guard ProcessInfo.processInfo.environment["INLAUT_NETWORK_TESTS"] == "1" else {
+            throw XCTSkip("needs the network")
+        }
+        let model = SpeechModel.ultra
+        let file = try XCTUnwrap(model.files.first { $0.name == "Decoder.mlmodelc/weights/weight.bin" })
+        let source = try XCTUnwrap(URL(string: "https://huggingface.co/\(model.repo)/resolve/\(model.revision)/\(file.name)"))
+        let downloaded = try await Download.run(source, interruptAfter: 6 << 20) { _ in }
+        defer { try? FileManager.default.removeItem(at: downloaded) }
+        XCTAssertEqual(try ModelStore.sha256(of: downloaded), file.sha256)
+    }
 }
