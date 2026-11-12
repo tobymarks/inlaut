@@ -64,6 +64,8 @@ enum TextInserter {
             return .copied(String(localized: "Text field changed – paste the dictation with ⌘V"))
         }
 
+        // The clipboard of the dictation before may still hold our text.
+        restoreNow()
         let saved = snapshot(pasteboard)
         copy(text, to: pasteboard)
         let ours = pasteboard.changeCount
@@ -71,16 +73,35 @@ enum TextInserter {
             return .copied(String(localized: "On the clipboard – paste the dictation with ⌘V"))
         }
 
-        // Restoration also runs on cancellation, including an originally empty
-        // clipboard. A new copy by the user always wins over our snapshot.
-        defer {
-            if pasteboard.changeCount == ours {
-                pasteboard.clearContents()
-                if !saved.isEmpty { pasteboard.writeObjects(saved) }
-            }
+        // The old clipboard comes back once the target app has had time to
+        // read ours, also an originally empty one. That wait runs on its own,
+        // so the next dictation can start right after the paste (#43). A new
+        // copy by the user always wins over our snapshot.
+        restoreGeneration += 1
+        let generation = restoreGeneration
+        pendingRestore = (generation, {
+            guard pasteboard.changeCount == ours else { return }
+            pasteboard.clearContents()
+            if !saved.isEmpty { pasteboard.writeObjects(saved) }
+        })
+        let wait = environment.waitForPaste
+        restoring = Task {
+            try? await wait()
+            if pendingRestore?.generation == generation { restoreNow() }
         }
-        try await environment.waitForPaste()
         return .inserted
+    }
+
+    /// The wait of the latest paste; tests await it.
+    private(set) static var restoring: Task<Void, Never>?
+    private static var restoreGeneration = 0
+    private static var pendingRestore: (generation: Int, run: () -> Void)?
+
+    /// Puts the user's clipboard back without waiting any longer.
+    static func restoreNow() {
+        guard let pending = pendingRestore else { return }
+        pendingRestore = nil
+        pending.run()
     }
 
     private static func copy(_ text: String, to pasteboard: NSPasteboard) {
@@ -132,7 +153,7 @@ enum TextInserter {
 
     private static func postCommandV() -> Bool {
         let source = CGEventSource(stateID: .combinedSessionState)
-        let v = CGKeyCode(kVK_ANSI_V)
+        let v = pasteKeyCode()
         guard let down = CGEvent(keyboardEventSource: source, virtualKey: v, keyDown: true),
               let up = CGEvent(keyboardEventSource: source, virtualKey: v, keyDown: false) else { return false }
         for event in [down, up] {
@@ -140,5 +161,39 @@ enum TextInserter {
             event.post(tap: .cghidEventTap)
         }
         return true
+    }
+
+    /// Key codes are positions on the keyboard, not letters: where QWERTY
+    /// has V, Dvorak has K, and ⌘K is not paste (#46).
+    private static func pasteKeyCode() -> CGKeyCode {
+        guard let source = TISCopyCurrentKeyboardLayoutInputSource()?.takeRetainedValue(),
+              let layout = layoutData(of: source),
+              let code = keyCode(producing: "v", in: layout) else { return CGKeyCode(kVK_ANSI_V) }
+        return code
+    }
+
+    static func layoutData(of source: TISInputSource) -> Data? {
+        guard let pointer = TISGetInputSourceProperty(source, kTISPropertyUnicodeKeyLayoutData) else { return nil }
+        return Unmanaged<CFData>.fromOpaque(pointer).takeUnretainedValue() as Data
+    }
+
+    /// The key that types `character` while ⌘ is held, which is how the
+    /// target app reads the shortcut ("Dvorak – QWERTY ⌘" keeps V in place).
+    static func keyCode(producing character: String, in layout: Data) -> CGKeyCode? {
+        layout.withUnsafeBytes { bytes -> CGKeyCode? in
+            guard let keyboard = bytes.bindMemory(to: UCKeyboardLayout.self).baseAddress else { return nil }
+            let command = UInt32(cmdKey >> 8) & 0xFF
+            for code in UInt16(0)..<128 {
+                var deadKeys: UInt32 = 0
+                var length = 0
+                var typed = [UniChar](repeating: 0, count: 4)
+                let status = UCKeyTranslate(keyboard, code, UInt16(kUCKeyActionDown), command, UInt32(LMGetKbdType()),
+                                            OptionBits(kUCKeyTranslateNoDeadKeysMask), &deadKeys, typed.count, &length, &typed)
+                if status == noErr, length == 1, String(utf16CodeUnits: typed, count: 1).lowercased() == character {
+                    return code
+                }
+            }
+            return nil
+        }
     }
 }
