@@ -285,6 +285,17 @@ final class AppState {
 
     /// Shorter takes are treated as an accidental tap and dropped.
     private let minimumSeconds: TimeInterval = 0.3
+    /// A dictation left running (hands-free, or a key that stuck) ends here
+    /// by itself: the audio is held in memory, about 230 MB per hour.
+    private let maximumTake: Duration = {
+        #if DEBUG
+        // End-to-end tests: `-takeLimitSeconds 4`.
+        let seconds = UserDefaults.standard.double(forKey: "takeLimitSeconds")
+        if seconds > 0 { return .seconds(seconds) }
+        #endif
+        return .seconds(30 * 60)
+    }()
+    private var takeLimit: Task<Void, Never>?
     /// People finish the last syllable just after letting go of the key.
     private let trailingAudio: Duration = .milliseconds(150)
 
@@ -607,7 +618,10 @@ final class AppState {
         switch trigger {
         case .shortcut:
             globeKey.stop()
-            hotKey.register(shortcut)
+            if !hotKey.register(shortcut) {
+                log.error("shortcut not registered")
+                fail(String(localized: "macOS did not accept this shortcut – choose another one in Settings."))
+            }
         case .globe:
             hotKey.unregister()
             globeKey.start()
@@ -766,8 +780,17 @@ final class AppState {
             dictationApp = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
             let device = Microphones.resolve(microphone)
             self.session = try ManagedSession.start(engine: engine) { try recorder.start(into: $0, device: device) }
-            dictationID = UUID()
+            let id = UUID()
+            dictationID = id
             status = .recording
+            takeLimit?.cancel()
+            takeLimit = Task {
+                try? await Task.sleep(for: maximumTake)
+                guard !Task.isCancelled, dictationID == id, status == .recording else { return }
+                log.notice("take ended at the time limit")
+                globeKey.endHandsFree()
+                stopAndTranscribe()
+            }
             // Both models get ready while the user is still speaking.
             if engine === parakeet { parakeet.warmUp() }
             if tidyDictations, resolveCorrections { CorrectionJudge.prewarm() }

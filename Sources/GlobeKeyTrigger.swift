@@ -49,6 +49,11 @@ final class GlobeKeyTrigger {
         phase = .idle
     }
 
+    /// The app ended a hands-free dictation itself; the next tap starts anew.
+    func endHandsFree() {
+        if phase == .handsFree { phase = .idle }
+    }
+
     private func flagsChanged(_ event: NSEvent) {
         let globeDown = event.modifierFlags.contains(.function)
         if event.keyCode == 63 {  // the 🌐/fn key itself
