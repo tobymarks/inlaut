@@ -205,9 +205,9 @@ final class AppState {
     var voiceCommands: Bool {
         didSet { UserDefaults.standard.set(voiceCommands, forKey: "voiceCommands") }
     }
-    /// "Strasse" → "Straße"; off by default where ss is the norm.
-    var sharpS: Bool {
-        didSet { UserDefaults.standard.set(sharpS, forKey: "sharpS") }
+    /// "Straße" → "Strasse"; on by default where ss is the norm.
+    var swissSpelling: Bool {
+        didSet { UserDefaults.standard.set(swissSpelling, forKey: "swissSpelling") }
     }
     /// Filler sounds and words said twice are left out.
     var tidyDictations: Bool {
@@ -315,7 +315,8 @@ final class AppState {
         playSounds = defaults.object(forKey: "playSounds") as? Bool ?? true
         microphone = MicrophoneChoice(stored: defaults.string(forKey: "microphone"))
         voiceCommands = defaults.object(forKey: "voiceCommands") as? Bool ?? true
-        sharpS = defaults.object(forKey: "sharpS") as? Bool ?? !["CH", "LI"].contains(Locale.current.region?.identifier)
+        swissSpelling = defaults.object(forKey: "swissSpelling") as? Bool
+            ?? ["CH", "LI"].contains(Locale.current.region?.identifier)
         tidyDictations = defaults.bool(forKey: "tidyDictations")
         resolveCorrections = defaults.bool(forKey: "resolveCorrections")
         replacements = defaults.data(forKey: "replacements")
@@ -667,7 +668,7 @@ final class AppState {
 
     /// The text settings as they are now.
     var textPipeline: TextPipeline {
-        TextPipeline(languages: language.spoken, voiceCommands: voiceCommands, sharpS: sharpS,
+        TextPipeline(languages: language.spoken, voiceCommands: voiceCommands, swissSpelling: swissSpelling,
                      tidy: tidyDictations, corrections: resolveCorrections,
                      replacements: replacements, snippets: snippets)
     }

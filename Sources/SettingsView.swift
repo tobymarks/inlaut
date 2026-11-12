@@ -84,9 +84,9 @@ struct SettingsView: View {
                         Text(state.language.commandHelp)
                     }
                     if state.language.spoken.contains(.german) {
-                        Toggle(isOn: $state.sharpS) {
-                            Text("ß instead of ss")
-                            Text("Writes unambiguous words such as Straße, groß or Grüße with ß.")
+                        Toggle(isOn: $state.swissSpelling) {
+                            Text("ss instead of ß")
+                            Text("Swiss spelling: Strasse, gross and Grüsse.")
                         }
                     }
                     Toggle(isOn: $state.tidyDictations) {

@@ -161,12 +161,11 @@ final class TextProcessingTests: XCTestCase {
                                     snippets: [Snippet(phrase: "Signatur", text: "Gruss, neue Zeile\nTobias")])
         XCTAssertEqual(pipeline.dictation("Signatur."), "Gruss, neue Zeile\nTobias")
         XCTAssertEqual(pipeline.transcript("Signatur."), "Signatur.")
-        XCTAssertEqual(pipeline.dictation("Gruss, neue Zeile, Tobias"), "Gruß,\nToby")
-        XCTAssertEqual(pipeline.transcript("Gruss, neue Zeile, Tobias"), "Gruß, neue Zeile, Toby")
+        XCTAssertEqual(pipeline.dictation("Gruß, neue Zeile, Tobias"), "Gruß,\nToby")
+        XCTAssertEqual(pipeline.transcript("Gruß, neue Zeile, Tobias"), "Gruß, neue Zeile, Toby")
         var plain = pipeline
         plain.voiceCommands = false
-        plain.sharpS = false
-        XCTAssertEqual(plain.dictation("Gruss, neue Zeile, Tobias"), "Gruss, neue Zeile, Toby")
+        XCTAssertEqual(plain.dictation("Gruß, neue Zeile, Tobias"), "Gruß, neue Zeile, Toby")
     }
 
     func testTextRulesFileRoundTripAndMerge() throws {
@@ -303,7 +302,7 @@ final class TextProcessingTests: XCTestCase {
         pipeline.appRule = AppRule(bundleID: "com.apple.Terminal", name: "Terminal")
         XCTAssertEqual(pipeline.dictation("Zeig mir den Status"), "zeig mir den STATUS")
         XCTAssertEqual(pipeline.dictation("Signatur."), "Viele Grüße.")
-        let confirmed = await pipeline.dictation("Das ist gross, neue Zeile.") { _ in true }
+        let confirmed = await pipeline.dictation("Das ist groß, neue Zeile.") { _ in true }
         XCTAssertEqual(confirmed, "das ist groß,\n")
         XCTAssertEqual(pipeline.transcript("Das bleibt."), "Das bleibt.")
     }
@@ -420,19 +419,28 @@ final class TextProcessingTests: XCTestCase {
                        "Hallo Sarah,\nViele Grüße,\nTobias")
     }
 
-    func testSharpSInWordsAndCompounds() {
-        XCTAssertEqual(SharpS.apply(to: "Viele Grüsse aus der Hauptstrasse, das ist ausserdem regelmässig ein grosser Spass."),
-                       "Viele Grüße aus der Hauptstraße, das ist außerdem regelmäßig ein großer Spaß.")
-        XCTAssertEqual(SharpS.apply(to: "Er weiss, was die Massnahme heisst; schliesslich fliesst es draussen."),
-                       "Er weiß, was die Maßnahme heißt; schließlich fließt es draußen.")
-        XCTAssertEqual(SharpS.apply(to: "Fussball, Weisswein, Eiweiss, Aussendienst, Reissverschluss"),
-                       "Fußball, Weißwein, Eiweiß, Außendienst, Reißverschluss")
+    func testWordsStayAsTheRecogniserWroteThem() {
+        // The ß rule of the first versions also changed these (#45).
+        let pipeline = TextPipeline(languages: [.german, .english])
+        for text in ["The gross margin went up.", "Don't make a fuss about it.", "Herr Weiss und Frau Strasser",
+                     "Viele Grüße aus der Hauptstraße."] {
+            XCTAssertEqual(pipeline.dictation(text), text)
+            XCTAssertEqual(pipeline.transcript(text), text)
+        }
     }
 
-    func testSharpSLeavesAmbiguousAndCorrectWordsAlone() {
-        let unchanged = "Masse Busse floss Schloss muss dass Fluss Strass STRASSE Füssen Fussel Hinweisschild "
-            + "Preissenkung Kreissäge aussenden Aussendung Weissagung Ausstellung Eissorte Blossom"
-        XCTAssertEqual(SharpS.apply(to: unchanged), unchanged)
+    func testSwissSpelling() {
+        var pipeline = TextPipeline(languages: [.german], swissSpelling: true,
+                                    replacements: [Replacement(from: "Meyerstrasse", to: "Meyerstraße")])
+        XCTAssertEqual(pipeline.dictation("Viele Grüße, das heißt draußen. STRAẞE"), "Viele Grüsse, das heisst draussen. STRASSE")
+        XCTAssertEqual(pipeline.transcript("Ein großer Spaß."), "Ein grosser Spass.")
+        // A replacement comes last and can keep one word as it is.
+        XCTAssertEqual(pipeline.dictation("In der Meyerstraße."), "In der Meyerstraße.")
+        // A snippet is inserted as written.
+        pipeline.snippets = [Snippet(phrase: "Gruß", text: "Viele Grüße")]
+        XCTAssertEqual(pipeline.dictation("Gruß."), "Viele Grüße")
+        pipeline.languages = [.english]
+        XCTAssertEqual(pipeline.dictation("Straße"), "Straße")
     }
 
     func testCancellationFlag() throws {

@@ -51,6 +51,8 @@ final class TextPipelineCorpusTests: XCTestCase {
                 used.formUnion(named)
                 expected = mac
             }
+            // The ß rule is Windows only (difference sharp-s-windows-only).
+            if step == "sharpS" { continue }
             XCTAssertEqual(try run(item, id: id, step: step), expected, id)
         }
         XCTAssertEqual(used, Set(differences.keys), "every named difference needs a case")
@@ -62,8 +64,6 @@ final class TextPipelineCorpusTests: XCTestCase {
             try XCTUnwrap(SpokenLanguage(rawValue: name), "\(id): unknown language \(name)")
         })
         switch step {
-        case "sharpS":
-            return SharpS.apply(to: input)
         case "voiceCommands":
             return VoiceCommands.apply(to: input, languages: languages)
         default:
@@ -73,7 +73,6 @@ final class TextPipelineCorpusTests: XCTestCase {
                 .map { Snippet(phrase: $0["phrase"] ?? "", text: $0["text"] ?? "") }
             var pipeline = TextPipeline(languages: languages,
                                         voiceCommands: try flag(item["voiceCommands"], id: id),
-                                        sharpS: try flag(item["sharpS"], id: id),
                                         replacements: replacements,
                                         snippets: snippets)
             pipeline.appRule = try appRule(item["appRule"], id: id)
