@@ -5,7 +5,8 @@ import Foundation
 struct TextPipeline: Sendable {
     var languages: Set<SpokenLanguage>
     var voiceCommands = true
-    var sharpS = true
+    /// Swiss spelling: every ß becomes ss.
+    var swissSpelling = false
     /// Filler sounds and words said twice go.
     var tidy = false
     /// Self-corrections are offered to whoever confirms them; needs `tidy`.
@@ -16,7 +17,7 @@ struct TextPipeline: Sendable {
     var appRule: AppRule?
 
     /// A dictation. A snippet's phrase on its own inserts the snippet as it
-    /// was written; anything else gets voice commands, tidying, ß and replacements.
+    /// was written; anything else gets voice commands, tidying, Swiss spelling and replacements.
     func dictation(_ raw: String) -> String {
         if raw.allSatisfy(\.isWhitespace) { return "" }
         if let snippet = snippets.match(raw) { return snippet }
@@ -48,10 +49,15 @@ struct TextPipeline: Sendable {
         corrected(raw)
     }
 
-    /// ß and the user's replacements, which come last so they can override ß.
+    /// Swiss spelling and the user's replacements, which come last so they
+    /// can override it. The recognisers write ß themselves; a rule that put
+    /// it back into words written with ss (#1) only hit English words and
+    /// names any more: "gross margin", "Herr Weiss" (#45).
     private func corrected(_ text: String) -> String {
         var text = text
-        if sharpS, languages.contains(.german) { text = SharpS.apply(to: text) }
+        if swissSpelling, languages.contains(.german) {
+            text = text.replacingOccurrences(of: "ß", with: "ss").replacingOccurrences(of: "ẞ", with: "SS")
+        }
         return replacements.apply(to: text)
     }
 }

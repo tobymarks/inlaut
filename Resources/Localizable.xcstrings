@@ -1194,6 +1194,16 @@
         }
       }
     },
+    "ss instead of ß": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ss statt ß"
+          }
+        }
+      }
+    },
     "Starting …": {
       "localizations": {
         "de": {
@@ -1210,6 +1220,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Schritt %lld"
+          }
+        }
+      }
+    },
+    "Swiss spelling: Strasse, gross and Grüsse.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schweizer Schreibung: Strasse, gross und Grüsse."
           }
         }
       }
@@ -1434,16 +1454,6 @@
         }
       }
     },
-    "Writes unambiguous words such as Straße, groß or Grüße with ß.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schreibt eindeutige Wörter wie Straße, groß oder Grüße mit ß."
-          }
-        }
-      }
-    },
     "Your voice. Straight to text.": {
       "localizations": {
         "de": {
@@ -1633,16 +1643,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "geschrieben, z. B. DAM"
-          }
-        }
-      }
-    },
-    "ß instead of ss": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ß statt ss"
           }
         }
       }

@@ -42,7 +42,6 @@ targets:
       - Sources/TextInserter.swift
       - Sources/VoiceCommands.swift
       - Sources/Replacements.swift
-      - Sources/SharpS.swift
       - Sources/Snippets.swift
       - Sources/TextPipeline.swift
       - Sources/AppRules.swift
