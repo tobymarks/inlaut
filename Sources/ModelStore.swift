@@ -1,5 +1,6 @@
 import CryptoKit
 import Foundation
+import os
 
 struct ModelFile: Hashable, Sendable {
     let name: String
@@ -179,34 +180,70 @@ enum ModelStore {
     }
 }
 
-/// One file download with byte progress, via a delegate session.
-private final class Download: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
+/// One file download with byte progress, via a delegate session. A dropped
+/// connection continues where it stopped instead of starting the file over
+/// (#47): the encoder weights alone are 594 MB.
+final class Download: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
     private var continuation: CheckedContinuation<URL, Error>?
     private let onProgress: @Sendable (Int64) -> Void
     private var lastReported: Int64 = 0
+    /// Tests: break the connection once after this many bytes.
+    private var interruptAfter: Int64?
 
-    private init(onProgress: @escaping @Sendable (Int64) -> Void) {
+    private static let log = Logger(subsystem: "de.tobymarks.inlaut", category: "download")
+
+    /// Tries after the first one; a server or disk error is not retried.
+    private static let retries = 4
+
+    private init(interruptAfter: Int64?, onProgress: @escaping @Sendable (Int64) -> Void) {
+        self.interruptAfter = interruptAfter
         self.onProgress = onProgress
     }
 
     @MainActor
-    static func run(_ url: URL, progress: @escaping @MainActor (Int64) -> Void) async throws -> URL {
+    static func run(_ url: URL, interruptAfter: Int64? = nil,
+                    progress: @escaping @MainActor (Int64) -> Void) async throws -> URL {
         try Task.checkCancellation()
-        let download = Download { written in Task { @MainActor in progress(written) } }
+        let download = Download(interruptAfter: interruptAfter) { written in Task { @MainActor in progress(written) } }
         let session = URLSession(configuration: .default, delegate: download, delegateQueue: nil)
         defer { session.finishTasksAndInvalidate() }
         return try await withTaskCancellationHandler {
-            try await withCheckedThrowingContinuation { continuation in
-                download.continuation = continuation
-                session.downloadTask(with: url).resume()
+            var resumeData: Data?
+            var attempt = 0
+            while true {
+                do {
+                    let partial = resumeData
+                    return try await withCheckedThrowingContinuation { continuation in
+                        download.continuation = continuation
+                        let task = partial.map(session.downloadTask(withResumeData:)) ?? session.downloadTask(with: url)
+                        task.resume()
+                    }
+                } catch let error as URLError where attempt < retries && !Task.isCancelled {
+                    // What arrived so far, if the server allows continuing from there.
+                    resumeData = error.downloadTaskResumeData
+                    guard resumeData != nil || Self.transient.contains(error.code) else { throw error }
+                    attempt += 1
+                    try await Task.sleep(for: .seconds(attempt))
+                }
             }
         } onCancel: {
             session.invalidateAndCancel()
         }
     }
 
+    /// Worth another try even when nothing can be continued.
+    private static let transient: Set<URLError.Code> = [
+        .networkConnectionLost, .timedOut, .notConnectedToInternet, .cannotConnectToHost, .cannotFindHost,
+        .dnsLookupFailed,
+    ]
+
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64,
                     totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        if let limit = interruptAfter, totalBytesWritten > limit {
+            interruptAfter = nil
+            downloadTask.cancel { _ in }
+            return
+        }
         // About every 4 MB is plenty for a progress bar.
         if totalBytesWritten - lastReported > 4 << 20 {
             lastReported = totalBytesWritten
@@ -214,9 +251,14 @@ private final class Download: NSObject, URLSessionDownloadDelegate, @unchecked S
         }
     }
 
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didResumeAtOffset fileOffset: Int64,
+                    expectedTotalBytes: Int64) {
+        Self.log.notice("download continued at \(fileOffset) of \(expectedTotalBytes) bytes")
+    }
+
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         // The system deletes `location` when this method returns.
-        if let http = downloadTask.response as? HTTPURLResponse, http.statusCode != 200 {
+        if let http = downloadTask.response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
             finish(.failure(EngineError("Download failed (HTTP \(http.statusCode)).")))
             return
         }

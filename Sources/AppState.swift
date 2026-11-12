@@ -768,7 +768,8 @@ final class AppState {
             self.session = try ManagedSession.start(engine: engine) { try recorder.start(into: $0, device: device) }
             dictationID = UUID()
             status = .recording
-            // The language model loads while the user is still speaking.
+            // Both models get ready while the user is still speaking.
+            if engine === parakeet { parakeet.warmUp() }
             if tidyDictations, resolveCorrections { CorrectionJudge.prewarm() }
             indicator.showRecording { [recorder] in recorder.level }
             // Not delayed until audio arrives: AirPods only start delivering once a

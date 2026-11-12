@@ -1,5 +1,6 @@
 import AppKit
 import AVFoundation
+import Carbon.HIToolbox
 import CoreAudio
 import XCTest
 
@@ -16,6 +17,7 @@ final class TextInserterTests: XCTestCase {
         board.clearContents()
         let result = try await TextInserter.insert("Diktat", pasteboard: board, environment: environment(board))
         XCTAssertEqual(result, .inserted)
+        await TextInserter.restoring?.value
         XCTAssertNil(board.string(forType: .string))
     }
 
@@ -34,6 +36,7 @@ final class TextInserterTests: XCTestCase {
             return true
         }
         _ = try await TextInserter.insert("Diktat", pasteboard: board, environment: env)
+        await TextInserter.restoring?.value
         XCTAssertEqual(board.string(forType: .string), "Während des Wartens kopiert")
     }
 
@@ -47,7 +50,44 @@ final class TextInserterTests: XCTestCase {
             board.setString("Neue Kopie", forType: .string)
         }
         _ = try await TextInserter.insert("Diktat", pasteboard: board, environment: env)
+        await TextInserter.restoring?.value
         XCTAssertEqual(board.string(forType: .string), "Neue Kopie")
+    }
+
+    func testReturnsBeforeTheClipboardIsRestored() async throws {
+        // The next dictation can start right after the paste (#43); if it
+        // pastes before the wait is over, the first clipboard still comes back.
+        let board = NSPasteboard.withUniqueName()
+        defer { board.releaseGlobally() }
+        board.setString("Vorher", forType: .string)
+        let (stream, gate) = AsyncStream<Void>.makeStream()
+        var env = environment(board)
+        env.waitForPaste = { for await _ in stream { break } }
+        let first = try await TextInserter.insert("Erstes Diktat", pasteboard: board, environment: env)
+        XCTAssertEqual(first, .inserted)
+        XCTAssertEqual(board.string(forType: .string), "Erstes Diktat")
+
+        var pasted: String?
+        var second = environment(board)
+        second.postPaste = { pasted = board.string(forType: .string); return true }
+        _ = try await TextInserter.insert("Zweites Diktat", pasteboard: board, environment: second)
+        XCTAssertEqual(pasted, "Zweites Diktat")
+        await TextInserter.restoring?.value
+        XCTAssertEqual(board.string(forType: .string), "Vorher")
+        gate.yield()
+        gate.finish()
+    }
+
+    func testPasteKeyFollowsTheKeyboardLayout() throws {
+        // Key codes are positions: Dvorak has V where QWERTY has the full stop (#46).
+        for (layout, key) in [("com.apple.keylayout.US", kVK_ANSI_V), ("com.apple.keylayout.German", kVK_ANSI_V),
+                              ("com.apple.keylayout.Dvorak", kVK_ANSI_Period),
+                              ("com.apple.keylayout.DVORAK-QWERTYCMD", kVK_ANSI_V)] {
+            let filter = [kTISPropertyInputSourceID as String: layout] as CFDictionary
+            guard let source = (TISCreateInputSourceList(filter, true)?.takeRetainedValue() as? [TISInputSource])?.first,
+                  let data = TextInserter.layoutData(of: source) else { throw XCTSkip("\(layout) is not installed") }
+            XCTAssertEqual(TextInserter.keyCode(producing: "v", in: data), CGKeyCode(key), layout)
+        }
     }
 
     func testSpokenBreaksAtTheEdgesReachTheField() async throws {
@@ -103,7 +143,7 @@ final class TextInserterTests: XCTestCase {
         XCTAssertEqual(board.string(forType: .string), "Diktat")
     }
 
-    func testCancellationRestoresRichClipboard() async throws {
+    func testRestoresRichClipboard() async throws {
         let board = NSPasteboard.withUniqueName()
         defer { board.releaseGlobally() }
         let rich = NSPasteboardItem()
@@ -112,10 +152,8 @@ final class TextInserterTests: XCTestCase {
         board.writeObjects([rich])
         var env = environment(board)
         env.waitForPaste = { throw CancellationError() }
-        do {
-            _ = try await TextInserter.insert("Diktat", pasteboard: board, environment: env)
-            XCTFail("Expected cancellation")
-        } catch is CancellationError { }
+        _ = try await TextInserter.insert("Diktat", pasteboard: board, environment: env)
+        await TextInserter.restoring?.value
         XCTAssertEqual(board.string(forType: .string), "Vorher")
         XCTAssertEqual(board.data(forType: .rtf), Data([1, 2, 3]))
     }

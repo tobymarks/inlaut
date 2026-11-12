@@ -1,6 +1,7 @@
 @preconcurrency import AVFoundation
 import CoreML
 import InlautSpeech
+import os
 import Synchronization
 
 /// Parakeet as Core ML components on the Neural Engine, through FluidAudio.
@@ -58,6 +59,13 @@ final class ParakeetEngine: TranscriptionEngine {
         loading = nil
     }
 
+    /// Called when a take starts. After about a minute without a dictation the
+    /// first inference took ~0.2 s longer (median 0.37 s against 0.19 s over
+    /// 27 dictations, #44); run here, that happens while the user speaks.
+    func warmUp() {
+        recognizer?.warmUp()
+    }
+
     func begin() throws -> TranscriptionSession {
         if let recognizer { return ParakeetSession { recognizer } }
         if let loading { return ParakeetSession { try await loading.value } }
@@ -112,6 +120,22 @@ final class ParakeetRecognizer: Sendable {
     static let sampleRate: Double = 16_000
 
     private let manager: AsrManager
+    private let warming = Mutex<Task<Void, Never>?>(nil)
+    private static let log = Logger(subsystem: "de.tobymarks.inlaut", category: "parakeet")
+
+    /// One second of silence through the model, in the background.
+    func warmUp() {
+        warming.withLock { current in
+            let previous = current
+            current = Task.detached(priority: .userInitiated) { [manager] in
+                await previous?.value
+                let started = DispatchTime.now().uptimeNanoseconds
+                var state = TdtDecoderState.make()
+                _ = try? await manager.transcribe([Float](repeating: 0, count: Int(Self.sampleRate)), decoderState: &state)
+                Self.log.notice("warm-up \((DispatchTime.now().uptimeNanoseconds - started) / 1_000_000) ms")
+            }
+        }
+    }
 
     init(directory: URL) async throws {
         // Loads the compiled components from our own pinned, checksummed
@@ -141,6 +165,10 @@ final class ParakeetRecognizer: Sendable {
             let gain = min(Self.targetPeak / peak, Self.maxGain)
             for i in samples.indices { samples[i] *= gain }
         }
+        // AsrManager is an actor, but its calls suspend: a warm-up still
+        // running must not interleave with this decode.
+        await warming.withLock { $0 }?.value
+        try cancellation.check()
         var state = TdtDecoderState.make()
         let result = try await manager.transcribe(samples, decoderState: &state)
         try cancellation.check()
