@@ -55,6 +55,27 @@ final class ModelStoreTests: XCTestCase {
                        "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
     }
 
+    /// A file of the right size but wrong content must not pass as intact:
+    /// what runs has to be exactly the bits that were tested.
+    func testDamagedFileFailsVerification() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let model = SpeechModel(id: "fixture", name: "Fixture", languages: ["de"], repo: "example/none",
+                                revision: String(repeating: "a", count: 40),
+                                files: [ModelFile(name: "a.bin", size: 3,
+                                                  sha256: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")],
+                                credit: "nobody")
+        try FileManager.default.createDirectory(at: model.directory(in: root), withIntermediateDirectories: true)
+        let file = model.url("a.bin", in: root)
+
+        try Data("abc".utf8).write(to: file)
+        XCTAssertNoThrow(try model.verifyInstalled(in: root))
+
+        // Same size, different bits: only the checksum catches this.
+        try Data("abd".utf8).write(to: file)
+        XCTAssertThrowsError(try model.verifyInstalled(in: root))
+    }
+
     /// Fetches 23 MB from Hugging Face, so it only runs when asked to:
     /// `TEST_RUNNER_INLAUT_NETWORK_TESTS=1 xcodebuild … test`.
     @MainActor

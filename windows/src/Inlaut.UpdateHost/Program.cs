@@ -12,7 +12,7 @@ internal static class Program
     private static int Main(string[] args)
     {
         UiText.Language = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "de" ? "de" : "en";
-        string? application = null; bool parentExited = false;
+        string? application = null; bool parentExited = false; bool verified = false;
         try
         {
             if (args.Length != 1) throw new ArgumentException(UiText.Get("Update-Auftrag fehlt."));
@@ -41,6 +41,9 @@ internal static class Program
             using (var locked = new FileStream(installer, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 UpdateSecurity.VerifyPackage(installer, request.Manifest, application);
+                // Only what passed the signature check may be started again,
+                // even when the installation itself fails afterwards.
+                verified = true;
                 var start = new ProcessStartInfo(installer) { UseShellExecute = false };
                 foreach (var arg in new[] { "/SILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-", "/DIR=" + Path.GetDirectoryName(application) }) start.ArgumentList.Add(arg);
                 using var setup = Process.Start(start) ?? throw new IOException(UiText.Get("Installation konnte nicht gestartet werden."));
@@ -57,7 +60,7 @@ internal static class Program
         }
         finally
         {
-            if (parentExited && application != null && File.Exists(application))
+            if (parentExited && verified && application != null && File.Exists(application))
             {
                 try { Process.Start(new ProcessStartInfo(application) { UseShellExecute = true }); }
                 catch { MessageBox.Show(UiText.Get("Bitte inlaut über das Startmenü öffnen."), UiText.Get("inlaut — Neustart")); }

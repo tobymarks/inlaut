@@ -27,6 +27,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # PR code runs below; the git credential stays out of .git/config.
+          persist-credentials: false
 
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
@@ -37,6 +40,9 @@ jobs:
         run: |
           dotnet --info
           dotnet restore windows/Inlaut.sln
+
+      - name: Check packages for known vulnerabilities
+        run: dotnet list windows/Inlaut.sln package --vulnerable --include-transitive
 
       - name: Build Solution
         run: dotnet build windows/Inlaut.sln -c Release --no-restore
@@ -245,10 +251,12 @@ jobs:
             "Workflow run: $env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
           ) | Set-Content -LiteralPath publish/beta/BUILD.txt -Encoding utf8
 
-      - name: Upload release installer and checksums
+      - name: Upload unsigned build installer and checksums
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: inlaut-windows-release
+          # Unsigned: also PR builds produce this artifact, and only the signed
+          # candidate from windows-sign.yml is release material.
+          name: inlaut-windows-unsigned-build
           path: |
             publish/beta/inlaut-*-windows-x64-setup.exe
             publish/beta/SHA256SUMS.txt

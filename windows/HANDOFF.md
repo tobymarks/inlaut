@@ -568,7 +568,7 @@ The release commit bumps Inlaut.App.csproj, BETA.md, the READMEs, the site sourc
 site/docs/windows-beta-release.md to 0.7.0-beta.10 and adds release-notes/0.7.0-beta.10.md.
 As with beta.9, the site source already links the beta.10 asset; the GitHub prerelease
 and the site deployment are separate steps that need the maintainer's go, in the order
-of site/docs/windows-beta-release.md. Publish only the inlaut-windows-release artifact of
+of site/docs/windows-beta-release.md. Publish only the inlaut-windows-unsigned-build artifact of
 the push run of the tagged commit (BUILD.txt names it), and only while that run is green.
 
 ## 0.7.0-beta.11 release (2026-10-23)

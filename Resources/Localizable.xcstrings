@@ -1284,6 +1284,16 @@
         }
       }
     },
+    "The model files no longer match their checksums – download the model again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Modelldateien entsprechen nicht mehr ihren Prüfsummen – das Modell erneut herunterladen."
+          }
+        }
+      }
+    },
     "The Parakeet model has not been downloaded yet.": {
       "localizations": {
         "de": {

@@ -75,4 +75,28 @@ foreach (var (input, expected) in new[]
 }
 Console.WriteLine("PASS: German spelling at punctuation/Unicode/whitespace boundaries; exceptions preserved");
 
+// A WAV whose header claims more data than the file holds must not be trusted
+// with the allocation: the sample count is capped to the bytes actually there.
+string waveRoot = Path.Combine(Path.GetTempPath(), "inlaut-wavereader-test-" + Guid.NewGuid());
+Directory.CreateDirectory(waveRoot);
+try
+{
+    string lying = Path.Combine(waveRoot, "lying.wav");
+    using (var writer = new BinaryWriter(File.Open(lying, FileMode.Create)))
+    {
+        writer.Write("RIFF".ToCharArray()); writer.Write(36 + 20); writer.Write("WAVE".ToCharArray());
+        writer.Write("fmt ".ToCharArray()); writer.Write(16);
+        writer.Write((short)1); writer.Write((short)1); writer.Write(16000);
+        writer.Write(32000); writer.Write((short)2); writer.Write((short)16);
+        writer.Write("data".ToCharArray()); writer.Write(int.MaxValue - 8);  // claims ~2 GB, delivers 20 bytes
+        for (int i = 0; i < 10; i++) writer.Write((short)(i * 1000));
+    }
+    var wave = new Inlaut.Platform.Windows.WaveReader(lying);
+    if (wave.SampleRate != 16000 || wave.Samples.Length != 10)
+        throw new Exception($"Lying WAV data size was not capped: {wave.Samples.Length} samples");
+    if (Math.Abs(wave.Samples[1] - 1000 / 32768f) > 1e-6) throw new Exception("Capped samples were converted wrongly");
+    Console.WriteLine("PASS: WAV sample allocation capped to the bytes present in the file");
+}
+finally { Directory.Delete(waveRoot, true); }
+
 CorpusChecks.Run();

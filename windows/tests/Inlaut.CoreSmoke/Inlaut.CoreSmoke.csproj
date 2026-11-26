@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="../../src/Inlaut.Core/Inlaut.Core.csproj" />
     <Compile Include="../../src/Inlaut.App/IndicatorLayout.cs" Link="IndicatorLayout.cs" />
+    <Compile Include="../../src/Inlaut.Platform.Windows/WaveReader.cs" Link="WaveReader.cs" />
     <None Include="../../../TestData/text-pipeline.json" Link="text-pipeline.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

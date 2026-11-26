@@ -48,7 +48,10 @@ public class WaveReader
 
         int dataSize = reader.ReadInt32();
         int bytesPerSample = bitsPerSample / 8;
-        int numSamples = dataSize / bytesPerSample;
+        if (bytesPerSample == 0) throw new NotSupportedException($"Unsupported WAV format: bitsPerSample={bitsPerSample}, format={audioFormat}");
+        // The header may claim more than the file holds; never allocate beyond the bytes actually present.
+        long available = reader.BaseStream.Length - reader.BaseStream.Position;
+        int numSamples = (int)Math.Min((long)dataSize, available) / bytesPerSample;
         Samples = new float[numSamples];
 
         if (bitsPerSample == 16)
