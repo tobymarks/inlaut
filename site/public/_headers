@@ -1,3 +1,10 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://analytics.inlaut.de 'sha256-MmUE/wrQPWOSNor2NibCYVikszDCekyGjV2xkU9oneY=' 'sha256-NhEkMZwQk1PqzOO9MylmEuK6CkjQ/iz6s61cPkoDkXc='; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self' https://analytics.inlaut.de; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'none'; upgrade-insecure-requests
+
 /updates/*
   Cache-Control: public, max-age=300, must-revalidate
   X-Content-Type-Options: nosniff

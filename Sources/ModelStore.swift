@@ -85,25 +85,51 @@ struct SpeechModel: Identifiable, Hashable, Sendable {
 
     func directory(in root: URL) -> URL { root.appending(path: id, directoryHint: .isDirectory) }
 
-    func url(_ name: String) -> URL { directory.appending(path: name) }
+    func url(_ name: String, in root: URL = ModelStore.root) -> URL { directory(in: root).appending(path: name) }
 
-    /// Files only reach their final name after the checksum passed, so a
-    /// matching size is enough here.
-    func isComplete(_ file: ModelFile) -> Bool {
-        let size = (try? FileManager.default.attributesOfItem(atPath: url(file.name).path)[.size] as? Int64) ?? nil
+    /// Files only reach their final name after the checksum passed. A
+    /// matching size is the cheap first check; the checksum is the proof.
+    func isComplete(_ file: ModelFile, in root: URL = ModelStore.root) -> Bool {
+        let size = (try? FileManager.default.attributesOfItem(atPath: url(file.name, in: root).path)[.size] as? Int64) ?? nil
         return size == file.size
     }
 
-    var isInstalled: Bool { files.allSatisfy(isComplete) }
+    var isInstalled: Bool { files.allSatisfy { isComplete($0) } }
 
-    /// Downloads what is missing. `progress` gets 0…1 on the main actor.
+    /// Whether an installed file still matches its recorded checksum. The
+    /// hashing reads the whole file, so it runs off the caller's actor.
+    private func intact(_ file: ModelFile, in root: URL) async -> Bool {
+        guard isComplete(file, in: root) else { return false }
+        let expected = file.sha256
+        let source = url(file.name, in: root)
+        return (try? await Task.detached(priority: .userInitiated) { try ModelStore.sha256(of: source) }.value) == expected
+    }
+
+    /// Throws when any file on disk no longer matches its recorded size and
+    /// checksum: what runs must be exactly the bits that were tested.
+    func verifyInstalled(in root: URL = ModelStore.root) throws {
+        for file in files {
+            guard isComplete(file, in: root),
+                  (try? ModelStore.sha256(of: url(file.name, in: root))) == file.sha256
+            else { throw EngineError("The model files no longer match their checksums – download the model again.") }
+        }
+    }
+
+    /// Downloads what is missing or damaged. `progress` gets 0…1 on the main actor.
     @MainActor
     func install(progress: @escaping @MainActor (Double) -> Void) async throws {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        var done = files.filter(isComplete).reduce(Int64(0)) { $0 + $1.size }
+        // A file of the right size may still be damaged, so what is on disk
+        // is verified before it is kept; anything that fails goes again.
+        var fetch: [ModelFile] = []
+        for file in files {
+            if await intact(file, in: ModelStore.root) { continue }
+            fetch.append(file)
+        }
+        var done = totalBytes - fetch.reduce(Int64(0)) { $0 + $1.size }
         progress(Double(done) / Double(totalBytes))
 
-        for file in files where !isComplete(file) {
+        for file in fetch {
             try Task.checkCancellation()
             let source = URL(string: "https://huggingface.co/\(repo)/resolve/\(revision)/\(file.name)")!
             let base = done

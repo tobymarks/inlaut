@@ -31,9 +31,13 @@ final class ParakeetEngine: TranscriptionEngine {
     func startLoading() throws {
         guard recognizer == nil, loading == nil else { return }
         guard model.isInstalled else { throw EngineError("The Parakeet model has not been downloaded yet.") }
+        let toLoad = model
         let directory = model.directory
         loading = Task.detached(priority: .userInitiated) {
             try Task.checkCancellation()
+            // What runs must be exactly the bits that were tested: a
+            // matching file size is not proof, the checksum is.
+            try toLoad.verifyInstalled()
             return try await ParakeetRecognizer(directory: directory)
         }
     }
